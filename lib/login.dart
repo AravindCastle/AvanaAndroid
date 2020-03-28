@@ -32,8 +32,8 @@ class _LoginPageState extends State<LoginPage> {
           prefs.setString("userId", documents[0].documentID);
         prefs.setString("name", documents[0]["username"]);
         prefs.setString("role", documents[0]["role"]);
-        prefs.setString("isActive", documents[0]["isactive"]);
-        prefs.setString("membershipdate", documents[0]["membershipdate"]);
+       // prefs.setString("isActive", documents[0]["isactive"]);
+       // prefs.setString("membershipdate", documents[0]["membershipdate"]);
              Navigator.pushNamed(context, "/messagePage"); 
         }
         else{

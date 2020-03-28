@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:ffi';
 import 'dart:wasm';
 
@@ -7,14 +8,56 @@ import 'package:flutter/material.dart';
 
  bool isActive = true;
   String userRole = "3";
+  bool loading=false;
 class AddUserPage extends StatefulWidget {
-  TextEditingController userName = new TextEditingController();
+  
+
+  _AddUserPageState createState() => _AddUserPageState();
+}
+
+class _AddUserPageState extends State<AddUserPage> {
+ TextEditingController userName = new TextEditingController();
   TextEditingController emailId = new TextEditingController();
   TextEditingController password = new TextEditingController();
 
-  Future<Null> addnewUser(BuildContext context ) async{
+Widget buttonOrLoading(){
+
+if(loading)  
+  return 
+    new LinearProgressIndicator(
+
+  );
+  else{
+    return Builder(builder: (BuildContext context) {
+                        return ButtonTheme(
+                            height: 30,
+                            minWidth: 300,
+                            child: RaisedButton(
+                              onPressed: () {
+                                addnewUser(context);
+                              },
+                              color: Colors.black,
+                              padding: const EdgeInsets.all(10.0),
+                              shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(30.0),
+                              ),
+                              child: const Text('Add New User',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w400)),
+                            ));
+                      });
+  }
+}
+
+ Future<Null> addnewUser(BuildContext context ) async{
     try{
-   await Firestore.instance.collection("userdata").add({
+      HashMap userDetail=new HashMap();
+      setState(() {
+        loading=true;
+      });
+   var succes=await Firestore.instance.collection("userdata").add({
       "username":userName.text,
       "email":emailId.text,
       "password":password.text,
@@ -22,21 +65,23 @@ class AddUserPage extends StatefulWidget {
       "userrole":int.parse(userRole),
       "membershipdate":new DateTime.now().millisecondsSinceEpoch    
     }); 
-
+    
      final snackBar = SnackBar(content: Text('Saved Successfully ! '));
         Scaffold.of(context).showSnackBar(snackBar);
-        Navigator.pop(context);
+    userName.clear();
+    emailId.clear();
+    password.clear();
+ setState(() {
+   loading=false;
+ });
+
     }
+ 
     catch(Exception){
          final snackBar = SnackBar(content: Text('oops Something went wrong ! '));
          Scaffold.of(context).showSnackBar(snackBar);
     }
-  }
-
-  _AddUserPageState createState() => _AddUserPageState();
-}
-
-class _AddUserPageState extends State<AddUserPage> {
+  } 
  
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,20 +95,23 @@ class _AddUserPageState extends State<AddUserPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                    children: <Widget>[                      
                       TextField(
+                        controller: userName,
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Username")),
                       SizedBox(height: 10),
                       TextField(
+                        controller: emailId,
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Email Id")),
                       SizedBox(height: 10),
                       TextField(
+                        controller: password,
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -115,27 +163,8 @@ class _AddUserPageState extends State<AddUserPage> {
                         ),
                       ),
                       
-                      SizedBox(height: 10),
-                      Builder(builder: (BuildContext context) {
-                        return ButtonTheme(
-                            height: 30,
-                            minWidth: 300,
-                            child: RaisedButton(
-                              onPressed: () {
-                                null;
-                              },
-                              color: Colors.black,
-                              padding: const EdgeInsets.all(10.0),
-                              shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(30.0),
-                              ),
-                              child: const Text('Add New User',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w400)),
-                            ));
-                      })
+                      SizedBox(height: 10),                      
+                      buttonOrLoading(),
                     ],
                   ),
                 ))));

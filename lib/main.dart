@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:avana_academy/messagescreen.dart';
-import 'package:avana_academy/screens/login.dart';
+import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 import 'addUser.dart';
+import 'login.dart';
 
 void main() => runApp(AvanaHome());
 
@@ -23,7 +24,8 @@ class AvanaHome extends StatelessWidget {
         "/login":(context) => LoginPage(),
         "/messagePage" :(context) => MessagePage(),
         "/userlist": (context) => userListPage(),
-        "/adduser":(context) => AddUserPage()
+        "/adduser":(context) => AddUserPage(),
+        "/userdetailpage" :(context) =>UserDetailsPage()
       },
 
       theme: ThemeData(
@@ -80,7 +82,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
           
       }
     }
-    if(isUserLogged){
+    if(!isUserLogged){
       Navigator.pushNamed(context, "/login");
     }
     else{
