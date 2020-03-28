@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1030602486424",
+    "firebase_url": "https://avanaacademy-af771.firebaseio.com",
+    "project_id": "avanaacademy-af771",
+    "storage_bucket": "avanaacademy-af771.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030602486424:android:aae2b95fa99ba3bbc916ed",
+        "android_client_info": {
+          "package_name": "com.example.avana_academy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1030602486424-kthvbcgqgpqhh73i0s9kgt56s6mr5m30.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo-uuCobf5TOE4hNjWYFqcUAGaRaTTS-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1030602486424-kthvbcgqgpqhh73i0s9kgt56s6mr5m30.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
