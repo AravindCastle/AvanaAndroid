@@ -55,7 +55,7 @@ class _MessagePageState extends State<MessagePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          Navigator.pushNamed(context, "/messageeditor");
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.green,

@@ -19,7 +19,7 @@ class _userListPageState extends State<userListPage> {
       appBar: AppBar(title: Text("Users")),
 
       body:new StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('userdata').snapshots(),
+              stream: Firestore.instance.collection('userdata').orderBy("username").snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) return new Text('Loading...');

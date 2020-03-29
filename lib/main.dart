@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:avana_academy/MessageEditor.dart';
+import 'package:avana_academy/Utils.dart';
 import 'package:avana_academy/messagescreen.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
@@ -15,8 +17,10 @@ void main() => runApp(AvanaHome());
 
 class AvanaHome extends StatelessWidget {
   // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Avana Academy',
@@ -25,7 +29,8 @@ class AvanaHome extends StatelessWidget {
         "/messagePage" :(context) => MessagePage(),
         "/userlist": (context) => userListPage(),
         "/adduser":(context) => AddUserPage(),
-        "/userdetailpage" :(context) =>UserDetailsPage()
+        "/userdetailpage" :(context) =>UserDetailsPage(),
+        "/messageeditor" :(context) => MessageEditor()
       },
 
       theme: ThemeData(
@@ -38,7 +43,8 @@ class AvanaHome extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.red,
+        secondaryHeaderColor: Colors.grey
       ),
       home: AvanaHomePage(title: 'Avana Academy'),
     );

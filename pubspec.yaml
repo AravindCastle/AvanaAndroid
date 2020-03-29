@@ -19,7 +19,8 @@ environment:
 dependencies:
   shared_preferences: ^0.5.6+3
   cloud_firestore: ^0.13.4
-  firebase_auth: ^0.15.5+3
+  image_picker: 0.6.0+17
+  firebase_storage: 3.0.4
   flutter:
     sdk: flutter
 

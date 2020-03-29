@@ -19,7 +19,10 @@ class _AddUserPageState extends State<AddUserPage> {
  TextEditingController userName = new TextEditingController();
   TextEditingController emailId = new TextEditingController();
   TextEditingController password = new TextEditingController();
-
+initState(){
+ loading=false; 
+}
+ 
 Widget buttonOrLoading(){
 
 if(loading)  
@@ -65,21 +68,21 @@ if(loading)
       "userrole":int.parse(userRole),
       "membershipdate":new DateTime.now().millisecondsSinceEpoch    
     }); 
-    
-     final snackBar = SnackBar(content: Text('Saved Successfully ! '));
-        Scaffold.of(context).showSnackBar(snackBar);
+      
     userName.clear();
     emailId.clear();
     password.clear();
  setState(() {
    loading=false;
  });
-
+ 
     }
  
     catch(Exception){
-         final snackBar = SnackBar(content: Text('oops Something went wrong ! '));
-         Scaffold.of(context).showSnackBar(snackBar);
+      setState(() {
+   loading=false;
+ });
+        
     }
   } 
  
