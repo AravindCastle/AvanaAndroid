@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,11 +10,12 @@ class MessageEditor extends StatefulWidget {
 }
 
 class _MessageEditorState extends State<MessageEditor> {
-  List<File> uploaderImgs = new List();
+  List<File> uploaderImgs = new List(); 
 
   Future<void> _pickImage(ImageSource source) async {
     if (uploaderImgs.length <= 6) {
-      File selectedFile = await ImagePicker.pickImage(source: source);
+      File selectedFile = await FilePicker.getFile(type: FileType.any);
+ //await ImagePicker.pickImage(source: source);
       setState(() {
         uploaderImgs.add(selectedFile);
       });
@@ -24,23 +26,26 @@ class _MessageEditorState extends State<MessageEditor> {
     if(uploaderImgs.length>0){
     List<Widget> previewIcons = new List();
     for (int i = 0; i < uploaderImgs.length; i++) {
-      Widget imgCOnt = new Container(
+      File temp=uploaderImgs[i];
+      String fileName=temp.path.split("/").last;
+      Widget imgCOnt = new SizedBox(
         width: 25,
         height: 25,
-        alignment: Alignment.center,
-        child: Image.file(uploaderImgs[i]),
+        child:Image.file(temp) ,
         
       );
       previewIcons.add(imgCOnt);
     
     }
-    return   GridView.count(
+    return  new SizedBox(height:500,child:  GridView.count(
+         
           childAspectRatio: 1,
           padding: const EdgeInsets.all(10),
           crossAxisSpacing: 2,
+          shrinkWrap: true, 
           mainAxisSpacing: 2,
           crossAxisCount: 3,
-          children: previewIcons);
+          children: previewIcons));
     }
     else{
       return SizedBox(height:10);
