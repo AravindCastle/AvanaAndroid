@@ -32,15 +32,16 @@ class _MessageEditorState extends State<MessageEditor> {
   Future<void> saveThread() async{
     try{
       
-    List<String> fileUrls= new List();
+    List<Map> fileUrls= new List();
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     for(int i=0;i<uploaderImgs.length;i++){
+      String fileName=uploaderImgs[i].path.split("/").last;
         StorageReference storageReference = FirebaseStorage.instance    
           .ref()    
-          .child('AvanaFiles/'+uploaderImgs[i].path.split("/").last);    
+          .child('AvanaFiles/'+fileName);    
         StorageUploadTask uploadTask = storageReference.putFile(uploaderImgs[i]);    
         await uploadTask.onComplete;         
-        fileUrls.add(await storageReference.getDownloadURL());
+        fileUrls.add({"url":await storageReference.getDownloadURL(),"name":fileName,"type":fileName.split(".").last});
 
     }
 

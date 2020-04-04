@@ -30,7 +30,7 @@ class _MessagePageState extends State<MessagePage> {
                       )),
                       subtitle: new Text(document['owner']),
                      onTap: (){
-                       Navigator.pushNamed(context, "/messageview");
+                       Navigator.pushNamed(context, "/messageview",arguments:document.documentID );
                      },
                     );
                   }).toList(),
