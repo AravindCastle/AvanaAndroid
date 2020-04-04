@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,17 +7,36 @@ class MessagePage extends StatefulWidget {
   _MessagePageState createState() => _MessagePageState();
 }
 
+
 class _MessagePageState extends State<MessagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            title: Text("Threads"),
-            brightness: Brightness.light,
-          )
-        ],
-      ),
+            appBar: AppBar(title: Text("Messages")),
+
+      body:new StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('Threads').orderBy("created_time").snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (!snapshot.hasData) return new CircularProgressIndicator();
+                return new ListView(
+                  children: snapshot.data.documents.map((document) {
+                    return new ListTile(
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                      leading: CircleAvatar(
+                          backgroundColor: Color.fromRGBO(240, 85, 69, 1),
+                        ),
+                      title: new Text(document['title'],style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      )),
+                      subtitle: new Text(document['owner']),
+                     onTap: (){
+                       Navigator.pushNamed(context, "/messageview");
+                     },
+                    );
+                  }).toList(),
+                );
+              },
+            ),
       drawer: new Drawer(
         child: ListView(
           padding: EdgeInsets.zero,

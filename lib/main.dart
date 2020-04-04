@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:avana_academy/MessageEditor.dart';
 import 'package:avana_academy/Utils.dart';
+import 'package:avana_academy/messageView.dart';
 import 'package:avana_academy/messagescreen.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
@@ -30,7 +31,8 @@ class AvanaHome extends StatelessWidget {
         "/userlist": (context) => userListPage(),
         "/adduser":(context) => AddUserPage(),
         "/userdetailpage" :(context) =>UserDetailsPage(),
-        "/messageeditor" :(context) => MessageEditor()
+        "/messageeditor" :(context) => MessageEditor(),
+        "/messageview" :(context) => MessageViewScreen()
       },
 
       theme: ThemeData(

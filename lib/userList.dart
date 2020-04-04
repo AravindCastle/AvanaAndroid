@@ -10,10 +10,6 @@ class userListPage extends StatefulWidget {
 
 class _userListPageState extends State<userListPage> {
 
-  Future<void> openUserDetails(){
-
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Users")),

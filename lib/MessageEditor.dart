@@ -31,7 +31,7 @@ class _MessageEditorState extends State<MessageEditor> {
   }
   Future<void> saveThread() async{
     try{
-      Uuids
+      
     List<String> fileUrls= new List();
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     for(int i=0;i<uploaderImgs.length;i++){
@@ -48,7 +48,6 @@ class _MessageEditorState extends State<MessageEditor> {
           "content":messageContr.text,
           "owner":localStore.getString("userId"),
           "attachments":fileUrls.toList(),
-          "comments":[],
           "created_time":new DateTime.now().millisecondsSinceEpoch,
           "title":localStore.getString("name")+"-"+new DateTime.now().toIso8601String()
         }); 
