@@ -1,5 +1,6 @@
 
 
+import 'package:avana_academy/Utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,9 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
 TextEditingController commentEditor= new TextEditingController();
 String threadID;
 bool isLoading=true;
+bool isCmntLoading=true;
 DocumentSnapshot threadDetails =null;
+ List<DocumentSnapshot> commentsDoc=null;
 
   Future<void> addComment() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
@@ -29,6 +32,18 @@ DocumentSnapshot threadDetails =null;
     commentEditor.clear();
   }
 
+Future<List> getComments() async{
+    final QuerySnapshot userDetails = await Firestore.instance
+          .collection('comments')
+       //  .orderBy("comments")
+          .where("thread_id", isEqualTo: threadID)
+          
+          .getDocuments();
+     commentsDoc= userDetails.documents;
+     setState(() {
+       isCmntLoading=false;
+     });
+}
   Widget buildInput() {
     return Container(
         child: Row(
@@ -91,76 +106,107 @@ DocumentSnapshot threadDetails =null;
   }
 
   Widget buildMessageContent()  {    
-     return  Flexible(
-       child: new Container(  padding: const EdgeInsets.all(10.0), child:Text(threadDetails["content"])
-     ));
+     return   new Container(  padding: const EdgeInsets.all(10.0), child:Text(threadDetails["content"])
+     );
+  }
+  List<Widget> commentRowWid(){
+    List<Widget> cmtRow= new List();
+    if(!isCmntLoading){
+    cmtRow.add(Text("Comments",style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w400            
+          ),));
+    for(int i=0;i<commentsDoc.length;i++){
+      
+      cmtRow.add(Container(
+                  child: Text(commentsDoc[i]["comment"],
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                  width: 200.0,
+                  decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(8.0)),
+                 // margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
+                ));
+    }}
+    else{
+      cmtRow.add(CircularProgressIndicator());
+    }
+  return cmtRow;
   }
   Widget buildCommentSection(){
     return new Container(
     padding: const EdgeInsets.all(15.0) ,
     child: new Column(
-       children: <Widget>[
-          Text("Comments",style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w400            
-          ),),
-          Container(
-                  child: Text("text1",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                  width: 200.0,
-                  decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(8.0)),
-                 // margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-                ),
-                Container(
-                  child: Text("text1",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                  width: 200.0,
-                  decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(8.0)),
-                 // margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-                ),
-                Container(
-                  child: Text("text1",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                  width: 200.0,
-                  decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(8.0)),
-                 // margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-                )
+       children: commentRowWid()
 
-
-                 ]
     ),
 
     );
   }
+
+
+  Widget buildAttachmentSection(BuildContext context){
+    List<dynamic> attachmentList = threadDetails["attachments"];
+
+    List<Widget> row1= new List();
+     List<Widget> row2= new List();
+    for(int i=0;i<attachmentList.length;i++){
+      String type=attachmentList[i]["type"];
+       String url=attachmentList[i]["url"];
+        String name=attachmentList[i]["name"];
+        if(i<3){
+          row1.add((Utils.attachmentWid(null, url, type, context)));
+        }
+        else{
+ row2.add((Utils.attachmentWid(null, url, type, context)));
+        }
+        
+    } 
+  
+    return new Container(
+      child:  Column(
+          children: <Widget>[
+            Row(
+              children:row1
+            )
+          ],
+
+      ),
+    )  ; 
+  }
+  Future<void> getThreadDetails() async {
+    getComments();
+    threadDetails = await Firestore.instance
+          .collection('Threads')
+          .document(threadID).get();
+          setState(() {
+            isLoading=false;
+          });
+  }
   Widget build(BuildContext context) {
     threadID= ModalRoute.of(context).settings.arguments;
+    getThreadDetails();
    /* threadDetails = await Firestore.instance
           .collection('Threads')
           .document(threadID).get();*/
     return new Scaffold(
       appBar: AppBar(title: Text("Details")),
-      body: Stack(
+      body:isLoading? new CircularProgressIndicator(): Stack(
         children: <Widget>[
           Column(
             children: <Widget>[
-
-              Flexible(
-                child: ListView(
+             Flexible(child:                  ListView(
                   children: <Widget>[
-                    buildMessageContent(),
+                   buildMessageContent(),
+                    Divider(color:Colors.black),
+                    buildAttachmentSection(context),
                     Divider(color:Colors.black),
                     buildCommentSection()
                     // Display your list,
                   ],
                   reverse: false,
                 ),
-              ),
+             ), 
               buildInput(),
             ],
           ),
