@@ -66,19 +66,17 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                height:  100,
-                child: AnimatedDefaultTextStyle(
-                    curve: Curves.linear,
-                    child: Text("Avana Academy"),
-                    style: TextStyle(
-                        fontSize:   30,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
-                    duration: const Duration(milliseconds: 500)),
+                height:  300,
+                width: 300,
+                child: Image.asset(
+                                'assets/avanalogo.png',
+                                width: 200.0,
+                                height: 200.0,
+                                fit: BoxFit.cover,
+                              )
               ),
               TextField(
                   obscureText: false,
-                  
                   controller: emailField,
                   onEditingComplete: () {
                     setState(() {
