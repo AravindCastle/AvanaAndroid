@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 
@@ -19,6 +20,8 @@ static Map<int, Color> primColor =
 900:Color.fromRGBO(183, 28, 28, 1),
 };
 
+ 
+
 
 static bool getImageFormats(String isSupported){
   List<String> imgFrmt= new List();
@@ -33,7 +36,37 @@ static bool getImageFormats(String isSupported){
 return imgFrmt.contains(isSupported.toLowerCase());
 
 }
+static String getMessageTimerFrmt(int time){
+  DateTime dt= new DateTime.fromMillisecondsSinceEpoch(time);
+  DateTime todat = new DateTime.now();
+  int day=dt.day.toInt();
+  int hour=dt.hour.toInt();  
+  int min=dt.minute.toInt();
+  int month=dt.month.toInt();  
+  int year=dt.year.toInt();
+  String timeFrmt="";
+  if(year==todat.year && day==todat.day.toInt() && month==todat.month.toInt()){
+    timeFrmt=hour.toString()+":"+min.toString();
+   
+  }
+  else{
+     timeFrmt=day.toString()+"/"+month.toString()+"/"+year.toString().substring(1,3);
+  }
+return timeFrmt;
 
+
+
+
+}
+static bool validateLogin(String email,String password){
+  if(email.trim().isNotEmpty){
+    return true;
+  }
+  if(password.trim().isNotEmpty ){
+    return true;
+  }
+  return false;
+}
 static Widget attachmentWid(File attach,String url,String type,BuildContext context){
      
      if(getImageFormats(type)){

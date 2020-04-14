@@ -1,57 +1,122 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Utils.dart';
 
 class MessagePage extends StatefulWidget {
   _MessagePageState createState() => _MessagePageState();
 }
 
-
 class _MessagePageState extends State<MessagePage> {
-  Widget build(BuildContext context) {
-    return Scaffold(
-            appBar: AppBar(title: Text("Messages")),
+  MediaQueryData medQry = null;
+  Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
+    int createdTime = messageDoc["created_time"];
+    return new  GestureDetector(child:
+    
+     Card(    
+        elevation: 3,
+        child: new Container(          
+          height: 110,
+          child: new Padding(
+              padding: EdgeInsets.all(medQry.size.width * .02),
+              child: new Column(children: [
+                Row(children: [
+                  SizedBox(
+                    width: medQry.size.width * .81,                    
+                    child: new Padding(padding: EdgeInsets.all(3),child: Text(                      
+                      messageDoc["title"],
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      style: TextStyle(fontSize: 19),
+                    ),
+                  )),
+                  Text(Utils.getMessageTimerFrmt(createdTime),
+                  style: TextStyle(
+                    fontSize:12,
+                    
+                  ),)
+                ]),
+                Row(                  
+                  children: <Widget>[
+                    SizedBox(width:medQry.size.width * .05),
+                    SizedBox(
+                      width: medQry.size.width * .60,                      
+                      child: Text(                        
+                        messageDoc["content"],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w300),
+                      ),
+                    ),
+                    SizedBox(
+                      width:medQry.size.width * .15
+                    ),                    
+                    Chip(label: Text("2"),
+                    labelStyle: TextStyle(fontSize:10,color:Colors.black),)
+                  ],
+                ),                
+              ])),
+        )),
+        onTap: () {
+        Navigator.pushNamed(context, "/messageview",
+            arguments: messageDoc.documentID);
+      }
+        );
+  }
 
-      body:new StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('Threads').orderBy("created_time").snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (!snapshot.hasData) return new CircularProgressIndicator();
-                return new ListView(
-                  children: snapshot.data.documents.map((document) {
-                    return new ListTile(
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                      leading: CircleAvatar(
-                          backgroundColor: Color.fromRGBO(240, 85, 69, 1),
-                        ),
-                      title: new Text(document['title'],style: TextStyle(
-                        fontWeight: FontWeight.bold
-                      )),
-                      subtitle: new Text(document['owner']),
-                     onTap: (){
-                       Navigator.pushNamed(context, "/messageview",arguments:document.documentID );
-                     },
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-      drawer: new Drawer(
+  Widget build(BuildContext context) {
+    medQry = MediaQuery.of(context);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Messages")),
+      body: new StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance
+            .collection('Threads')
+            .orderBy("created_time")
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) return new CircularProgressIndicator();
+          return new ListView(
+            children: snapshot.data.documents.map((document) {
+              return messageItem(document, context);
+            }).toList(),
+          );
+        },
+      ),
+      drawer:  Drawer(
+        
         child: ListView(
+          
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.green,
-              ),
-              child: Text(
+            DrawerHeader(   
+            decoration: BoxDecoration(
+          color:  Color.fromRGBO(183, 28, 28, 1),
+        ),
+              child:Column(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                children:[
+                  SizedBox(
+                    child:CircleAvatar(
+                      child: Icon(Icons.account_circle,size:60),
+                    ),                    
+                  ),
+                  SizedBox(
+                    child:
+                  Text(
                 "text",
-                style: TextStyle(
-                  color: Colors.white,
+                style: TextStyle(                  
                   fontSize: 24,
-                ),
+                  color: Colors.white
+                )),
               ),
+                ]
+              ) 
             ),
             ListTile(
               leading: Icon(Icons.account_circle),
@@ -78,7 +143,7 @@ class _MessagePageState extends State<MessagePage> {
           Navigator.pushNamed(context, "/messageeditor");
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.green,
+        backgroundColor: Theme.of(context).secondaryHeaderColor,
       ),
     );
   }

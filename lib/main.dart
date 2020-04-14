@@ -45,8 +45,36 @@ class AvanaHome extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.red,
-        secondaryHeaderColor: Colors.grey
+        primarySwatch: MaterialColor(
+            Color.fromRGBO(183, 28, 28, 1).value,
+            {
+              50: Color.fromRGBO(183, 28, 28, 0) ,
+              100: Color.fromRGBO(183, 28, 28, .1),
+              200: Color.fromRGBO(183, 28, 28, .2),
+              300: Color.fromRGBO(183, 28, 28, .3),
+              400: Color.fromRGBO(183, 28, 28, .4),
+              500: Color.fromRGBO(183, 28, 28, .5),
+              600: Color.fromRGBO(183, 28, 28, .6),
+              700: Color.fromRGBO(183, 28, 28, .7),
+              800: Color.fromRGBO(183, 28, 28, .8),
+              900: Color.fromRGBO(183, 28, 28, .9)
+            }
+          ),
+        secondaryHeaderColor: MaterialColor(
+            Color.fromRGBO(117,117,117, 1).value,
+            {
+              50: Color.fromRGBO(117,117,117, 0) ,
+              100: Color.fromRGBO(117,117,117, .1),
+              200: Color.fromRGBO(117,117,117, .2),
+              300: Color.fromRGBO(117,117,117, .3),
+              400: Color.fromRGBO(117,117,117, .4),
+              500: Color.fromRGBO(117,117,117, .5),
+              600: Color.fromRGBO(117,117,117, .6),
+              700: Color.fromRGBO(117,117,117, .7),
+              800: Color.fromRGBO(117,117,117, .8),
+              900: Color.fromRGBO(117,117,117, .9)
+            }
+          ),          
       ),
       home: AvanaHomePage(title: 'Avana Academy'),
     );

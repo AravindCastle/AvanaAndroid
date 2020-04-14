@@ -189,7 +189,8 @@ Future<List> getComments() async{
    /* threadDetails = await Firestore.instance
           .collection('Threads')
           .document(threadID).get();*/
-    return new Scaffold(
+    return 
+    new Scaffold(
       appBar: AppBar(title: Text("Details")),
       body:isLoading? new CircularProgressIndicator(): Stack(
         children: <Widget>[

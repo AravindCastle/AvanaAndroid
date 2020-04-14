@@ -23,6 +23,9 @@ dependencies:
   open_file: ^3.0.1
 
 
+
+
+
   firebase_storage: 3.0.4
   flutter:
     sdk: flutter
@@ -49,6 +52,7 @@ flutter:
   uses-material-design: true
   assets:
      - assets/avanalogo.png
+     - assets/loginbg.png
   # To add assets to your application, add an assets section, like this:
   
   #  - images/a_dot_ham.jpeg

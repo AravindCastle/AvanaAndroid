@@ -48,6 +48,7 @@ class _MessageEditorState extends State<MessageEditor> {
     var succes=await Firestore.instance.collection("Threads").add({
           "content":messageContr.text,
           "owner":localStore.getString("userId"),
+          "ownername":localStore.getString("name"),
           "attachments":fileUrls.toList(),
           "created_time":new DateTime.now().millisecondsSinceEpoch,
           "title":localStore.getString("name")+"-"+new DateTime.now().toIso8601String()
