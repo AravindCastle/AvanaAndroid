@@ -24,7 +24,8 @@ class _userListPageState extends State<userListPage> {
                     return new ListTile(
                       trailing: Icon(Icons.keyboard_arrow_right),
                       leading: CircleAvatar(
-                          backgroundColor: Color.fromRGBO(240, 85, 69, 1),
+                          backgroundColor:  Color.fromRGBO(117,117,117, 1),
+                          child:Text(document['username'].toString().substring(0,1).toUpperCase(),style:TextStyle(color: Colors.white ),)
                         ),
                       title: new Text(document['username'],style: TextStyle(
                         fontWeight: FontWeight.bold
@@ -45,7 +46,7 @@ class _userListPageState extends State<userListPage> {
           // Add your onPressed code here!
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.green,
+        backgroundColor: Theme.of(context).secondaryHeaderColor,
       ),
     );
   }

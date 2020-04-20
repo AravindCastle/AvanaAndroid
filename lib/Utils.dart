@@ -54,8 +54,11 @@ static String getMessageTimerFrmt(int time){
   }
 return timeFrmt;
 
+}
 
-
+static String getTimeFrmt(int time){
+  DateTime dt= new DateTime.fromMillisecondsSinceEpoch(time);
+  return dt.day.toString()+"/"+dt.month.toString()+"/"+dt.year.toString().substring(2,3)+" "+dt.hour.toString()+":"+dt.minute.toString();
 
 }
 static bool validateLogin(String email,String password){

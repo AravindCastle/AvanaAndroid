@@ -24,28 +24,32 @@ class _MessagePageState extends State<MessagePage> {
                   child: new Column(children: [
                     Row(children: [
                       SizedBox(
-                          width: medQry.size.width * .81,
-                          child: new Padding(
-                            padding: EdgeInsets.all(3),
-                            child: Text(
-                              messageDoc["title"],
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: true,
-                              style: TextStyle(fontSize: 19),
-                            ),
-                          )),
-                      Text(
-                        Utils.getMessageTimerFrmt(createdTime),
-                        style: TextStyle(
-                          fontSize: 12,
+                        width: medQry.size.width * .68,
+                        child: Text(
+                          messageDoc["ownername"],
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                          style: TextStyle(fontSize: 19),
                         ),
-                      )
+                      ),
+                      SizedBox(
+                        width: medQry.size.width*.25,
+                      child:Text(
+                        Utils.getTimeFrmt(messageDoc["created_time"]),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        style: TextStyle(
+                            fontSize: 13,
+                            textBaseline: TextBaseline.alphabetic),
+                      ),
+                      ),                      
                     ]),
+                    SizedBox(height: medQry.size.height * .01),
                     Row(
                       children: <Widget>[
                         SizedBox(width: medQry.size.width * .05),
                         SizedBox(
-                          width: medQry.size.width * .60,
+                          width: medQry.size.width * .84,
                           child: Text(
                             messageDoc["content"],
                             maxLines: 2,
@@ -55,12 +59,7 @@ class _MessagePageState extends State<MessagePage> {
                                 fontSize: 15, fontWeight: FontWeight.w300),
                           ),
                         ),
-                        SizedBox(width: medQry.size.width * .15),
-                        Chip(
-                          label: Text("2"),
-                          labelStyle:
-                              TextStyle(fontSize: 10, color: Colors.black),
-                        )
+                        //SizedBox(width: medQry.size.width * .05),
                       ],
                     ),
                   ])),
@@ -108,12 +107,7 @@ class _MessagePageState extends State<MessagePage> {
                             child: CircleAvatar(
                               child: Icon(Icons.account_circle, size: 60),
                             ),
-                          ),
-                          SizedBox(
-                            child: Text("text",
-                                style: TextStyle(
-                                    fontSize: 24, color: Colors.white)),
-                          ),
+                          )
                         ])),
                 ListTile(
                   leading: Icon(Icons.account_circle),
