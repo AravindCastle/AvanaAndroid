@@ -11,7 +11,21 @@ class MessagePage extends StatefulWidget {
 }
 
 class _MessagePageState extends State<MessagePage> {
+  
   MediaQueryData medQry = null;
+  String userName="";
+ 
+  //void initState() {
+    
+  //}
+
+  void getUserName() async{
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+     userName=prefs.getString("name"); 
+    });     
+
+  }
   Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
     int createdTime = messageDoc["created_time"];
     return new GestureDetector(
@@ -23,8 +37,9 @@ class _MessagePageState extends State<MessagePage> {
                   padding: EdgeInsets.all(medQry.size.width * .02),
                   child: new Column(children: [
                     Row(children: [
+                      SizedBox(width: medQry.size.height * .01),
                       SizedBox(
-                        width: medQry.size.width * .68,
+                        width: medQry.size.width * .67,
                         child: Text(
                           messageDoc["ownername"],
                           overflow: TextOverflow.ellipsis,
@@ -39,6 +54,7 @@ class _MessagePageState extends State<MessagePage> {
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
                         style: TextStyle(
+                          fontWeight: FontWeight.w400,
                             fontSize: 13,
                             textBaseline: TextBaseline.alphabetic),
                       ),
@@ -71,6 +87,7 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Widget build(BuildContext context) {
+getUserName();
     medQry = MediaQuery.of(context);
     return WillPopScope(
         onWillPop: () async => false,
@@ -104,10 +121,14 @@ class _MessagePageState extends State<MessagePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
+                            height:medQry.size.width*.15, 
+                            width:medQry.size.width*.15,
                             child: CircleAvatar(
-                              child: Icon(Icons.account_circle, size: 60),
+                              child: Icon(Icons.account_circle, size: medQry.size.width*.15),
                             ),
-                          )
+                          ),
+                          SizedBox(height:15),
+                          Text(userName,style: TextStyle(fontSize:18,color: Colors.white))
                         ])),
                 ListTile(
                   leading: Icon(Icons.account_circle),
