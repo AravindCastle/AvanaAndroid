@@ -39,7 +39,7 @@ if(loading)
                               onPressed: () {
                                 addnewUser(context);
                               },
-                              color: Colors.black,
+                           //   color: Colors.black,
                               padding: const EdgeInsets.all(10.0),
                               shape: new RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(30.0),

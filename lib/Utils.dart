@@ -70,40 +70,51 @@ static bool validateLogin(String email,String password){
   }
   return false;
 }
-static Widget attachmentWid(File attach,String url,String type,BuildContext context){
+static Widget attachmentWid(File attach,String url,String type,BuildContext context,MediaQueryData medQry){
      
      if(getImageFormats(type)){
         return Container(
-                            child: FlatButton(
+                            child: OutlineButton(    
+                                                        
                               child:  Material(
-                                    child:attach==null? Image.network(url,
-                                      width: 100.0,
-                                      height: 100.0,
+                                
+                                    child:attach==null? 
+                                    Image.network(url,
+                                      width: medQry.size.width*.29,
+                                      height:medQry.size.width*.29,
                                       fit: BoxFit.cover,
                                     ): Image.file(attach,
-                                      width: 100.0,
-                                      height: 100.0,
-                                      fit: BoxFit.cover,
-                                    ),
+                                      width: medQry.size.width*.29,
+                                      height:medQry.size.width*.29,
+                                      fit: BoxFit.cover,                                      
+                                    ),                    
+                                                 
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(8.0),
                                     ),
                                     clipBehavior: Clip.hardEdge,
                                   ),
-                              onPressed: () {
+                              onPressed:attach==null?null: () {
                                  OpenFile.open(url);
                                // Navigator.push(context,
                                    // MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
-                              },
+                              },              
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(8.0)),      
+                              borderSide: BorderSide(color: Colors.grey),          
                               padding: EdgeInsets.all(0),
                             ),
-                            margin: EdgeInsets.only(left: 10.0),
+                            margin: EdgeInsets.only(left:medQry.size.width*.03,top:medQry.size.width*.03  ),
                           );
      }
      else{
            return Container(
-                            child: FlatButton(
-                              child:  Material(
+             height: medQry.size.width*.29,
+             width: medQry.size.width*.29,
+                            child: OutlineButton(
+                              
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(8.0)),      
+                              borderSide: BorderSide(color: Colors.grey), 
+                              child:  Material(                                
                                     child:Text(type,
                                     style:TextStyle(
                                       fontSize: 15
@@ -122,7 +133,8 @@ static Widget attachmentWid(File attach,String url,String type,BuildContext cont
                               padding: EdgeInsets.all(0),
                               
                             ),
-                            margin: EdgeInsets.only(left: 10.0),
+                            margin: EdgeInsets.only(left:medQry.size.width*.03,top:medQry.size.width*.03  ),
+                          
                           );
      }
   

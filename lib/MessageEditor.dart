@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Utils.dart';
+
 //String[] videoFrmts=new String['.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'];
 
 class MessageEditor extends StatefulWidget {
@@ -14,93 +16,100 @@ class MessageEditor extends StatefulWidget {
 }
 
 class _MessageEditorState extends State<MessageEditor> {
+  MediaQueryData medQry;
+  bool isSaving = false;
   List<File> uploaderImgs = new List();
   List<String> videoFrmts = new List();
-  TextEditingController messageContr= new TextEditingController();
+  TextEditingController messageContr = new TextEditingController();
 //videoFrmts.addAll({'.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'});
   Future<void> _pickImage() async {
     if (uploaderImgs.length <= 6) {
       File selectedFile = await FilePicker.getFile(type: FileType.any);
       //await ImagePicker.pickImage(source: source);
-      if(selectedFile!=null){
+      if (selectedFile != null) {
         setState(() {
-        uploaderImgs.add(selectedFile);
-      });
+          uploaderImgs.add(selectedFile);
+        });
       }
     }
   }
-  Future<void> saveThread() async{
-    try{
-      
-    List<Map> fileUrls= new List();
-    final SharedPreferences localStore = await SharedPreferences.getInstance();
-    for(int i=0;i<uploaderImgs.length;i++){
-      String fileName=uploaderImgs[i].path.split("/").last;
-        StorageReference storageReference = FirebaseStorage.instance    
-          .ref()    
-          .child('AvanaFiles/'+fileName);    
-        StorageUploadTask uploadTask = storageReference.putFile(uploaderImgs[i]);    
-        await uploadTask.onComplete;         
-        fileUrls.add({"url":await storageReference.getDownloadURL(),"name":fileName,"type":fileName.split(".").last});
 
-    }
+  Future<void> saveThread() async {
+    if(!isSaving)
+    setState(() {
+      isSaving=true;
+    });
+    try {
+      String content = messageContr.text;
+      if (content.isNotEmpty) {
+        List<Map> fileUrls = new List();
+        final SharedPreferences localStore =
+            await SharedPreferences.getInstance();
+        for (int i = 0; i < uploaderImgs.length; i++) {
+          String fileName = uploaderImgs[i].path.split("/").last;
+          StorageReference storageReference =
+              FirebaseStorage.instance.ref().child('AvanaFiles/' + fileName);
+          StorageUploadTask uploadTask =
+              storageReference.putFile(uploaderImgs[i]);
+          await uploadTask.onComplete;
+          fileUrls.add({
+            "url": await storageReference.getDownloadURL(),
+            "name": fileName,
+            "type": fileName.split(".").last
+          });
+        }
 
-    var succes=await Firestore.instance.collection("Threads").add({
-          "content":messageContr.text,
-          "owner":localStore.getString("userId"),
-          "ownername":localStore.getString("name"),
-          "attachments":fileUrls.toList(),
-          "created_time":new DateTime.now().millisecondsSinceEpoch,
-          "title":localStore.getString("name")+"-"+new DateTime.now().toIso8601String()
-        }); 
-      Navigator.pushNamed(context, "/messagePage");
-
-    }
-    catch(Exception){
+        var succes = await Firestore.instance.collection("Threads").add({
+          "content": messageContr.text,
+          "owner": localStore.getString("userId"),
+          "ownername": localStore.getString("name"),
+          "attachments": fileUrls.toList(),
+          "created_time": new DateTime.now().millisecondsSinceEpoch,
+          "title": localStore.getString("name") +
+              "-" +
+              new DateTime.now().toIso8601String()
+        });
+        Navigator.pushNamed(context, "/messagePage");
+      }
+    } catch (Exception) {
       print(Exception);
     }
+    setState(() {
+      isSaving=false;
+    });
   }
 
-  Widget previewThumbnail() {
-    if (uploaderImgs.length > 0) {
-      List<Widget> previewIcons = new List();
-      for (int i = 0; i < uploaderImgs.length; i++) {
-        File temp = uploaderImgs[i];
-        String fileName = temp.path.split("/").last;
-        Widget imgCOnt = new Container(
-          width: 250,
-          height: 30,
-          child:Row(
-             children: <Widget>[
-               Icon(Icons.attachment),SizedBox(width: 15,), Flexible(child: Text(fileName))
-             ],
-          ) ,
-          
-          decoration: BoxDecoration(border: Border.all()),
-        );
-        previewIcons.add(imgCOnt);
+  Widget buildAttachmentSection(BuildContext context) {
+    List<Widget> row1 = new List();
+    List<Widget> row2 = new List();
+    for (int i = 0; i < uploaderImgs.length; i++) {
+      File prevFile = uploaderImgs[i];
+      String fileName = prevFile.path.split("/").last;
+      String fileType = fileName.split(".").last;
+      if (i < 3) {
+        row1.add(
+            (Utils.attachmentWid(prevFile, null, fileType, context, medQry)));
+      } else {
+        row2.add(
+            (Utils.attachmentWid(prevFile, null, fileType, context, medQry)));
       }
-      return new SizedBox(
-          height: 500,
-          
-          width:500 ,
-          child: Column(
-           mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-             children: previewIcons
-          ));
-    } else {
-      return SizedBox(height: 10);
     }
+
+    return new Container(
+      child: Column(
+        children: <Widget>[Row(children: row1), Row(children: row2)],
+      ),
+    );
   }
 
   Widget build(BuildContext context) {
-        var size = MediaQuery.of(context).size;
+    medQry = MediaQuery.of(context);
 
     return new Scaffold(
         appBar: AppBar(
           title: Text("Compose Message"),
           actions: <Widget>[
+            IconButton(icon: Icon(Icons.attach_file), onPressed: _pickImage),
             IconButton(icon: Icon(Icons.send), onPressed: saveThread)
           ],
         ),
@@ -108,33 +117,28 @@ class _MessageEditorState extends State<MessageEditor> {
           child: new Container(
             padding: const EdgeInsets.all(1.0),
             alignment: Alignment.center,
-            child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 40, 20, 0),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      new TextField(
-                          controller: messageContr,
-                          maxLines: 12,
-                          decoration: InputDecoration(
-                              border: const OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 0.0),
-                              ),
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                              hintText: "Type ...")),
-                      SizedBox(height: 10),
-                      RaisedButton(
-                          onPressed: () {
-                            _pickImage();
-                          },
-                          child: Text("Add Files",
-                              style: TextStyle(color: Colors.black))),
-                              SizedBox(height:10),
-                      previewThumbnail()
-                    ])),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  isSaving
+                      ? SizedBox(
+                          height: medQry.size.height * .01,
+                          child: LinearProgressIndicator(),
+                        )
+                      : SizedBox(
+                          height: medQry.size.height * .01,
+                        ),
+                  new TextField(
+                    autofocus: true,
+                      controller: messageContr,
+                      maxLines: 15,
+                      decoration: InputDecoration(
+                          contentPadding:
+                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                          hintText: "Type ...")),
+                  buildAttachmentSection(context)
+                ]),
           ),
         ));
   }

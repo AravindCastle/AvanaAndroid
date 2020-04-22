@@ -21,6 +21,7 @@ dependencies:
   cloud_firestore: ^0.13.4
   file_picker: ^1.5.1
   open_file: ^3.0.1
+  cached_network_image: ^2.1.0+1
 
 
 

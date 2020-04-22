@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                                     height: medQry.size.height * .25,
                                     width: medQry.size.width * .90,
                                     padding:
-                                        EdgeInsets.all(medQry.size.width * .04),
+                                        EdgeInsets.only(left:medQry.size.width * .02,right:medQry.size.width * .03,top:medQry.size.width * .03,bottom:medQry.size.width * .03),
                                     child: Image.asset(
                                       'assets/avanalogo.png',
                                       fit: BoxFit.cover,
@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     focusColor: Colors.blue,
                                     border: OutlineInputBorder(),
-                                    icon: Icon(Icons.perm_identity),
+                                   // icon: Icon(Icons.perm_identity),
                                     labelStyle: TextStyle(color: Colors.black),
                                     labelText: "Email"),
                               ),
@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     focusColor: Colors.blue,
                                     border: OutlineInputBorder(),
-                                    icon: Icon(Icons.vpn_key),
+                                  //  icon: Icon(Icons.vpn_key),
                                     labelStyle: TextStyle(color: Colors.black),
                                     labelText: "Password"),
                               ),
@@ -185,8 +185,8 @@ class _LoginPageState extends State<LoginPage> {
                                 )),
                                 Builder(builder: (BuildContext context) {
                                   return ButtonTheme(
-                                      height: medQry.size.height * 0.09,
-                                      minWidth: medQry.size.height * 0.05,
+                                      height: medQry.size.height * 0.07,
+                                      minWidth: medQry.size.height * 0.06,
                                       child: RaisedButton(
                                           onPressed: () {
                                             handleSignIn(context);
@@ -194,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                                           shape: new RoundedRectangleBorder(
                                             borderRadius:
                                                 new BorderRadius.circular(
-                                                    medQry.size.height * 0.06),
+                                                    medQry.size.height * 0.07),
                                           ),
                                           child: new Icon(Icons.arrow_forward,
                                               color: Colors.white)));

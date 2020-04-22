@@ -57,7 +57,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     if (userDetails.data.length > 0) {
       userName = userDetails["username"];
       password = userDetails["password"];
-      role = userDetails["role"];
+      role = Utils.getRoleString(userDetails["userrole"].toString());
       isActive = userDetails["isactive"];
       membershipDate = userDetails["membershipdate"];
       email = userDetails["email"];
