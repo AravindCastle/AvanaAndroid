@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:avana_academy/MessageEditor.dart';
-import 'package:avana_academy/Utils.dart';
 import 'package:avana_academy/messageView.dart';
 import 'package:avana_academy/messagescreen.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
@@ -35,16 +35,7 @@ class AvanaHome extends StatelessWidget {
         "/messageview" :(context) => MessageViewScreen()
       },
 
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
+      theme: ThemeData(        
         primarySwatch: MaterialColor(
             Color.fromRGBO(183, 28, 28, 1).value,
             {
@@ -76,7 +67,12 @@ class AvanaHome extends StatelessWidget {
             }
           ),          
       ),
-      home: AvanaHomePage(title: 'Avana Academy'),
+      home: SplashScreen.navigate(
+        name: 'assets/splashScreen.flr',
+        next: (context) => AvanaHomePage(title: 'Avana Academy'),
+        until: () => Future.delayed(Duration(seconds: 10)),
+        startAnimation: 'splash',
+      ),            
     );
   }
 }
@@ -131,8 +127,12 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
  
   @override
   Widget build(BuildContext context) {
-     
-     return Scaffold();
+     MediaQueryData md=MediaQuery.of(context);
+     return Scaffold(
+       body: new Container(   
+         child:CircularProgressIndicator()
+       ),
+     );
       
   }
 }
