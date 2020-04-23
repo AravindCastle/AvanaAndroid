@@ -58,7 +58,20 @@ return timeFrmt;
 
 static String getTimeFrmt(int time){
   DateTime dt= new DateTime.fromMillisecondsSinceEpoch(time);
-  return dt.day.toString()+"/"+dt.month.toString()+"/"+dt.year.toString().substring(2,3)+" "+dt.hour.toString()+":"+dt.minute.toString();
+  String dateFrmt="";
+  String amPm=" am";
+  int hour=dt.hour;
+  dateFrmt+=dt.day<10?"0"+dt.day.toString():dt.day.toString() ;
+  dateFrmt+="/"+ (dt.month<10?"0"+dt.month.toString():dt.month.toString() );
+  dateFrmt+="/"+ (dt.year.toString() );
+  if(hour>12){
+    amPm=" pm";
+    hour=hour-12;
+  }  
+  dateFrmt+=" "+ (hour<10?"0"+hour.toString():hour.toString() );
+  dateFrmt+=":"+ (dt.minute<10?"0"+dt.minute.toString():dt.minute.toString() );
+  dateFrmt+=amPm;
+  return dateFrmt;
 
 }
 static bool validateLogin(String email,String password){

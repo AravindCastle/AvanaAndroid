@@ -21,7 +21,8 @@ dependencies:
   cloud_firestore: ^0.13.4
   file_picker: ^1.5.1
   open_file: ^3.0.1
-  cached_network_image: ^2.1.0+1
+  flare_splash_screen: ^3.0.1
+
 
 
 
@@ -54,6 +55,7 @@ flutter:
   assets:
      - assets/avanalogo.png
      - assets/loginbg.png
+     - assets/splash.flr2d
   # To add assets to your application, add an assets section, like this:
   
   #  - images/a_dot_ham.jpeg

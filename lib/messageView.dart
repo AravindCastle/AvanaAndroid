@@ -104,46 +104,31 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
 
   Widget buildMessageInfo() {
     return new Container(
-        padding: EdgeInsets.only(
-            left: medQry.size.width * .03, top: medQry.size.width * .04),
+        //  padding: EdgeInsets.only(
+        //    left: medQry.size.width * .03, top: medQry.size.width * .04),
         child: Row(children: [
-          SizedBox(
-            width: medQry.size.width * .13,
-            height: medQry.size.width * .13,
-            child: CircleAvatar(
-                backgroundColor: Color.fromRGBO(117, 117, 117, 1),
-                child: Text(
-                  threadDetails['ownername']
-                      .toString()
-                      .substring(0, 1)
-                      .toUpperCase(),
-                  style: TextStyle(
-                      color: Colors.white, fontSize: medQry.size.width * .07),
-                )),
-          ),
-          SizedBox(
-              width: medQry.size.width * .80,
-              height: medQry.size.width * .13,
-              child: Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(threadDetails['ownername'].toString(),
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: medQry.size.width * .06,
-                                fontWeight: FontWeight.w600)),
-                        SizedBox(height: 3),
-                        Text(Utils.getTimeFrmt(threadDetails["created_time"]),
-                            style: TextStyle(
-                                color: Colors.black54,
-                                // fontStyle: FontStyle.italic,
-                                fontSize: medQry.size.width * .035,
-                                fontWeight: FontWeight.normal))
-                      ])))
-        ]));
+      SizedBox(
+          // width: medQry.size.width * .80,
+          //height: medQry.size.width * .13,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+            Text(threadDetails['ownername'].toString(),
+            softWrap: true,
+                style: TextStyle(
+                    color: Colors.white,                    
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600)),
+            SizedBox(height: 3),
+            Text(Utils.getTimeFrmt(threadDetails["created_time"]),
+                style: TextStyle(
+                    color: Colors.white70,
+                    // fontStyle: FontStyle.italic,
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal))
+          ]))
+    ]));
   }
 
   Widget buildMessageContent() {
@@ -161,10 +146,10 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   List<Widget> commentRowWid() {
     List<Widget> cmtRow = new List();
     if (!isCmntLoading) {
-      cmtRow.add(Text(
-        "Comments",
+      cmtRow.add(Padding(padding:EdgeInsets.only(top:30) , child:Text(        
+        "Comments",        
         style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
-      ));
+      )));
       cmtRow.add(SizedBox(height: 12));
       for (int i = 0; i < commentsDoc.length; i++) {
         cmtRow.add(Container(
@@ -255,7 +240,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           .collection('Threads')
           .document(threadID).get();*/
     return new Scaffold(
-      appBar: AppBar(title: Text("Details")),
+      appBar: AppBar(title:isLoading?Text(""): buildMessageInfo()),
       body: isLoading
           ? new Container(
               height: medQry.size.height,
@@ -268,7 +253,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                     Flexible(
                       child: ListView(
                         children: <Widget>[
-                          buildMessageInfo(),
+                          //  buildMessageInfo(),
                           buildMessageContent(),
                           //Divider(color: Colors.black),
                           buildAttachmentSection(context),
