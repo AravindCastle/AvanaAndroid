@@ -62,9 +62,12 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       membershipDate = userDetails["membershipdate"];
       email = userDetails["email"];
     }
+    if (this.mounted){
+
     setState(() {
       isPageLoading = false;
     });
+    }
   }
 
   Widget buildUserCard(BuildContext context) {

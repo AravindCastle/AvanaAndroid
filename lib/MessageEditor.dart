@@ -26,7 +26,7 @@ class _MessageEditorState extends State<MessageEditor> {
     if (uploaderImgs.length <= 6) {
       File selectedFile = await FilePicker.getFile(type: FileType.any);
       //await ImagePicker.pickImage(source: source);
-      if (selectedFile != null) {
+      if (selectedFile != null && this.mounted){
         setState(() {
           uploaderImgs.add(selectedFile);
         });
@@ -35,7 +35,7 @@ class _MessageEditorState extends State<MessageEditor> {
   }
 
   Future<void> saveThread() async {
-    if(!isSaving)
+    if(!isSaving && this.mounted)
     setState(() {
       isSaving=true;
     });
@@ -74,9 +74,12 @@ class _MessageEditorState extends State<MessageEditor> {
     } catch (Exception) {
       print(Exception);
     }
+    if (this.mounted){
+
     setState(() {
       isSaving=false;
     });
+    }
   }
 
   Widget buildAttachmentSection(BuildContext context) {

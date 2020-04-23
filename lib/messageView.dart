@@ -16,7 +16,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   bool isCmntLoading = true;
   DocumentSnapshot threadDetails = null;
   List<DocumentSnapshot> commentsDoc = null;
-var focusNode = new FocusNode();
+  var focusNode = new FocusNode();
   Future<void> addComment() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
 
@@ -26,10 +26,10 @@ var focusNode = new FocusNode();
       "owner": localStore.getString("userId"),
       "owner_name": localStore.getString("name"),
       "thread_id": threadID,
-    });    
+    });
     commentEditor.clear();
-    
-   var textField = new TextField(focusNode: focusNode);
+
+    var textField = new TextField(focusNode: focusNode);
     focusNode.unfocus();
   }
 
@@ -40,63 +40,66 @@ var focusNode = new FocusNode();
         .where("thread_id", isEqualTo: threadID)
         .getDocuments();
     commentsDoc = userDetails.documents;
-    setState(() {
-      isCmntLoading = false;
-    });
+    if (this.mounted) {
+      setState(() {
+        isCmntLoading = false;
+      });
+    }
   }
 
   Widget buildInput() {
     return Container(
-      decoration: BoxDecoration(border:Border(top:BorderSide(color: Colors.black54,))),
+      decoration: BoxDecoration(
+          border: Border(
+              top: BorderSide(
+        color: Colors.black54,
+      ))),
       padding: EdgeInsets.all(3),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[           
-            SizedBox(width: 6), // Edit text            
-            Flexible(
-              child: Container(
-                
-                decoration: new BoxDecoration(
-              color: Color.fromRGBO(250, 250, 250, 1),
-              borderRadius: new BorderRadius.all( const Radius.circular(10.0))
-            ),
-                child: TextField(
-                  focusNode: focusNode,
-                  scrollPadding: EdgeInsets.all(3),
-                  maxLines: 10,
-                  controller: commentEditor,                            
-                  decoration: InputDecoration(
-                    hintText: 'Add Comment...',
-                    contentPadding: const EdgeInsets.all(4),
-                    border: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        errorBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
-                  ),
-                  //     focusNode: focusNode,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          SizedBox(width: 6), // Edit text
+          Flexible(
+            child: Container(
+              decoration: new BoxDecoration(
+                  color: Color.fromRGBO(250, 250, 250, 1),
+                  borderRadius:
+                      new BorderRadius.all(const Radius.circular(10.0))),
+              child: TextField(
+                focusNode: focusNode,
+                scrollPadding: EdgeInsets.all(3),
+                maxLines: 10,
+                controller: commentEditor,
+                decoration: InputDecoration(
+                  hintText: 'Add Comment...',
+                  contentPadding: const EdgeInsets.all(4),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
                 ),
+                //     focusNode: focusNode,
               ),
             ),
+          ),
 
-            // Button send message
-            Material(
-              
-              child: new Container(
-                color: Colors.transparent,
-                margin: new EdgeInsets.symmetric(horizontal: 8.0),
-                child: new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: addComment,
-                 
-                ),
-              ),            
+          // Button send message
+          Material(
+            child: new Container(
+              color: Colors.transparent,
+              margin: new EdgeInsets.symmetric(horizontal: 8.0),
+              child: new IconButton(
+                icon: new Icon(Icons.send),
+                onPressed: addComment,
+              ),
             ),
-          ],
-        ),
-        width: double.infinity,
-        height: 50.0,
-        );
+          ),
+        ],
+      ),
+      width: double.infinity,
+      height: 50.0,
+    );
   }
 
   Widget buildMessageInfo() {
@@ -136,7 +139,7 @@ var focusNode = new FocusNode();
                         Text(Utils.getTimeFrmt(threadDetails["created_time"]),
                             style: TextStyle(
                                 color: Colors.black54,
-                               // fontStyle: FontStyle.italic,
+                                // fontStyle: FontStyle.italic,
                                 fontSize: medQry.size.width * .035,
                                 fontWeight: FontWeight.normal))
                       ])))
@@ -150,7 +153,7 @@ var focusNode = new FocusNode();
             right: medQry.size.width * .02,
             top: medQry.size.width * .05),
         child: Text(
-         "\t\t\t\t"+ threadDetails["content"],
+          "\t\t\t\t" + threadDetails["content"],
           style: TextStyle(fontSize: 17),
         ));
   }
@@ -162,32 +165,37 @@ var focusNode = new FocusNode();
         "Comments",
         style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
       ));
-      cmtRow.add(SizedBox(height:12));
+      cmtRow.add(SizedBox(height: 12));
       for (int i = 0; i < commentsDoc.length; i++) {
         cmtRow.add(Container(
-          child:
-          Column(
+          child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-            children:[
-               Text(
-            commentsDoc[i]["owner_name"],
-            style: TextStyle(color: Colors.black,fontWeight: FontWeight.normal,fontSize: 17),
-          ),
-          Padding( padding: EdgeInsets.only(left:10), 
-           child:Text(             
-            commentsDoc[i]["comment"],
-            style: TextStyle(color: Colors.black87,fontSize: 15,fontWeight: FontWeight.normal),
-          )
-          )
-           ]
-          ),
-          padding: EdgeInsets.all(medQry.size.width * .03),             
-          width: medQry.size.width*.85,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  commentsDoc[i]["owner_name"],
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 17),
+                ),
+                Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Text(
+                      commentsDoc[i]["comment"],
+                      style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal),
+                    ))
+              ]),
+          padding: EdgeInsets.all(medQry.size.width * .03),
+          width: medQry.size.width * .85,
           decoration: BoxDecoration(
-              color: Color.fromRGBO(238, 238, 238, 1), borderRadius: BorderRadius.circular(8.0)),         
+              color: Color.fromRGBO(238, 238, 238, 1),
+              borderRadius: BorderRadius.circular(8.0)),
         ));
-        cmtRow.add(SizedBox(height:9));
+        cmtRow.add(SizedBox(height: 9));
       }
     } else {
       cmtRow.add(CircularProgressIndicator());
@@ -199,9 +207,9 @@ var focusNode = new FocusNode();
     return new Container(
       padding: const EdgeInsets.all(15.0),
       child: new Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: commentRowWid()),
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: commentRowWid()),
     );
   }
 
@@ -232,9 +240,11 @@ var focusNode = new FocusNode();
     getComments();
     threadDetails =
         await Firestore.instance.collection('Threads').document(threadID).get();
-    setState(() {
-      isLoading = false;
-    });
+    if (this.mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Widget build(BuildContext context) {

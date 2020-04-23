@@ -37,9 +37,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<Void> handleSignIn(BuildContext context) async {
     bool isActive = false;
+   if (this.mounted){
+
     setState(() {
       isLoading = true;
     });
+   }
     if (!Utils.validateLogin(emailField.text, passwordField.text)) {
       final snackBar = SnackBar(content: Text('Invalid Email or Password ! '));
       Scaffold.of(context).showSnackBar(snackBar);
@@ -79,9 +82,12 @@ class _LoginPageState extends State<LoginPage> {
         print(Exception);
       }
     }
+    if (this.mounted){
+
     setState(() {
       isLoading = false;
     });
+    }
   }
 
   Widget build(BuildContext context) {

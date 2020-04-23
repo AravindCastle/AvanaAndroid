@@ -57,9 +57,12 @@ if(loading)
  Future<Null> addnewUser(BuildContext context ) async{
     try{
       HashMap userDetail=new HashMap();
+      if (this.mounted){
+
       setState(() {
         loading=true;
       });
+      }
    var succes=await Firestore.instance.collection("userdata").add({
       "username":userName.text,
       "email":emailId.text,
@@ -72,9 +75,12 @@ if(loading)
     userName.clear();
     emailId.clear();
     password.clear();
+ if (this.mounted){
+
  setState(() {
    loading=false;
  });
+ }
  
     }
  

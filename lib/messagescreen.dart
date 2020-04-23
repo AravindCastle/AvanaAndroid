@@ -21,10 +21,12 @@ class _MessagePageState extends State<MessagePage> {
 
   void getUserName() async{
      SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (this.mounted){
+
     setState(() {
      userName=prefs.getString("name"); 
     });     
-
+    }
   }
   Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
     int createdTime = messageDoc["created_time"];
