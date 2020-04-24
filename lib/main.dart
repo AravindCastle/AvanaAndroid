@@ -6,6 +6,7 @@ import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -70,8 +71,21 @@ class AvanaHome extends StatelessWidget {
       home: SplashScreen.navigate(
         name: 'assets/splashScreen.flr',
         next: (context) => AvanaHomePage(title: 'Avana Academy'),
-        until: () => Future.delayed(Duration(seconds: 10)),
+        until: () => Future.delayed(Duration(seconds: 1)),
         startAnimation: 'splash',
+        loopAnimation:"splash",
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      var begin = Offset(0.0, 1.0);
+      var end = Offset.zero;
+      var curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
       ),            
     );
   }
@@ -130,7 +144,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
      MediaQueryData md=MediaQuery.of(context);
      return Scaffold(
        body: new Container(   
-         child:CircularProgressIndicator()
+         child:FlareActor('assets/splashScreen.flr', animation: 'splash')
        ),
      );
       
