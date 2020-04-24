@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
@@ -108,7 +110,7 @@ static Widget attachmentWid(File attach,String url,String type,BuildContext cont
                                     clipBehavior: Clip.hardEdge,
                                   ),
                               onPressed:attach==null?null: () {
-                                 OpenFile.open(url);
+                                 OpenFile.open("assets/avanalogo.png");
                                // Navigator.push(context,
                                    // MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
                               },              
@@ -158,10 +160,80 @@ static Widget attachmentWid(File attach,String url,String type,BuildContext cont
 
 
 
+/*
+static void openFile(File file,String url){
+  if(file==null){
+    OpenFile.open(filePath)
+  }
+}
+*/
+
+static Color getColor(String key){
+key=key.toLowerCase();
+var colors = new Map(); 
+colors["a"]=Color.fromRGBO(252, 4, 4, 1);
+colors["b"]=Color.fromRGBO(4, 4, 252, 1);
+colors["c"]=Color.fromRGBO(217, 83, 79, 1);
+colors["d"]=Color.fromRGBO(252, 68, 68, 1);
+colors["e"]=Color.fromRGBO(84, 36, 52, 1);
+colors["f"]=Color.fromRGBO(68, 44, 76, 1);
+colors["g"]=Color.fromRGBO(68, 44, 76, 1);
+colors["h"]=Color.fromRGBO(36, 36, 36, 1);
+colors["i"]=Color.fromRGBO(76, 68, 36, 1);
+colors["j"]=Color.fromRGBO(252, 204, 92, 1);
+colors["k"]=Color.fromRGBO(252, 4, 4, 1);
+colors["l"]=Color.fromRGBO(4, 4, 252, 1);
+colors["m"]=Color.fromRGBO(217, 83, 79, 1);
+colors["n"]=Color.fromRGBO(252, 68, 68, 1);
+colors["o"]=Color.fromRGBO(84, 36, 52, 1);
+colors["p"]=Color.fromRGBO(68, 44, 76, 1);
+colors["q"]=Color.fromRGBO(68, 44, 76, 1);
+colors["r"]=Color.fromRGBO(36, 36, 36, 1);
+colors["s"]=Color.fromRGBO(76, 68, 36, 1);
+colors["t"]=Color.fromRGBO(252, 204, 92, 1);
+colors["u"]=Color.fromRGBO(252, 4, 4, 1);
+colors["v"]=Color.fromRGBO(4, 4, 252, 1);
+colors["w"]=Color.fromRGBO(217, 83, 79, 1);
+colors["x"]=Color.fromRGBO(252, 68, 68, 1);
+colors["y"]=Color.fromRGBO(84, 36, 52, 1);
+colors["z"]=Color.fromRGBO(68, 44, 76, 1);
+
+if(colors.containsKey(key)){
+return colors[key];
+}
+else{
+  return Color.fromRGBO(252, 204, 92, 1);
+}
 
 
+}
 
-
+static Future<void> sendPushNotification(String title,String body) async {
+     final FirebaseMessaging _fcm = FirebaseMessaging();
+     String serverToken="AAAA7_Sx8pg:APA91bE1afmUpIcNCCe9leKNrNOHut5JajyvKmUBRKxdfELopzap3XJaHw4Ih_Cj6EzebCGi8QeSA_m6kXIvRq4WiGiqDYj7c-G8YklDX9feOm1eusmN0eIPa914m4APgLVC5Iqx96Nw";
+   await http.post(
+    'https://fcm.googleapis.com/fcm/send',
+     headers: <String, String>{
+       'Content-Type': 'application/json',
+       'Authorization': 'key=$serverToken',
+     },
+     body: jsonEncode(
+     <String, dynamic>{
+       'notification': <String, dynamic>{
+         'body': body,
+         'title': title
+       },
+       'priority': 'high',
+       'data': <String, dynamic>{
+         'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+         'id': '1',
+         'status': 'done'
+       },
+       'to': "/topics/all",
+     },
+    ),
+  );
+}
   static String getRoleString(String role){
       switch(role){
         case "1":

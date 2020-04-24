@@ -64,11 +64,10 @@ class _MessageEditorState extends State<MessageEditor> {
           "owner": localStore.getString("userId"),
           "ownername": localStore.getString("name"),
           "attachments": fileUrls.toList(),
-          "created_time": new DateTime.now().millisecondsSinceEpoch,
-          "title": localStore.getString("name") +
-              "-" +
-              new DateTime.now().toIso8601String()
+          "created_time": new DateTime.now().millisecondsSinceEpoch,         
         });
+        String notfyStr=localStore.getString("name")+":"+messageContr.text;
+        Utils.sendPushNotification("New Message",notfyStr);
         Navigator.pushNamed(context, "/messagePage");
       }
     } catch (Exception) {

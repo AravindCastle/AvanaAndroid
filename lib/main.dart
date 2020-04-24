@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:avana_academy/MessageEditor.dart';
 import 'package:avana_academy/messageView.dart';
 import 'package:avana_academy/messagescreen.dart';
@@ -6,6 +7,7 @@ import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,14 +104,53 @@ class AvanaHomePage extends StatefulWidget {
 class _AvanaHomePageState extends State<AvanaHomePage> {
   
   bool isUserLogged=false;
-  
-  
+   final FirebaseMessaging _fcm = FirebaseMessaging();
+      StreamSubscription iosSubscription;
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
      checkUserLogged();
+     _fcm.subscribeToTopic("all");
+     if (Platform.isIOS) {
+            iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
+                // save the token  OR subscribe to a topic here
+            });
+
+            _fcm.requestNotificationPermissions(IosNotificationSettings());
+        }
+        _fcm.configure(
+          onMessage: (Map<String, dynamic> message) async {
+            print("onMessage: $message");
+           /*
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                        content: ListTile(
+                        title: Text(message['notification']['title']),
+                        subtitle: Text(message['notification']['body']),
+                        ),
+                        actions: <Widget>[
+                        FlatButton(
+                            child: Text('Ok'),
+                            onPressed: () => Navigator.of(context).pop(),
+                        ),
+                    ],
+                ),
+            );
+            */
+        },
+        onLaunch: (Map<String, dynamic> message) async {
+            print("onLaunch: $message");
+            // TODO optional
+        },
+        onResume: (Map<String, dynamic> message) async {
+            print("onResume: $message");
+            // TODO optional
+        },
+      );
   }
 
    void checkUserLogged() async {

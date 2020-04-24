@@ -23,6 +23,9 @@ dependencies:
   file_picker: ^1.5.1
   open_file: ^3.0.1
   flare_flutter: ^2.0.3
+  firebase_messaging: 6.0.13
+  flutter_local_notifications: 1.4.0
+  http: ^0.12.0+4
 
   
 

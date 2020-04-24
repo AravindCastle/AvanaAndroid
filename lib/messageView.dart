@@ -17,6 +17,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   DocumentSnapshot threadDetails = null;
   List<DocumentSnapshot> commentsDoc = null;
   var focusNode = new FocusNode();
+
+
   Future<void> addComment() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
 
@@ -27,10 +29,12 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       "owner_name": localStore.getString("name"),
       "thread_id": threadID,
     });
-    commentEditor.clear();
-
-    var textField = new TextField(focusNode: focusNode);
+    
+    
     focusNode.unfocus();
+    String notfyStr=localStore.getString("name")+":"+commentEditor.text;
+    commentEditor.clear();
+    Utils.sendPushNotification("New Comment",notfyStr);
   }
 
   Future<List> getComments() async {

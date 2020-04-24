@@ -1,3 +1,4 @@
+import 'package:avana_academy/Utils.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +25,7 @@ class _userListPageState extends State<userListPage> {
                     return new ListTile(
                       trailing: Icon(Icons.keyboard_arrow_right),
                       leading: CircleAvatar(
-                          backgroundColor:  Color.fromRGBO(117,117,117, 1),
+                          backgroundColor:  Utils.getColor(document['username'].toString().substring(0,1).toUpperCase()),
                           child:Text(document['username'].toString().substring(0,1).toUpperCase(),style:TextStyle(color: Colors.white ),)
                         ),
                       title: new Text(document['username'],style: TextStyle(

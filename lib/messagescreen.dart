@@ -41,7 +41,7 @@ class _MessagePageState extends State<MessagePage> {
                     Row(children: [
                       SizedBox(width: medQry.size.height * .01),
                       SizedBox(
-                        width: medQry.size.width * .67,
+                        width: medQry.size.width * .60,
                         child: Text(
                           messageDoc["ownername"],
                           overflow: TextOverflow.ellipsis,
@@ -50,14 +50,14 @@ class _MessagePageState extends State<MessagePage> {
                         ),
                       ),
                       SizedBox(
-                        width: medQry.size.width*.25,
+                        width: medQry.size.width*.32,
                       child:Text(
                         Utils.getTimeFrmt(messageDoc["created_time"]),
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
-                            fontSize: 13,
+                            fontSize: 11,
                             textBaseline: TextBaseline.alphabetic),
                       ),
                       ),                      
