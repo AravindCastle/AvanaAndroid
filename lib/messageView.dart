@@ -1,4 +1,5 @@
 import 'package:avana_academy/Utils.dart';
+import 'package:avana_academy/addUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   DocumentSnapshot threadDetails = null;
   List<DocumentSnapshot> commentsDoc = null;
   var focusNode = new FocusNode();
-
+  String userId;
+  int userRole;
 
   Future<void> addComment() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
@@ -155,6 +157,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
         style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
       )));
       cmtRow.add(SizedBox(height: 12));
+      if(commentsDoc.length>0){
       for (int i = 0; i < commentsDoc.length; i++) {
         cmtRow.add(Container(
           child: Column(
@@ -165,26 +168,36 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                   commentsDoc[i]["owner_name"],
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 17),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18),
                 ),
-                Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Text(
+                //Padding(
+                  //  padding: EdgeInsets.only(left: 10),
+                    //child:
+                     Text(
                       commentsDoc[i]["comment"],
                       style: TextStyle(
                           color: Colors.black87,
                           fontSize: 15,
                           fontWeight: FontWeight.normal),
-                    ))
-              ]),
+                    ),                    
+                    //)
+                    Padding(padding: EdgeInsets.only(top:8), child:Text(Utils.getTimeFrmt(commentsDoc[i]["created_time"]),style: TextStyle(fontSize:10,color: Colors.black87), ))
+              ]
+              ),
           padding: EdgeInsets.all(medQry.size.width * .03),
           width: medQry.size.width * .85,
           decoration: BoxDecoration(
               color: Color.fromRGBO(238, 238, 238, 1),
               borderRadius: BorderRadius.circular(8.0)),
+       
         ));
+         //cmtRow.add();
         cmtRow.add(SizedBox(height: 9));
+      }
+      }
+      else{
+        cmtRow.add(new Center(child: Text("No comments added "),));
       }
     } else {
       cmtRow.add(CircularProgressIndicator());
@@ -192,7 +205,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     return cmtRow;
   }
 
-  Widget buildCommentSection() {
+  Widget buildCommentSection(){
+    
     return new Container(
       padding: const EdgeInsets.all(15.0),
       child: new Column(
@@ -200,6 +214,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: commentRowWid()),
     );
+
   }
 
   Widget buildAttachmentSection(BuildContext context) {
@@ -226,6 +241,10 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   }
 
   Future<void> getThreadDetails() async {
+    final SharedPreferences localStore = await SharedPreferences.getInstance();
+    userId=localStore.getString("userId");
+    userRole=localStore.getInt("role");
+   
     getComments();
     threadDetails =
         await Firestore.instance.collection('Threads').document(threadID).get();
@@ -259,7 +278,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                         children: <Widget>[
                           //  buildMessageInfo(),
                           buildMessageContent(),
-                          //Divider(color: Colors.black),
+                          SizedBox(height:10),
                           buildAttachmentSection(context),
                           //Divider(color: Colors.black),
                           buildCommentSection()
@@ -268,7 +287,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                         reverse: false,
                       ),
                     ),
-                    buildInput(),
+                    (userRole==1 || userRole==2 || userId==threadDetails["owner"])?
+                    buildInput():SizedBox(height:10),
                   ],
                 ),
               ],

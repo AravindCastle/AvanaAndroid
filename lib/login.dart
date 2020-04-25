@@ -191,8 +191,8 @@ class _LoginPageState extends State<LoginPage> {
                                 )),
                                 Builder(builder: (BuildContext context) {
                                   return ButtonTheme(
-                                      height: medQry.size.height * 0.07,
-                                      minWidth: medQry.size.height * 0.06,
+                                      height: 60,
+                                      minWidth: 60,
                                       child: RaisedButton(
                                           onPressed: () {
                                             handleSignIn(context);
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                                           shape: new RoundedRectangleBorder(
                                             borderRadius:
                                                 new BorderRadius.circular(
-                                                    medQry.size.height * 0.07),
+                                                    60),
                                           ),
                                           child: new Icon(Icons.arrow_forward,
                                               color: Colors.white)));

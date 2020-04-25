@@ -14,7 +14,7 @@ class _MessagePageState extends State<MessagePage> {
   
   MediaQueryData medQry = null;
   String userName="";
- 
+  int userRole;
   //void initState() {
     
   //}
@@ -25,6 +25,7 @@ class _MessagePageState extends State<MessagePage> {
 
     setState(() {
      userName=prefs.getString("name"); 
+     userRole=prefs.getInt("role");
     });     
     }
   }
@@ -46,7 +47,8 @@ class _MessagePageState extends State<MessagePage> {
                           messageDoc["ownername"],
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
-                          style: TextStyle(fontSize: 19),
+                          style: TextStyle(fontSize: 19,color: Colors.black)
+                          
                         ),
                       ),
                       SizedBox(
@@ -56,28 +58,27 @@ class _MessagePageState extends State<MessagePage> {
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
                         style: TextStyle(
-                          fontWeight: FontWeight.w400,
+                         color: Colors.black87,
                             fontSize: 11,
-                            textBaseline: TextBaseline.alphabetic),
+                           ),
                       ),
                       ),                      
                     ]),
                     SizedBox(height: medQry.size.height * .01),
                     Row(
                       children: <Widget>[
-                        SizedBox(width: medQry.size.width * .05),
+                        SizedBox(width: medQry.size.width * .01),
                         SizedBox(
-                          width: medQry.size.width * .84,
+                          width: medQry.size.width * .92,
                           child: Text(
-                            messageDoc["content"],
-                            maxLines: 2,
+                            "\t\t\t"+messageDoc["content"],
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
                             style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w300),
+                                fontSize: 15,color: Colors.black54),
                           ),
-                        ),
-                        //SizedBox(width: medQry.size.width * .05),
+                        ),                       
                       ],
                     ),
                   ])),
@@ -89,7 +90,7 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Widget build(BuildContext context) {
-getUserName();
+      getUserName();
     medQry = MediaQuery.of(context);
     return WillPopScope(
         onWillPop: () async => false,
@@ -103,7 +104,7 @@ getUserName();
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) return new CircularProgressIndicator();
+              if (!snapshot.hasData) return SizedBox(child:  new LinearProgressIndicator(),height:5);
               return new ListView(
                 children: snapshot.data.documents.map((document) {
                   return messageItem(document, context);
@@ -132,13 +133,15 @@ getUserName();
                           SizedBox(height:15),
                           Text(userName,style: TextStyle(fontSize:18,color: Colors.white))
                         ])),
+                (userRole==1) ?
                 ListTile(
                   leading: Icon(Icons.account_circle),
                   title: Text('Users'),
                   onTap: () {
                     Navigator.pushNamed(context, "/userlist");
                   },
-                ),
+                ):SizedBox(height:0),
+
                 ListTile(
                   leading: Icon(Icons.add_call),
                   title: Text('Log out'),
