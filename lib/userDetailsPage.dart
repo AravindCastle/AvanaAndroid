@@ -18,10 +18,12 @@ class UserDetailsPage extends StatefulWidget {
 
 class _UserDetailsPageState extends State<UserDetailsPage> {
   bool isPageLoading = true;
+  String docmtId;
   String userName;
   String password;
   String email;
   String role;
+  int userRole;
   bool isActive;
   MediaQueryData medQry = null;
   int membershipDate;
@@ -50,6 +52,11 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           ]);
     }
   }
+Future<void> updateUserActive(bool state,String docId) async {
+await Firestore.instance.collection('userdata').document(docId).updateData({
+"isactive":state,"membershipdate":DateTime.now().millisecondsSinceEpoch
+});
+}
 
   Future<void> getUserDetails(String docId) async {
     final DocumentSnapshot userDetails =
@@ -57,7 +64,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     if (userDetails.data.length > 0) {
       userName = userDetails["username"];
       password = userDetails["password"];
-      role = Utils.getRoleString(userDetails["userrole"].toString());
+      userRole=userDetails["userrole"];
+      role = Utils.getRoleString(userRole.toString());
+
       isActive = userDetails["isactive"];
       membershipDate = userDetails["membershipdate"];
       email = userDetails["email"];
@@ -88,11 +97,15 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     Icon(Icons.account_circle, size: medQry.size.width * .35,color: Color.fromRGBO(117,117,117, 1),),
               ),
               SizedBox(height: 10, width: 10),
+             Row( mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,children: <Widget>[
+              Utils.getUserBadge(userRole,17),
               Text(userName,
                   style: TextStyle(
                     fontSize: 26,
                   ),
                   textAlign: TextAlign.center),
+],),
               SizedBox(height: medQry.size.height * .03),
               Padding(padding: EdgeInsets.all(medQry.size.width*.04), child:  Row(                
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -136,7 +149,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ],
               )),
-              Padding(padding: EdgeInsets.all(medQry.size.width*.04), child:Row(                
+             /* Padding(padding: EdgeInsets.all(medQry.size.width*.04), child:Row(                
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -149,7 +162,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     child: Text(":  "+Utils.getTimeFrmt(membershipDate),style: TextStyle(fontSize:15)),
                   ),
                 ],
-              )),
+              )),*/
                   Align(
                     alignment: Alignment.topLeft,
                       child: SizedBox( 
@@ -162,6 +175,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 onChanged: (bool value) {
                   setState(() {
                     isActive = value;
+                    updateUserActive(isActive,docmtId);
                   });
                 },
               )),
@@ -180,7 +194,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     medQry = MediaQuery.of(context);
     final UserDetailsArguement userDet =
         ModalRoute.of(context).settings.arguments;
-    getUserDetails(userDet.userId);
+        docmtId=userDet.userId;
+    getUserDetails(docmtId);
     return new Scaffold(
         appBar: AppBar(title: Text("User Details")),
         body: new Container(

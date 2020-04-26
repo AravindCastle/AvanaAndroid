@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -59,15 +60,16 @@ class _MessageEditorState extends State<MessageEditor> {
           });
         }
 
-        var succes = await Firestore.instance.collection("Threads").add({
+        DocumentReference newThread = await Firestore.instance.collection("Threads").add({
           "content": messageContr.text,
           "owner": localStore.getString("userId"),
           "ownername": localStore.getString("name"),
+          "ownerrole": localStore.getInt("role"),
           "attachments": fileUrls.toList(),
           "created_time": new DateTime.now().millisecondsSinceEpoch,         
         });
-        String notfyStr=localStore.getString("name")+":"+messageContr.text;
-        Utils.sendPushNotification("New Message",notfyStr);
+        String notfyStr=messageContr.text;
+        Utils.sendPushNotification("New Message",notfyStr,"messageview",newThread.documentID);
         Navigator.pushNamed(context, "/messagePage");
       }
     } catch (Exception) {

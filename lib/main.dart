@@ -10,6 +10,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_splash_screen/flare_splash_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
@@ -21,23 +23,51 @@ void main() => runApp(AvanaHome());
 
 class AvanaHome extends StatelessWidget {
   // This widget is the root of your application.
-  
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    switch (settings.name) {          
+      case '/login':
+        return PageTransition(child: LoginPage(), type: PageTransitionType.fade,settings: settings);  //MaterialPageRoute(builder: (_) => LoginPage());     
+      break;
+      case '/messagePage':
+       return PageTransition(child: MessagePage(), type: PageTransitionType.fade,settings: settings);           
+      break;
+      case '/userlist':
+        return PageTransition(child: userListPage(), type: PageTransitionType.fade,settings: settings);                
+      break;
+      case '/adduser':
+       return PageTransition(child: AddUserPage(), type: PageTransitionType.fade,settings: settings);               
+      break;
+      case '/userdetailpage':
+       return PageTransition(child: UserDetailsPage(), type: PageTransitionType.leftToRightWithFade,settings: settings);                
+      break;
+      case '/messageeditor':
+       return PageTransition(child: MessageEditor(), type: PageTransitionType.fade,settings: settings);           
+      break;
+      case '/messageview':
+       return PageTransition(child: MessageViewScreen(), type: PageTransitionType.fade,settings: settings);             
+      break;      
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+      
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Avana Academy',
-      routes: {
-        "/login":(context) => LoginPage(),
+      /*routes: {
+        "/login":(context) =>  LoginPage(),
         "/messagePage" :(context) => MessagePage(),
         "/userlist": (context) => userListPage(),
         "/adduser":(context) => AddUserPage(),
         "/userdetailpage" :(context) =>UserDetailsPage(),
         "/messageeditor" :(context) => MessageEditor(),
         "/messageview" :(context) => MessageViewScreen()
-      },
-
+      },*/
+      onGenerateRoute: generateRoute,
       theme: ThemeData(        
         primarySwatch: MaterialColor(
             Color.fromRGBO(183, 28, 28, 1).value,
@@ -123,31 +153,16 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
         }
         _fcm.configure(
           onMessage: (Map<String, dynamic> message) async {
-            print("onMessage: $message");
-           /*
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                        content: ListTile(
-                        title: Text(message['notification']['title']),
-                        subtitle: Text(message['notification']['body']),
-                        ),
-                        actions: <Widget>[
-                        FlatButton(
-                            child: Text('Ok'),
-                            onPressed: () => Navigator.of(context).pop(),
-                        ),
-                    ],
-                ),
-            );
-            */
+            print("onMessage: $message");          
         },
         onLaunch: (Map<String, dynamic> message) async {
-            print("onLaunch: $message");
+          Navigator.pushNamed(context, "/"+message["screeen"],arguments:message["docid"]);
+           // print("onLaunch: $message");
             // TODO optional
         },
         onResume: (Map<String, dynamic> message) async {
-            print("onResume: $message");
+          Navigator.pushNamed(context, "/"+message["screeen"],arguments:message["docid"]);
+            //print("onResume: $message");
             // TODO optional
         },
       );
@@ -184,7 +199,8 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
   Widget build(BuildContext context) {
      MediaQueryData md=MediaQuery.of(context);
      return Scaffold(
-       body: new Container(   
+       body: new Container(            
+         decoration: BoxDecoration( color: Colors.black, border: Border.all(color:Colors.black) ),
          child:FlareActor('assets/splashScreen.flr', animation: 'splash')
        ),
      );

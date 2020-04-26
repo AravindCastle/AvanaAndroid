@@ -14,7 +14,6 @@ class _userListPageState extends State<userListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Users")),
-
       body:new StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance.collection('userdata').orderBy("username").snapshots(),
               builder: (BuildContext context,

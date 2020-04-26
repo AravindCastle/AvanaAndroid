@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:avana_academy/addUser.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
@@ -207,8 +208,18 @@ else{
 
 
 }
-
-static Future<void> sendPushNotification(String title,String body) async {
+static Widget getUserBadge(int userRole,double fntsize){
+  if(userRole==1){
+      return Icon(Icons.supervised_user_circle,size: fntsize,color:Color.fromRGBO(183, 28, 28, 1) ,);
+  }
+  else if(userRole==2){
+    return Icon(Icons.verified_user,size: fntsize,color:Color.fromRGBO(183, 28, 28, 1) ,);
+  }
+  else{
+    return Icon(Icons.person,size: fntsize,color:Color.fromRGBO(183, 28, 28, 1) ,);
+  }
+}
+static Future<void> sendPushNotification(String title,String body,String screenName,String docId) async {
    
      String serverToken="AAAA7_Sx8pg:APA91bE1afmUpIcNCCe9leKNrNOHut5JajyvKmUBRKxdfELopzap3XJaHw4Ih_Cj6EzebCGi8QeSA_m6kXIvRq4WiGiqDYj7c-G8YklDX9feOm1eusmN0eIPa914m4APgLVC5Iqx96Nw";
    await http.post(
@@ -227,7 +238,9 @@ static Future<void> sendPushNotification(String title,String body) async {
        'data': <String, dynamic>{
          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
          'id': '1',
-         'status': 'done'
+         'status': 'done',
+         'screen':screenName,
+         'docid':docId
        },
        'to': "/topics/all",
      },

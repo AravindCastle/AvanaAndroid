@@ -6,32 +6,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
- bool isActive = true;
-  String userRole = "3";
-  bool loading=false;
-class AddUserPage extends StatefulWidget {
-  
+bool isActive = true;
+String userRole = "3";
+bool loading = false;
 
+class AddUserPage extends StatefulWidget {
   _AddUserPageState createState() => _AddUserPageState();
 }
 
 class _AddUserPageState extends State<AddUserPage> {
- TextEditingController userName = new TextEditingController();
+  TextEditingController userName = new TextEditingController();
   TextEditingController emailId = new TextEditingController();
   TextEditingController password = new TextEditingController();
-initState(){
- loading=false; 
-}
- 
-Widget buttonOrLoading(){
 
-if(loading)  
-  return 
-    new LinearProgressIndicator(
+  void initState() => loading = false;
 
-  );
-  else{
-    return Builder(builder: (BuildContext context) {
+  Widget buttonOrLoading() {
+    if (loading)
+      return new LinearProgressIndicator();
+    else {
+      return SizedBox();
+      /*Builder(builder: (BuildContext context) {
                         return ButtonTheme(
                             height: 30,
                             minWidth: 300,
@@ -50,51 +45,58 @@ if(loading)
                                       fontSize: 17,
                                       fontWeight: FontWeight.w400)),
                             ));
-                      });
+                      });*/
+
+    }
   }
-}
 
- Future<Null> addnewUser(BuildContext context ) async{
-    try{
-      HashMap userDetail=new HashMap();
-      if (this.mounted){
-
-      setState(() {
-        loading=true;
-      });
+  void addnewUser(BuildContext context) async {
+    try {
+      HashMap userDetail = new HashMap();
+     if(userName.text.isNotEmpty && password.text.isNotEmpty && emailId.text.isNotEmpty){
+      if (this.mounted) {
+        setState(() {
+          loading = true;
+        });
       }
-   var succes=await Firestore.instance.collection("userdata").add({
-      "username":userName.text,
-      "email":emailId.text,
-      "password":password.text,
-      "isactive":isActive,
-      "userrole":int.parse(userRole),
-      "membershipdate":new DateTime.now().millisecondsSinceEpoch    
-    }); 
-      
-    userName.clear();
-    emailId.clear();
-    password.clear();
- if (this.mounted){
 
- setState(() {
-   loading=false;
- });
- }
- 
-    }
- 
-    catch(Exception){
+      Firestore.instance.collection("userdata").add({
+        "username": userName.text,
+        "email": emailId.text,
+        "password": password.text,
+        "isactive": isActive,
+        "userrole": int.parse(userRole),
+        "membershipdate": new DateTime.now().millisecondsSinceEpoch
+      });
+
+      userName.clear();
+      emailId.clear();
+      password.clear();
+      if (this.mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
+     }
+    } catch (Exception) {
       setState(() {
-   loading=false;
- });
-        
+        loading = false;
+      });
     }
-  } 
- 
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Add user")),
+        appBar: AppBar(
+          title: Text("Add user"),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.person_add),
+                onPressed: () {
+                  addnewUser(context);
+                })
+          ],
+        ),
         body: SingleChildScrollView(
             child: Container(
                 padding: const EdgeInsets.all(1.0),
@@ -104,23 +106,23 @@ if(loading)
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[                      
+                    children: <Widget>[
                       TextField(
-                        controller: userName,
+                          controller: userName,
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Username")),
                       SizedBox(height: 10),
                       TextField(
-                        controller: emailId,
+                          controller: emailId,
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Email Id")),
                       SizedBox(height: 10),
                       TextField(
-                        controller: password,
+                          controller: password,
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -171,8 +173,7 @@ if(loading)
                           },
                         ),
                       ),
-                      
-                      SizedBox(height: 10),                      
+                      SizedBox(height: 10),
                       buttonOrLoading(),
                     ],
                   ),

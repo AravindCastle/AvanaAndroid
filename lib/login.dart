@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           if (isActive) {
             prefs.setString("userId", documents[0].documentID);
             prefs.setString("name", documents[0]["username"]);
-            prefs.setString("role", documents[0]["role"]);
+            prefs.setInt("role", documents[0]["userrole"]);
             Navigator.of(context).push(_moveToHome());
           } else {
             final snackBar = SnackBar(content: Text('Membership Expired ! '));

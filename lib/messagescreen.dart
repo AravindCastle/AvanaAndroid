@@ -14,7 +14,7 @@ class _MessagePageState extends State<MessagePage> {
   
   MediaQueryData medQry = null;
   String userName="";
-  int userRole;
+  int userRole=1;
   //void initState() {
     
   //}
@@ -40,9 +40,10 @@ class _MessagePageState extends State<MessagePage> {
                   padding: EdgeInsets.all(medQry.size.width * .02),
                   child: new Column(children: [
                     Row(children: [
-                      SizedBox(width: medQry.size.height * .01),
+                      SizedBox(width: 20,child:Utils.getUserBadge(messageDoc["ownerrole"],17)),
                       SizedBox(
-                        width: medQry.size.width * .60,
+                        
+                        width: medQry.size.width * .56,
                         child: Text(
                           messageDoc["ownername"],
                           overflow: TextOverflow.ellipsis,
@@ -100,7 +101,7 @@ class _MessagePageState extends State<MessagePage> {
           body: new StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
                 .collection('Threads')
-                .orderBy("created_time")
+                .orderBy("created_time",descending: true)                
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

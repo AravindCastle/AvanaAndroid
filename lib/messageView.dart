@@ -1,5 +1,4 @@
 import 'package:avana_academy/Utils.dart';
-import 'package:avana_academy/addUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +23,12 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   Future<void> addComment() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
 
-    var succes = await Firestore.instance.collection("comments").add({
+     await Firestore.instance.collection("comments").add({
       "comment": commentEditor.text,
       "created_time": new DateTime.now().millisecondsSinceEpoch,
       "owner": localStore.getString("userId"),
       "owner_name": localStore.getString("name"),
+      "ownerrole": localStore.getInt("role"),
       "thread_id": threadID,
     });
     
@@ -36,14 +36,15 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     focusNode.unfocus();
     String notfyStr=localStore.getString("name")+":"+commentEditor.text;
     commentEditor.clear();
-    Utils.sendPushNotification("New Comment",notfyStr);
+    Utils.sendPushNotification("New Comment",notfyStr,"messageview",threadID);
   }
 
-  Future<List> getComments() async {
+  Future<void> getComments() async {
     final QuerySnapshot userDetails = await Firestore.instance
         .collection('comments')
         //  .orderBy("comments")
         .where("thread_id", isEqualTo: threadID)
+        .orderBy("created_time",descending: true)
         .getDocuments();
     commentsDoc = userDetails.documents;
     if (this.mounted) {
@@ -120,12 +121,15 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+           SizedBox( width:medQry.size.width*.75, child:
+            
             Text(threadDetails['ownername'].toString(),
             softWrap: true,
                 style: TextStyle(
-                    color: Colors.white,                    
+                    color: Colors.white,                                        
                     fontSize: 18,
                     fontWeight: FontWeight.w600)),
+           ),           
             SizedBox(height: 3),
             Text(Utils.getTimeFrmt(threadDetails["created_time"]),
                 style: TextStyle(
@@ -164,13 +168,14 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                
+                Row(children: <Widget>[ Utils.getUserBadge(userRole, 13),                Text(
                   commentsDoc[i]["owner_name"],
                   style: TextStyle(
                       color: Colors.black,
-                      fontWeight: FontWeight.w700,
+                      //fontWeight: FontWeight.normal,
                       fontSize: 18),
-                ),
+                )],),
                 //Padding(
                   //  padding: EdgeInsets.only(left: 10),
                     //child:
@@ -182,7 +187,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                           fontWeight: FontWeight.normal),
                     ),                    
                     //)
-                    Padding(padding: EdgeInsets.only(top:8), child:Text(Utils.getTimeFrmt(commentsDoc[i]["created_time"]),style: TextStyle(fontSize:10,color: Colors.black87), ))
+                    Padding(padding: EdgeInsets.only(top:8), child:Text(Utils.getTimeFrmt(commentsDoc[i]["created_time"]),style: TextStyle(fontSize:10,color: Colors.black54), ))
               ]
               ),
           padding: EdgeInsets.all(medQry.size.width * .03),
