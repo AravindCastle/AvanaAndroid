@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
-import 'package:avana_academy/addUser.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -125,19 +123,32 @@ class Utils {
     return false;
   }
 
-  static Widget attachmentWid(File attach, String url, String type,
+  static Widget attachmentWid(String name,File attach, String url, String type,
       BuildContext context, MediaQueryData medQry) {
     if (getImageFormats(type)) {
       return Container(
+         width: medQry.size.width * .29,
+                    height: medQry.size.width * .29,
         child: OutlineButton(
           child: Material(
             child: attach == null
-                ? Image.network(
+                ? /*Image.network(
                     url,
                     width: medQry.size.width * .29,
                     height: medQry.size.width * .29,
                     fit: BoxFit.cover,
-                  )
+                  )*/
+                  CachedNetworkImage(
+                    width: medQry.size.width * .29,
+                    height: medQry.size.width * .29,
+                   fit: BoxFit.contain,
+                  progressIndicatorBuilder: (context, url, progress) =>
+                      CircularProgressIndicator(
+                    value: progress.progress,
+                  ),
+                  imageUrl:
+                    url,
+                )
                 : Image.file(
                     attach,
                     width: medQry.size.width * .29,
@@ -149,12 +160,10 @@ class Utils {
             ),
             clipBehavior: Clip.hardEdge,
           ),
-          onPressed: attach == null
+          onPressed: attach != null
               ? null
               : () {
-                  OpenFile.open("assets/avanalogo.png");
-                  // Navigator.push(context,
-                  // MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
+                 Navigator.pushNamed(context, "/photoview",arguments:{"url":url,"name":name});                  
                 },
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),

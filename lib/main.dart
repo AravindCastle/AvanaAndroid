@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:avana_academy/MessageEditor.dart';
 import 'package:avana_academy/messageView.dart';
 import 'package:avana_academy/messagescreen.dart';
+import 'package:avana_academy/photoview.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
 
@@ -46,6 +47,9 @@ class AvanaHome extends StatelessWidget {
       break;
       case '/messageview':
        return PageTransition(child: MessageViewScreen(), type: PageTransitionType.fade,settings: settings);             
+      break;   
+       case '/photoview':
+       return PageTransition(child: PhotoViewr(), type: PageTransitionType.fade,settings: settings);             
       break;      
     }
   }

@@ -232,9 +232,9 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       String url = attachmentList[i]["url"];
       String name = attachmentList[i]["name"];
       if (i < 3) {
-        row1.add((Utils.attachmentWid(null, url, type, context, medQry)));
+        row1.add((Utils.attachmentWid(name,null, url, type, context, medQry)));
       } else {
-        row2.add((Utils.attachmentWid(null, url, type, context, medQry)));
+        row2.add((Utils.attachmentWid(name,null, url, type, context, medQry)));
       }
     }
 

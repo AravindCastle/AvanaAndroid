@@ -92,10 +92,10 @@ class _MessageEditorState extends State<MessageEditor> {
       String fileType = fileName.split(".").last;
       if (i < 3) {
         row1.add(
-            (Utils.attachmentWid(prevFile, null, fileType, context, medQry)));
+            (Utils.attachmentWid(fileName,prevFile, null, fileType, context, medQry)));
       } else {
         row2.add(
-            (Utils.attachmentWid(prevFile, null, fileType, context, medQry)));
+            (Utils.attachmentWid(fileName,prevFile, null, fileType, context, medQry)));
       }
     }
 
