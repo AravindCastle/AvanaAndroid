@@ -13,6 +13,7 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   
   MediaQueryData medQry = null;
+  SharedPreferences prefs ;
   String userName="";
   int userRole=1;
   //void initState() {
@@ -20,7 +21,7 @@ class _MessagePageState extends State<MessagePage> {
   //}
 
   void getUserName() async{
-     SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs = await SharedPreferences.getInstance();
     if (this.mounted){
 
     setState(() {
@@ -30,37 +31,40 @@ class _MessagePageState extends State<MessagePage> {
     }
   }
   Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
-    int createdTime = messageDoc["created_time"];
     return new GestureDetector(
         child: Card(
             elevation: 3,
             child: new Container(
-              height: 110,
+              height: 95,
               child: new Padding(
-                  padding: EdgeInsets.all(medQry.size.width * .02),
+                  padding: EdgeInsets.only(top:10,bottom:10,left:8,right:8),
                   child: new Column(children: [
                     Row(children: [
-                      SizedBox(width: 20,child:Utils.getUserBadge(messageDoc["ownerrole"],17)),
+                      Utils.isNewMessage(messageDoc.documentID,prefs),
+                      SizedBox(width: 5),
                       SizedBox(
                         
-                        width: medQry.size.width * .56,
+                        width: medQry.size.width * .68,
                         child: Text(
                           messageDoc["ownername"],
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
                           style: TextStyle(fontSize: 19,color: Colors.black)
                           
                         ),
                       ),
                       SizedBox(
-                        width: medQry.size.width*.32,
+                        width: medQry.size.width*.19,
                       child:Text(
                         Utils.getTimeFrmt(messageDoc["created_time"]),
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
+                        textAlign: TextAlign.right,
                         style: TextStyle(
+                          
                          color: Colors.black87,
                             fontSize: 11,
+                            
                            ),
                       ),
                       ),                      
@@ -68,12 +72,12 @@ class _MessagePageState extends State<MessagePage> {
                     SizedBox(height: medQry.size.height * .01),
                     Row(
                       children: <Widget>[
-                        SizedBox(width: medQry.size.width * .01),
+                        SizedBox(width:15),
                         SizedBox(
-                          width: medQry.size.width * .92,
+                          width: medQry.size.width * .89,
                           child: Text(
-                            "\t\t\t"+messageDoc["content"],
-                            maxLines: 3,
+                            messageDoc["content"],
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
                             style: TextStyle(
@@ -144,7 +148,7 @@ class _MessagePageState extends State<MessagePage> {
                 ):SizedBox(height:0),
 
                 ListTile(
-                  leading: Icon(Icons.add_call),
+                  leading: Icon(Icons.exit_to_app),
                   title: Text('Log out'),
                   onTap: () async {
                     final SharedPreferences prefs =

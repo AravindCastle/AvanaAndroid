@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 
+import 'Utils.dart';
 import 'addUser.dart';
 import 'login.dart';
 
@@ -153,17 +154,31 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
         }
         _fcm.configure(
           onMessage: (Map<String, dynamic> message) async {
-            print("onMessage: $message");          
+            print("ara");
+            if(this.mounted){
+              setState(() {
+                 Utils.addNotificationId(message["data"]["docid"]);  
+              });
+            }
+            
+                 
         },
         onLaunch: (Map<String, dynamic> message) async {
-          Navigator.pushNamed(context, "/"+message["screeen"],arguments:message["docid"]);
-           // print("onLaunch: $message");
-            // TODO optional
-        },
+             print("ara");
+          if(this.mounted){
+              setState(() {
+                 Utils.addNotificationId(message["data"]["docid"]);  
+              });
+            }
+          
+          },
         onResume: (Map<String, dynamic> message) async {
-          Navigator.pushNamed(context, "/"+message["screeen"],arguments:message["docid"]);
-            //print("onResume: $message");
-            // TODO optional
+             print("ara");
+          if(this.mounted){
+              setState(() {
+                 Utils.addNotificationId(message["data"]["docid"]);  
+              });
+            }
         },
       );
   }

@@ -131,7 +131,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                     fontWeight: FontWeight.w600)),
            ),           
             SizedBox(height: 3),
-            Text(Utils.getTimeFrmt(threadDetails["created_time"]),
+            Text(Utils.getMessageTimerFrmt(threadDetails["created_time"]),
                 style: TextStyle(
                     color: Colors.white70,
                     // fontStyle: FontStyle.italic,
@@ -169,7 +169,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 
-                Row(children: <Widget>[ Utils.getUserBadge(userRole, 13),                Text(
+                Row(children: <Widget>[                Text(
                   commentsDoc[i]["owner_name"],
                   style: TextStyle(
                       color: Colors.black,
@@ -249,7 +249,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     userId=localStore.getString("userId");
     userRole=localStore.getInt("role");
-   
+    Utils.removeNotifyItem(threadID);
     getComments();
     threadDetails =
         await Firestore.instance.collection('Threads').document(threadID).get();
