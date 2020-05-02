@@ -123,12 +123,12 @@ class Utils {
     return false;
   }
 
-  static Widget attachmentWid(String name,File attach, String url, String type,
+  static Widget attachmentWid(String name, File attach, String url, String type,
       BuildContext context, MediaQueryData medQry) {
     if (getImageFormats(type)) {
       return Container(
-         width: medQry.size.width * .29,
-                    height: medQry.size.width * .29,
+        width: medQry.size.width * .29,
+        height: medQry.size.width * .29,
         child: OutlineButton(
           child: Material(
             child: attach == null
@@ -138,17 +138,16 @@ class Utils {
                     height: medQry.size.width * .29,
                     fit: BoxFit.cover,
                   )*/
-                  CachedNetworkImage(
+                CachedNetworkImage(
                     width: medQry.size.width * .29,
                     height: medQry.size.width * .29,
-                   fit: BoxFit.contain,
-                  progressIndicatorBuilder: (context, url, progress) =>
-                      CircularProgressIndicator(
-                    value: progress.progress,
-                  ),
-                  imageUrl:
-                    url,
-                )
+                    fit: BoxFit.contain,
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        CircularProgressIndicator(
+                      value: progress.progress,
+                    ),
+                    imageUrl: url,
+                  )
                 : Image.file(
                     attach,
                     width: medQry.size.width * .29,
@@ -163,7 +162,8 @@ class Utils {
           onPressed: attach != null
               ? null
               : () {
-                 Navigator.pushNamed(context, "/photoview",arguments:{"url":url,"name":name});                  
+                  Navigator.pushNamed(context, "/photoview",
+                      arguments: {"url": url, "name": name});
                 },
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
@@ -207,27 +207,26 @@ static void openFile(File file,String url){
   }
 }
 */
-  static Widget isNewMessage(String messageId,SharedPreferences localStore)  {
-    List notifyList=new List();
-    if(localStore.containsKey("notifylist")){
-      notifyList=localStore.getStringList("notifylist");      
-    } 
-    if(notifyList!=null && notifyList.contains(messageId)){
-     return SizedBox(width: 10,child:ClipOval(
-      child: Material(
-        color: Colors.red, // button color
-        child: InkWell(
-          splashColor: Colors.red, // inkwell color
-          child: SizedBox(width: 10, height: 10),
-        ),
-      ),
-    ) );
+  static Widget isNewMessage(String messageId, SharedPreferences localStore) {
+    List notifyList = new List();
+    if (localStore.containsKey("notifylist")) {
+      notifyList = localStore.getStringList("notifylist");
     }
-    else{
+    if (notifyList != null && notifyList.contains(messageId)) {
+      return SizedBox(
+          width: 10,
+          child: ClipOval(
+            child: Material(
+              color: Colors.red, // button color
+              child: InkWell(
+                splashColor: Colors.red, // inkwell color
+                child: SizedBox(width: 10, height: 10),
+              ),
+            ),
+          ));
+    } else {
       return SizedBox(width: 10);
     }
-
-
   }
 
   static Color getColor(String key) {
@@ -330,39 +329,40 @@ static void openFile(File file,String url){
     }
     return "";
   }
+
   static Future<void> removeNotifyItem(String docId) async {
-       final SharedPreferences localStore = await SharedPreferences.getInstance();
-      List<String> listDocId= new List<String>();
-      if(localStore.containsKey("notifylist")) {
-        listDocId=localStore.getStringList("notifylist");  
-      }
-       if(listDocId.contains(docId)){
-listDocId.remove(docId);
-      }  
-localStore.setStringList("notifylist", listDocId);
+    final SharedPreferences localStore = await SharedPreferences.getInstance();
+    List<String> listDocId = new List<String>();
+    if (localStore.containsKey("notifylist")) {
+      listDocId = localStore.getStringList("notifylist");
+    }
+    if (listDocId.contains(docId)) {
+      listDocId.remove(docId);
+    }
+    localStore.setStringList("notifylist", listDocId);
   }
+
   static void addNotificationId(String docId) async {
-      final SharedPreferences localStore = await SharedPreferences.getInstance();
-      List<String> listDocId= new List<String>();
-      if(localStore.containsKey("notifylist")) {
-        listDocId=localStore.getStringList("notifylist");  
-      }
-      if(!listDocId.contains(docId)){
-listDocId.add(docId);
-      }          
-      localStore.setStringList("notifylist", listDocId);
+    final SharedPreferences localStore = await SharedPreferences.getInstance();
+    List<String> listDocId = new List<String>();
+    if (localStore.containsKey("notifylist")) {
+      listDocId = localStore.getStringList("notifylist");
+    }
+    if (!listDocId.contains(docId)) {
+      listDocId.add(docId);
+    }
+    localStore.setStringList("notifylist", listDocId);
   }
 
-
+  static Widget getNewMessageCount(SharedPreferences localStore) {
+    List notifiCntList = new List();
+    if (localStore.containsKey("notifylist")) {
+      notifiCntList = localStore.getStringList("notifylist");
+    }
+    if (notifiCntList != null && notifiCntList.length > 0) {
+      return Text("Messages (" + notifiCntList.length.toString() + ")");
+    } else {
+      return Text("Messages");
+    }
+  }
 }
-
-
-
-
-
-
-
-
-
-
-

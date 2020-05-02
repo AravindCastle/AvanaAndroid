@@ -101,7 +101,7 @@ class _MessagePageState extends State<MessagePage> {
         onWillPop: () async => false,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppBar(title: Text("Messages")),
+          appBar: AppBar(title: Utils.getNewMessageCount(prefs)),
           body: new StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
                 .collection('Threads')
