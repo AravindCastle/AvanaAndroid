@@ -146,7 +146,13 @@ class _MessagePageState extends State<MessagePage> {
                     Navigator.pushNamed(context, "/userlist");
                   },
                 ):SizedBox(height:0),
-
+                ListTile(
+                  leading: Icon(Icons.image),
+                  title: Text('Gallery'),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/gallery",arguments:{"superLevel":0,"parentid":"0","title":"Gallery"} ); 
+                  },
+                ),
                 ListTile(
                   leading: Icon(Icons.exit_to_app),
                   title: Text('Log out'),

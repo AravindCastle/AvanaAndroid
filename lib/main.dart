@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:avana_academy/MessageEditor.dart';
+import 'package:avana_academy/galleryPage.dart';
 import 'package:avana_academy/messageView.dart';
 import 'package:avana_academy/messagescreen.dart';
 import 'package:avana_academy/photoview.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
+import 'package:avana_academy/videoview.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -51,6 +53,13 @@ class AvanaHome extends StatelessWidget {
        case '/photoview':
        return PageTransition(child: PhotoViewr(), type: PageTransitionType.fade,settings: settings);             
       break;      
+       case '/videoview':
+       return PageTransition(child: VideoViewer(), type: PageTransitionType.fade,settings: settings);             
+      break;      
+       case '/gallery':
+       return PageTransition(child: GalleryPage(), type: PageTransitionType.fade,settings: settings);             
+      break;      
+
     }
   }
 
@@ -161,7 +170,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
             print("ara");
             if(this.mounted){
               setState(() {
-                 Utils.addNotificationId(message["data"]["docid"]);  
+                 Utils.addNotificationId(message["data"]["docid"],message["data"]["ownerId"]);  
               });
             }
             
@@ -171,16 +180,14 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
              print("ara");
           if(this.mounted){
               setState(() {
-                 Utils.addNotificationId(message["data"]["docid"]);  
-              });
+                 Utils.addNotificationId(message["data"]["docid"],message["data"]["ownerId"]);              });
             }
           
           },
-        onResume: (Map<String, dynamic> message) async {
-             print("ara");
+        onResume: (Map<String, dynamic> message) async {             
           if(this.mounted){
               setState(() {
-                 Utils.addNotificationId(message["data"]["docid"]);  
+                 Utils.addNotificationId(message["data"]["docid"],message["data"]["ownerId"]);
               });
             }
         },

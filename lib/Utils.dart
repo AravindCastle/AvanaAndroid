@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils {
@@ -32,6 +31,24 @@ class Utils {
     imgFrmt.add("gif");
     imgFrmt.add("heif");
 
+    return imgFrmt.contains(isSupported.toLowerCase());
+  }
+
+  static bool getVideoFormats(String isSupported) {
+    List<String> imgFrmt = new List();
+
+    imgFrmt.add("mp4");
+    imgFrmt.add("m4a");
+    imgFrmt.add("FMP4");
+    imgFrmt.add("WebM");
+    imgFrmt.add("Matroska");
+    imgFrmt.add("MP3");
+    imgFrmt.add("Ogg");
+    imgFrmt.add("WAV");
+    imgFrmt.add("MPEG-TS");
+    imgFrmt.add("MPEG-PS");
+    imgFrmt.add("FLV");
+    imgFrmt.add("AMR");
     return imgFrmt.contains(isSupported.toLowerCase());
   }
 
@@ -132,13 +149,7 @@ class Utils {
         child: OutlineButton(
           child: Material(
             child: attach == null
-                ? /*Image.network(
-                    url,
-                    width: medQry.size.width * .29,
-                    height: medQry.size.width * .29,
-                    fit: BoxFit.cover,
-                  )*/
-                CachedNetworkImage(
+                ? CachedNetworkImage(
                     width: medQry.size.width * .29,
                     height: medQry.size.width * .29,
                     fit: BoxFit.contain,
@@ -173,6 +184,35 @@ class Utils {
         margin: EdgeInsets.only(
             left: medQry.size.width * .03, top: medQry.size.width * .03),
       );
+    } else if (getVideoFormats(type)) {
+      return Container(
+        width: medQry.size.width * .29,
+        height: medQry.size.width * .29,
+        child: OutlineButton(
+          child: Material(
+            child: Image.asset(
+              "assets/videothumbnail.png",
+              width: medQry.size.width * .29,
+              height: medQry.size.width * .29,
+              fit: BoxFit.cover,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+            clipBehavior: Clip.hardEdge,
+          ),
+          onPressed: () {
+            Navigator.pushNamed(context, "/videoview",
+                arguments: {"url": url, "name": name});
+          },
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0)),
+          borderSide: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.all(0),
+        ),
+        margin: EdgeInsets.only(
+            left: medQry.size.width * .03, top: medQry.size.width * .03),
+      );
     } else {
       return Container(
         height: medQry.size.width * .29,
@@ -189,8 +229,8 @@ class Utils {
             clipBehavior: Clip.hardEdge,
           ),
           onPressed: () {
-            // Navigator.push(context,
-            // MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
+            Navigator.pushNamed(context, "/videoview",
+                arguments: {"url": url, "name": name});
           },
           padding: EdgeInsets.all(0),
         ),
@@ -290,6 +330,8 @@ static void openFile(File file,String url){
 
   static Future<void> sendPushNotification(
       String title, String body, String screenName, String docId) async {
+    final SharedPreferences localStore = await SharedPreferences.getInstance();
+    String ownerId = localStore.getString("userId");
     String serverToken =
         "AAAA7_Sx8pg:APA91bE1afmUpIcNCCe9leKNrNOHut5JajyvKmUBRKxdfELopzap3XJaHw4Ih_Cj6EzebCGi8QeSA_m6kXIvRq4WiGiqDYj7c-G8YklDX9feOm1eusmN0eIPa914m4APgLVC5Iqx96Nw";
     await http.post(
@@ -307,7 +349,8 @@ static void openFile(File file,String url){
             'id': '1',
             'status': 'done',
             'screen': screenName,
-            'docid': docId
+            'docid': docId,
+            'ownerId': ownerId
           },
           'to': "/topics/all",
         },
@@ -342,27 +385,111 @@ static void openFile(File file,String url){
     localStore.setStringList("notifylist", listDocId);
   }
 
-  static void addNotificationId(String docId) async {
+  static void addNotificationId(String docId, String ownerId) async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
-    List<String> listDocId = new List<String>();
-    if (localStore.containsKey("notifylist")) {
-      listDocId = localStore.getStringList("notifylist");
+    if (ownerId != null && ownerId != localStore.getString("userId")) {
+      List<String> listDocId = new List<String>();
+      if (localStore.containsKey("notifylist")) {
+        listDocId = localStore.getStringList("notifylist");
+      }
+      if (!listDocId.contains(docId)) {
+        listDocId.add(docId);
+      }
+      localStore.setStringList("notifylist", listDocId);
     }
-    if (!listDocId.contains(docId)) {
-      listDocId.add(docId);
-    }
-    localStore.setStringList("notifylist", listDocId);
   }
 
   static Widget getNewMessageCount(SharedPreferences localStore) {
     List notifiCntList = new List();
-    if (localStore.containsKey("notifylist")) {
+    if (localStore != null && localStore.containsKey("notifylist")) {
       notifiCntList = localStore.getStringList("notifylist");
     }
     if (notifiCntList != null && notifiCntList.length > 0) {
       return Text("Messages (" + notifiCntList.length.toString() + ")");
     } else {
       return Text("Messages");
+    }
+  }
+
+  static Widget buildGalleryFileItem(
+      BuildContext context, String url, String name, String type) {
+    if (getImageFormats(type)) {
+      return Container(
+        child: OutlineButton(
+          child: Column(
+            children: [
+              Material(
+                child: CachedNetworkImage(
+                  width: 150,
+                  height: 130,
+                  fit: BoxFit.fill,
+                  progressIndicatorBuilder: (context, url, progress) =>
+                      CircularProgressIndicator(
+                    value: progress.progress,
+                  ),
+                  imageUrl: url,
+                ),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
+                ),
+                clipBehavior: Clip.hardEdge,
+              ),
+              Padding(
+                  padding: EdgeInsets.only(left: 15, right: 5),
+                  child: Text(name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      textAlign: TextAlign.center))
+            ],
+          ),
+
+          onPressed: () {
+            Navigator.pushNamed(context, "/photoview",
+                arguments: {"url": url, "name": name});
+          },
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0)),
+          //  borderSide: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.all(0),
+        ),
+      );
+    } else if (getVideoFormats(type)) {
+              return Container(
+        child: OutlineButton(
+          child: Column(
+            children: [
+              Material(
+                    child: Image.asset(
+              "assets/videothumbnail.png",
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+        
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
+                ),
+                clipBehavior: Clip.hardEdge,
+              ),
+              Padding(
+                  padding: EdgeInsets.only(left: 15, right: 5),
+                  child: Text(name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      textAlign: TextAlign.center))
+            ],
+          ),
+
+          onPressed: () {
+            Navigator.pushNamed(context, "/videoview",
+                arguments: {"url": url, "name": name});
+          },
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0)),
+          //  borderSide: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.all(0),
+        ),
+      );
     }
   }
 }

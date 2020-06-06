@@ -99,7 +99,7 @@ await Firestore.instance.collection('userdata').document(docId).updateData({
               SizedBox(height: 10, width: 10),
              Row( mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,children: <Widget>[
-              Utils.getUserBadge(userRole,17),
+            //  Utils.getUserBadge(userRole,17),
               Text(userName,
                   style: TextStyle(
                     fontSize: 26,

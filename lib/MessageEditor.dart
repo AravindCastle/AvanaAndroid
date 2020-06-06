@@ -24,7 +24,7 @@ class _MessageEditorState extends State<MessageEditor> {
   TextEditingController messageContr = new TextEditingController();
 //videoFrmts.addAll({'.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'});
   Future<void> _pickImage() async {
-    if (uploaderImgs.length <= 6) {
+    if (uploaderImgs.length < 6) {
       File selectedFile = await FilePicker.getFile(type: FileType.any);
       //await ImagePicker.pickImage(source: source);
       if (selectedFile != null && this.mounted){

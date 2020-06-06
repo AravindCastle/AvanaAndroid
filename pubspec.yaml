@@ -29,6 +29,9 @@ dependencies:
   page_transition: "^1.1.5"
   cached_network_image: ^2.2.0
   photo_view: ^0.9.2
+  video_player: ^0.10.9+1
+  chewie: ^0.9.10
+
 
 
 
@@ -73,6 +76,7 @@ flutter:
      - assets/avanaIconLaunch.png
      - assets/loginbg.png
      - assets/splashScreen.flr
+     - assets/videothumbnail.png
   # To add assets to your application, add an assets section, like this:
   
   #  - images/a_dot_ham.jpeg
