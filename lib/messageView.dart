@@ -23,7 +23,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   Future<void> addComment() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
 
-     await Firestore.instance.collection("comments").add({
+    await Firestore.instance.collection("comments").add({
       "comment": commentEditor.text,
       "created_time": new DateTime.now().millisecondsSinceEpoch,
       "owner": localStore.getString("userId"),
@@ -31,12 +31,12 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       "ownerrole": localStore.getInt("role"),
       "thread_id": threadID,
     });
-    
-    
+
     focusNode.unfocus();
-    String notfyStr=localStore.getString("name")+":"+commentEditor.text;
+    String notfyStr = localStore.getString("name") + ":" + commentEditor.text;
     commentEditor.clear();
-    Utils.sendPushNotification("New Comment",notfyStr,"messageview",threadID);
+    Utils.sendPushNotification(
+        "New Comment", notfyStr, "messageview", threadID);
   }
 
   Future<void> getComments() async {
@@ -44,7 +44,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
         .collection('comments')
         //  .orderBy("comments")
         .where("thread_id", isEqualTo: threadID)
-        .orderBy("created_time",descending: true)
+        .orderBy("created_time", descending: true)
         .getDocuments();
     commentsDoc = userDetails.documents;
     if (this.mounted) {
@@ -121,15 +121,15 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-           SizedBox( width:medQry.size.width*.75, child:
-            
-            Text(threadDetails['ownername'].toString(),
-            softWrap: true,
-                style: TextStyle(
-                    color: Colors.white,                                        
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600)),
-           ),           
+            SizedBox(
+              width: medQry.size.width * .68,
+              child: Text(threadDetails['ownername'].toString(),
+                  softWrap: true,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600)),
+            ),
             SizedBox(height: 3),
             Text(Utils.getMessageTimerFrmt(threadDetails["created_time"]),
                 style: TextStyle(
@@ -156,53 +156,62 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   List<Widget> commentRowWid() {
     List<Widget> cmtRow = new List();
     if (!isCmntLoading) {
-      cmtRow.add(Padding(padding:EdgeInsets.only(top:30) , child:Text(        
-        "Comments",        
-        style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
-      )));
+      cmtRow.add(Padding(
+          padding: EdgeInsets.only(top: 30),
+          child: Text(
+            "Comments",
+            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+          )));
       cmtRow.add(SizedBox(height: 12));
-      if(commentsDoc.length>0){
-      for (int i = 0; i < commentsDoc.length; i++) {
-        cmtRow.add(Container(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                
-                Row(children: <Widget>[                Text(
-                  commentsDoc[i]["owner_name"],
-                  style: TextStyle(
-                      color: Colors.black,
-                      //fontWeight: FontWeight.normal,
-                      fontSize: 18),
-                )],),
-                //Padding(
+      if (commentsDoc.length > 0) {
+        for (int i = 0; i < commentsDoc.length; i++) {
+          cmtRow.add(Container(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        commentsDoc[i]["owner_name"],
+                        style: TextStyle(
+                            color: Colors.black,
+                            //fontWeight: FontWeight.normal,
+                            fontSize: 18),
+                      )
+                    ],
+                  ),
+                  //Padding(
                   //  padding: EdgeInsets.only(left: 10),
-                    //child:
-                     Text(
-                      commentsDoc[i]["comment"],
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal),
-                    ),                    
-                    //)
-                    Padding(padding: EdgeInsets.only(top:8), child:Text(Utils.getTimeFrmt(commentsDoc[i]["created_time"]),style: TextStyle(fontSize:10,color: Colors.black54), ))
-              ]
-              ),
-          padding: EdgeInsets.all(medQry.size.width * .03),
-          width: medQry.size.width * .85,
-          decoration: BoxDecoration(
-              color: Color.fromRGBO(238, 238, 238, 1),
-              borderRadius: BorderRadius.circular(8.0)),
-       
+                  //child:
+                  Text(
+                    commentsDoc[i]["comment"],
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  //)
+                  Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        Utils.getTimeFrmt(commentsDoc[i]["created_time"]),
+                        style: TextStyle(fontSize: 10, color: Colors.black54),
+                      ))
+                ]),
+            padding: EdgeInsets.all(medQry.size.width * .03),
+            width: medQry.size.width * .85,
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(238, 238, 238, 1),
+                borderRadius: BorderRadius.circular(8.0)),
+          ));
+          //cmtRow.add();
+          cmtRow.add(SizedBox(height: 9));
+        }
+      } else {
+        cmtRow.add(new Center(
+          child: Text("No comments added "),
         ));
-         //cmtRow.add();
-        cmtRow.add(SizedBox(height: 9));
-      }
-      }
-      else{
-        cmtRow.add(new Center(child: Text("No comments added "),));
       }
     } else {
       cmtRow.add(CircularProgressIndicator());
@@ -210,8 +219,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     return cmtRow;
   }
 
-  Widget buildCommentSection(){
-    
+  Widget buildCommentSection() {
     return new Container(
       padding: const EdgeInsets.all(15.0),
       child: new Column(
@@ -219,7 +227,6 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: commentRowWid()),
     );
-
   }
 
   Widget buildAttachmentSection(BuildContext context) {
@@ -232,9 +239,9 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       String url = attachmentList[i]["url"];
       String name = attachmentList[i]["name"];
       if (i < 3) {
-        row1.add((Utils.attachmentWid(name,null, url, type, context, medQry)));
+        row1.add((Utils.attachmentWid(name, null, url, type, context, medQry)));
       } else {
-        row2.add((Utils.attachmentWid(name,null, url, type, context, medQry)));
+        row2.add((Utils.attachmentWid(name, null, url, type, context, medQry)));
       }
     }
 
@@ -247,8 +254,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
 
   Future<void> getThreadDetails() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
-    userId=localStore.getString("userId");
-    userRole=localStore.getInt("role");
+    userId = localStore.getString("userId");
+    userRole = localStore.getInt("role");
     Utils.removeNotifyItem(threadID);
     getComments();
     threadDetails =
@@ -268,7 +275,10 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           .collection('Threads')
           .document(threadID).get();*/
     return new Scaffold(
-      appBar: AppBar(title:isLoading?Text(""): buildMessageInfo()),
+      appBar: AppBar(
+        title: isLoading ? Text("") : buildMessageInfo(),
+        actions: <Widget>[new Icon(Icons.more_vert)],
+      ),
       body: isLoading
           ? new Container(
               height: medQry.size.height,
@@ -283,7 +293,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                         children: <Widget>[
                           //  buildMessageInfo(),
                           buildMessageContent(),
-                          SizedBox(height:10),
+                          SizedBox(height: 10),
                           buildAttachmentSection(context),
                           //Divider(color: Colors.black),
                           buildCommentSection()
@@ -292,8 +302,11 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                         reverse: false,
                       ),
                     ),
-                    (userRole==1 || userRole==2 || userId==threadDetails["owner"])?
-                    buildInput():SizedBox(height:10),
+                    (userRole == 1 ||
+                            userRole == 2 ||
+                            userId == threadDetails["owner"])
+                        ? buildInput()
+                        : SizedBox(height: 10),
                   ],
                 ),
               ],

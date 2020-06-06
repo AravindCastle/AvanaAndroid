@@ -82,20 +82,21 @@ class AvanaHome extends StatelessWidget {
         "/messageview" :(context) => MessageViewScreen()
       },*/
       onGenerateRoute: generateRoute,
-      theme: ThemeData(        
+      theme: ThemeData(     
+        fontFamily: 'Georgia',   
         primarySwatch: MaterialColor(
-            Color.fromRGBO(183, 28, 28, 1).value,
+            Color.fromRGBO(25, 118, 210, 1).value,
             {
-              50: Color.fromRGBO(183, 28, 28, 0) ,
-              100: Color.fromRGBO(183, 28, 28, .1),
-              200: Color.fromRGBO(183, 28, 28, .2),
-              300: Color.fromRGBO(183, 28, 28, .3),
-              400: Color.fromRGBO(183, 28, 28, .4),
-              500: Color.fromRGBO(183, 28, 28, .5),
-              600: Color.fromRGBO(183, 28, 28, .6),
-              700: Color.fromRGBO(183, 28, 28, .7),
-              800: Color.fromRGBO(183, 28, 28, .8),
-              900: Color.fromRGBO(183, 28, 28, .9)
+              50: Color.fromRGBO(25, 118, 210, 0) ,
+              100: Color.fromRGBO(25, 118, 210, .1),
+              200: Color.fromRGBO(25, 118, 210, .2),
+              300: Color.fromRGBO(25, 118, 210, .3),
+              400: Color.fromRGBO(25, 118, 210, .4),
+              500: Color.fromRGBO(25, 118, 210, .5),
+              600: Color.fromRGBO(25, 118, 210, .6),
+              700: Color.fromRGBO(25, 118, 210, .7),
+              800: Color.fromRGBO(25, 118, 210, .8),
+              900: Color.fromRGBO(25, 118, 210, .9)
             }
           ),
         secondaryHeaderColor: MaterialColor(

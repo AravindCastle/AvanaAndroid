@@ -9,16 +9,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils {
   static Map<int, Color> primColor = {
-    50: Color.fromRGBO(183, 28, 28, .1),
-    100: Color.fromRGBO(183, 28, 28, .2),
-    200: Color.fromRGBO(183, 28, 28, .3),
-    300: Color.fromRGBO(183, 28, 28, .4),
-    400: Color.fromRGBO(183, 28, 28, .5),
-    500: Color.fromRGBO(183, 28, 28, .6),
-    600: Color.fromRGBO(183, 28, 28, .7),
-    700: Color.fromRGBO(183, 28, 28, .8),
-    800: Color.fromRGBO(183, 28, 28, .9),
-    900: Color.fromRGBO(183, 28, 28, 1),
+    50: Color.fromRGBO(25, 118, 210, .1),
+    100: Color.fromRGBO(25, 118, 210, .2),
+    200: Color.fromRGBO(25, 118, 210, .3),
+    300: Color.fromRGBO(25, 118, 210, .4),
+    400: Color.fromRGBO(25, 118, 210, .5),
+    500: Color.fromRGBO(25, 118, 210, .6),
+    600: Color.fromRGBO(25, 118, 210, .7),
+    700: Color.fromRGBO(25, 118, 210, .8),
+    800: Color.fromRGBO(25, 118, 210, .9),
+    900: Color.fromRGBO(25, 118, 210, 1),
   };
 
   static bool getImageFormats(String isSupported) {
@@ -311,19 +311,19 @@ static void openFile(File file,String url){
       return Icon(
         Icons.supervisor_account,
         size: fntsize,
-        color: Color.fromRGBO(183, 28, 28, 1),
+        color: Color.fromRGBO(25, 118, 210, 1),
       );
     } else if (userRole == 2) {
       return Icon(
         Icons.verified_user,
         size: fntsize,
-        color: Color.fromRGBO(183, 28, 28, 1),
+        color: Color.fromRGBO(25, 118, 210, 1),
       );
     } else {
       return Icon(
         Icons.person,
         size: fntsize,
-        color: Color.fromRGBO(183, 28, 28, 1),
+        color: Color.fromRGBO(25, 118, 210, 1),
       );
     }
   }
@@ -415,13 +415,13 @@ static void openFile(File file,String url){
       BuildContext context, String url, String name, String type) {
     if (getImageFormats(type)) {
       return Container(
-        child: OutlineButton(
+        child: FlatButton(
           child: Column(
             children: [
               Material(
                 child: CachedNetworkImage(
-                  width: 150,
-                  height: 130,
+                  width: 100,
+                  height: 86,
                   fit: BoxFit.fill,
                   progressIndicatorBuilder: (context, url, progress) =>
                       CircularProgressIndicator(
@@ -438,7 +438,7 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 1,
                       textAlign: TextAlign.center))
             ],
           ),
@@ -450,19 +450,19 @@ static void openFile(File file,String url){
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
           //  borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
         ),
       );
     } else if (getVideoFormats(type)) {
               return Container(
-        child: OutlineButton(
+        child: FlatButton(
           child: Column(
             children: [
               Material(
                     child: Image.asset(
               "assets/videothumbnail.png",
-              width: 100,
-              height: 100,
+              width: 120,
+              height: 86,
               fit: BoxFit.cover,
             ),
         
@@ -475,7 +475,7 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 1,
                       textAlign: TextAlign.center))
             ],
           ),
@@ -487,9 +487,47 @@ static void openFile(File file,String url){
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
           //  borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
         ),
       );
     }
+    else if("pdf".contains(type)){
+            return Container(
+        child: FlatButton(
+          child: Column(
+            children: [
+              Material(
+                    child: Image.asset(
+              "assets/pdfthumbnail.jpg",
+              width: 120,
+              height: 86,
+              fit: BoxFit.cover,
+            ),
+        
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
+                ),
+                clipBehavior: Clip.hardEdge,
+              ),
+              Padding(
+                  padding: EdgeInsets.only(left: 15, right: 5),
+                  child: Text(name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      textAlign: TextAlign.center))
+            ],
+          ),
+
+          onPressed: () {
+            Navigator.pushNamed(context, "/videoview",
+                arguments: {"url": url, "name": name});
+          },
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0)),
+          //  borderSide: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+        ),
+      );
+    }    
   }
 }

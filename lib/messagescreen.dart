@@ -123,7 +123,7 @@ class _MessagePageState extends State<MessagePage> {
               children: <Widget>[
                 DrawerHeader(
                     decoration: BoxDecoration(
-                      color: Color.fromRGBO(183, 28, 28, 1),
+                      color: Color.fromRGBO(25, 118, 210, 1),
                     ),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

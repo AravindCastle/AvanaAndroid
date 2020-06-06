@@ -136,11 +136,10 @@ class GalleryPageState extends State<GalleryPage> {
           .orderBy("ordertype")
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData)
-          return new Container();
+        if (!snapshot.hasData) return new Container();
         final int messageCount = snapshot.data.documents.length;
         return Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(1),
             child: GridView.builder(
               itemCount: messageCount,
               itemBuilder: (_, int index) {
@@ -149,7 +148,7 @@ class GalleryPageState extends State<GalleryPage> {
                 return buildAttachment(document);
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+                crossAxisCount: 3,
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
               ),
@@ -170,22 +169,27 @@ class GalleryPageState extends State<GalleryPage> {
           },
           child: new Container(
               width: 100,
-              height: 100,
+              height: 90,
               child: Column(children: [
                 IconButton(
-                    icon: Icon(Icons.folder), iconSize: 85, onPressed: null),
+                    color: Color.fromRGBO(25, 118, 210, .4),
+                    icon: Icon(
+                      Icons.folder,
+                      color: Color.fromRGBO(25, 118, 210, .4),
+                    ),
+                    iconSize: 80,
+                    onPressed: null),
                 Padding(
                     padding: EdgeInsets.only(left: 15, right: 5),
                     child: Text(galleryItem["name"],
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
+                        maxLines: 1,
                         textAlign: TextAlign.center))
               ])));
     } else if (galleryItem["type"] == "file") {
       return Utils.buildGalleryFileItem(context, galleryItem["url"],
           galleryItem["name"], galleryItem["filetype"]);
-    }
-    else{
+    } else {
       return SizedBox();
     }
   }
@@ -193,20 +197,19 @@ class GalleryPageState extends State<GalleryPage> {
   Widget build(BuildContext context) {
     argMap = ModalRoute.of(context).settings.arguments;
     return Scaffold(
-      appBar: AppBar(title: Text(argMap["title"])),
-      body: new Container(
-        child: buildGallery(context),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: argMap["superLevel"] < 10
-            ? () {
-                showAddType(context);
-              }
-            : null,
-        child: Icon(Icons.add),
-        backgroundColor: Theme.of(context).secondaryHeaderColor,
-      )
-    );
+        appBar: AppBar(title: Text(argMap["title"])),
+        body: new Container(
+          child: buildGallery(context),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: argMap["superLevel"] < 10
+              ? () {
+                  showAddType(context);
+                }
+              : null,
+          child: Icon(Icons.add),
+          backgroundColor: Theme.of(context).secondaryHeaderColor,
+        ));
   }
 
   @override

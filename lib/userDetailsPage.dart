@@ -94,7 +94,7 @@ await Firestore.instance.collection('userdata').document(docId).updateData({
                 width: medQry.size.width * .35,
                 height: medQry.size.width * .35,
                 child:
-                    Icon(Icons.account_circle, size: medQry.size.width * .35,color: Color.fromRGBO(117,117,117, 1),),
+                    Icon(Icons.account_circle, size: medQry.size.width * .35,color: Color.fromRGBO(44,44,44, 1),),
               ),
               SizedBox(height: 10, width: 10),
              Row( mainAxisAlignment: MainAxisAlignment.center,
