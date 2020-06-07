@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 import 'Utils.dart';
 
@@ -27,7 +27,7 @@ class _MessageEditorState extends State<MessageEditor> {
     if (uploaderImgs.length < 6) {
       File selectedFile = await FilePicker.getFile(type: FileType.any);
       //await ImagePicker.pickImage(source: source);
-      if (selectedFile != null && this.mounted){
+      if (selectedFile != null && this.mounted) {
         setState(() {
           uploaderImgs.add(selectedFile);
         });
@@ -35,51 +35,59 @@ class _MessageEditorState extends State<MessageEditor> {
     }
   }
 
-  Future<void> saveThread() async {
-    if(!isSaving && this.mounted)
-    setState(() {
-      isSaving=true;
-    });
-    try {
-      String content = messageContr.text;
-      if (content.isNotEmpty) {
-        List<Map> fileUrls = new List();
-        final SharedPreferences localStore =
-            await SharedPreferences.getInstance();
-        for (int i = 0; i < uploaderImgs.length; i++) {
-          String fileName = uploaderImgs[i].path.split("/").last;
-          StorageReference storageReference =
-              FirebaseStorage.instance.ref().child('AvanaFiles/' + fileName);
-          StorageUploadTask uploadTask =
-              storageReference.putFile(uploaderImgs[i]);
-          await uploadTask.onComplete;
-          fileUrls.add({
-            "url": await storageReference.getDownloadURL(),
-            "name": fileName,
-            "type": fileName.split(".").last
-          });
-        }
-
-        DocumentReference newThread = await Firestore.instance.collection("Threads").add({
-          "content": messageContr.text,
-          "owner": localStore.getString("userId"),
-          "ownername": localStore.getString("name"),
-          "ownerrole": localStore.getInt("role"),
-          "attachments": fileUrls.toList(),
-          "created_time": new DateTime.now().millisecondsSinceEpoch,         
+  Future<void> saveThread(BuildContext context) async {
+    var uuid = new Uuid();
+    String folderId = uuid.v4();
+    if (!isSaving) {
+      if (!isSaving && this.mounted)
+        setState(() {
+          isSaving = true;
         });
-        String notfyStr=messageContr.text;
-        Utils.sendPushNotification("New Message",notfyStr,"messageview",newThread.documentID);
-        Navigator.pushNamed(context, "/messagePage");
+      try {
+        Utils.showLoadingPop(context);
+        String content = messageContr.text;
+        if (content.isNotEmpty) {
+          List<Map> fileUrls = new List();
+          final SharedPreferences localStore =
+              await SharedPreferences.getInstance();
+          for (int i = 0; i < uploaderImgs.length; i++) {
+            String fileName = uploaderImgs[i].path.split("/").last;
+            StorageReference storageReference = FirebaseStorage.instance
+                .ref()
+                .child('AvanaFiles/' + folderId + '/' + fileName);
+            StorageUploadTask uploadTask =
+                storageReference.putFile(uploaderImgs[i]);
+            await uploadTask.onComplete;
+            fileUrls.add({
+              "url": await storageReference.getDownloadURL(),
+              "name": fileName,
+              "type": fileName.split(".").last
+            });
+          }
+          Navigator.pop(context);
+          DocumentReference newThread =
+              await Firestore.instance.collection("Threads").add({
+            "content": messageContr.text,
+            "owner": localStore.getString("userId"),
+            "ownername": localStore.getString("name"),
+            "ownerrole": localStore.getInt("role"),
+            "attachments": fileUrls.toList(),
+            "created_time": new DateTime.now().millisecondsSinceEpoch,
+            "folderid": folderId
+          });
+          String notfyStr = messageContr.text;
+          Utils.sendPushNotification(
+              "New Message", notfyStr, "messageview", newThread.documentID);
+          Navigator.pushNamed(context, "/messagePage");
+        }
+      } catch (Exception) {
+        print(Exception);
       }
-    } catch (Exception) {
-      print(Exception);
-    }
-    if (this.mounted){
-
-    setState(() {
-      isSaving=false;
-    });
+      if (this.mounted) {
+        setState(() {
+          isSaving = false;
+        });
+      }
     }
   }
 
@@ -91,11 +99,11 @@ class _MessageEditorState extends State<MessageEditor> {
       String fileName = prevFile.path.split("/").last;
       String fileType = fileName.split(".").last;
       if (i < 3) {
-        row1.add(
-            (Utils.attachmentWid(fileName,prevFile, null, fileType, context, medQry)));
+        row1.add((Utils.attachmentWid(
+            fileName, prevFile, null, fileType, context, medQry)));
       } else {
-        row2.add(
-            (Utils.attachmentWid(fileName,prevFile, null, fileType, context, medQry)));
+        row2.add((Utils.attachmentWid(
+            fileName, prevFile, null, fileType, context, medQry)));
       }
     }
 
@@ -114,7 +122,11 @@ class _MessageEditorState extends State<MessageEditor> {
           title: Text("Compose Message"),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.attach_file), onPressed: _pickImage),
-            IconButton(icon: Icon(Icons.send), onPressed: saveThread)
+            IconButton(
+                icon: Icon(Icons.send),
+                onPressed: () {
+                  saveThread(context);
+                })
           ],
         ),
         body: new SingleChildScrollView(
@@ -134,7 +146,7 @@ class _MessageEditorState extends State<MessageEditor> {
                           height: medQry.size.height * .01,
                         ),
                   new TextField(
-                    autofocus: true,
+                      autofocus: true,
                       controller: messageContr,
                       maxLines: 15,
                       decoration: InputDecoration(

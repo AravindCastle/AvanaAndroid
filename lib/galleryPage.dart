@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GalleryPage extends StatefulWidget {
   GalleryPageState createState() => GalleryPageState();
@@ -33,7 +34,7 @@ class GalleryPageState extends State<GalleryPage> {
                   title: new Text('File'),
                   onTap: () {
                     Navigator.pop(context);
-                    uploadFile();
+                    uploadFile(context);
                   },
                 ),
               ],
@@ -58,7 +59,7 @@ class GalleryPageState extends State<GalleryPage> {
     }
   }
 
-  Future<void> uploadFile() async {
+  Future<void> uploadFile(BuildContext context) async {
     File selectedFile = await FilePicker.getFile(type: FileType.any);
     if (selectedFile != null) {
       String fileName = selectedFile.path.split("/").last;
@@ -66,6 +67,7 @@ class GalleryPageState extends State<GalleryPage> {
       if (fileType == "pdf" ||
           Utils.getImageFormats(fileType) ||
           Utils.getVideoFormats(fileType)) {
+        Utils.showLoadingPop(context);
         StorageReference storageReference = FirebaseStorage.instance
             .ref()
             .child('AvanaFiles/' +
@@ -75,6 +77,7 @@ class GalleryPageState extends State<GalleryPage> {
         await uploadTask.onComplete;
         String url = await storageReference.getDownloadURL();
 
+        Navigator.of(context).pop();
         DocumentReference newThread =
             await Firestore.instance.collection("gallery").add({
           "name": fileName,
@@ -184,6 +187,7 @@ class GalleryPageState extends State<GalleryPage> {
                     child: Text(galleryItem["name"],
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
+                        style: TextStyle(fontSize: 11),
                         textAlign: TextAlign.center))
               ])));
     } else if (galleryItem["type"] == "file") {
@@ -193,14 +197,71 @@ class GalleryPageState extends State<GalleryPage> {
       return SizedBox();
     }
   }
-
+MediaQueryData medQry;
   Widget build(BuildContext context) {
+     medQry = MediaQuery.of(context);
     argMap = ModalRoute.of(context).settings.arguments;
     return Scaffold(
         appBar: AppBar(title: Text(argMap["title"])),
         body: new Container(
           child: buildGallery(context),
         ),
+        drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(25, 118, 210, 1),
+                    ),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height:medQry.size.width*.15, 
+                            width:medQry.size.width*.15,
+                            child: CircleAvatar(
+                              child: Icon(Icons.account_circle, size: medQry.size.width*.15),
+                            ),
+                          ),
+                          SizedBox(height:15),
+                          Text(Utils.userName,style: TextStyle(fontSize:18,color: Colors.white))
+                        ])),
+                ListTile(
+                  leading: Icon(Icons.message),
+                  title: Text('Messages'),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/messagePage" ); 
+                  },
+                ),
+                (Utils.userRole==1) ?
+                ListTile(
+                  leading: Icon(Icons.account_circle),
+                  title: Text('Users'),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/userlist");
+                  },
+                ):SizedBox(height:0),
+                ListTile(
+                  leading: Icon(Icons.image),
+                  title: Text('Resources'),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/gallery",arguments:{"superLevel":0,"parentid":"0","title":"Gallery"} ); 
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.exit_to_app),
+                  title: Text('Log out'),
+                  onTap: () async {
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.clear();
+                    Navigator.pushNamed(context, "/login");
+                  },
+                ),
+              ],
+            ),
+          ),
         floatingActionButton: FloatingActionButton(
           onPressed: argMap["superLevel"] < 10
               ? () {

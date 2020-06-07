@@ -267,17 +267,53 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     }
   }
 
+  void deleteThread(String threadId){
+    Firestore.instance.collection('Threads').document(threadId).delete();
+    for (int i = 0; i < commentsDoc.length; i++) {    
+         Firestore.instance.collection('comments').document(commentsDoc[i].documentID).delete();
+    }
+    
+  }
+  void deleteAlert(BuildContext context){
+    showDialog(
+        context: context,
+        builder: (BuildContext bCont) {
+          return new Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
+              child: AlertDialog(
+                title: Text(
+                  "Do you want to delete this message",
+                  textAlign: TextAlign.center,
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('Delete'),
+                    onPressed: () {
+                      deleteThread(threadID);
+                    },
+                  ),
+                ],
+              ));
+        });
+  }
+
+
+
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
     threadID = ModalRoute.of(context).settings.arguments;
     getThreadDetails();
-    /* threadDetails = await Firestore.instance
-          .collection('Threads')
-          .document(threadID).get();*/
     return new Scaffold(
       appBar: AppBar(
         title: isLoading ? Text("") : buildMessageInfo(),
-        actions: <Widget>[new Icon(Icons.more_vert)],
+        actions: <Widget>[ IconButton(icon:Icon(Icons.delete),onPressed: null,)],
       ),
       body: isLoading
           ? new Container(

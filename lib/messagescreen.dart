@@ -138,6 +138,13 @@ class _MessagePageState extends State<MessagePage> {
                           SizedBox(height:15),
                           Text(userName,style: TextStyle(fontSize:18,color: Colors.white))
                         ])),
+                ListTile(
+                  leading: Icon(Icons.message),
+                  title: Text('Messages'),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/messagePage" ); 
+                  },
+                ),
                 (userRole==1) ?
                 ListTile(
                   leading: Icon(Icons.account_circle),
@@ -148,7 +155,7 @@ class _MessagePageState extends State<MessagePage> {
                 ):SizedBox(height:0),
                 ListTile(
                   leading: Icon(Icons.image),
-                  title: Text('Gallery'),
+                  title: Text('Resources'),
                   onTap: () {
                     Navigator.pushNamed(context, "/gallery",arguments:{"superLevel":0,"parentid":"0","title":"Gallery"} ); 
                   },

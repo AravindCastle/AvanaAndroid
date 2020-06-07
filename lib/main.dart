@@ -14,6 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -72,18 +73,9 @@ class AvanaHome extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Avana Academy',
-      /*routes: {
-        "/login":(context) =>  LoginPage(),
-        "/messagePage" :(context) => MessagePage(),
-        "/userlist": (context) => userListPage(),
-        "/adduser":(context) => AddUserPage(),
-        "/userdetailpage" :(context) =>UserDetailsPage(),
-        "/messageeditor" :(context) => MessageEditor(),
-        "/messageview" :(context) => MessageViewScreen()
-      },*/
       onGenerateRoute: generateRoute,
       theme: ThemeData(     
-        fontFamily: 'Georgia',   
+        textTheme: GoogleFonts.openSansTextTheme(),   
         primarySwatch: MaterialColor(
             Color.fromRGBO(25, 118, 210, 1).value,
             {
@@ -207,6 +199,8 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
           bool activeState=userDetails.data["isactive"];
           int membershipDate=userDetails.data["membershipdate"];
           int currDate=new DateTime.now().millisecondsSinceEpoch;
+          Utils.userRole=userDetails.data["userrole"];
+          Utils.userName=userDetails.data["username"];
           isUserLogged=(currDate-membershipDate) > 31540000000?false:activeState;          
           
       }

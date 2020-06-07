@@ -34,6 +34,8 @@ class Utils {
     return imgFrmt.contains(isSupported.toLowerCase());
   }
 
+  static String userName="";
+  static int userRole=1;
   static bool getVideoFormats(String isSupported) {
     List<String> imgFrmt = new List();
 
@@ -329,7 +331,9 @@ static void openFile(File file,String url){
   }
 
   static Future<void> sendPushNotification(
-      String title, String body, String screenName, String docId) async {
+    
+    String title, String body, String screenName, String docId) async {
+      return false;
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     String ownerId = localStore.getString("userId");
     String serverToken =
@@ -398,6 +402,7 @@ static void openFile(File file,String url){
       localStore.setStringList("notifylist", listDocId);
     }
   }
+  
 
   static Widget getNewMessageCount(SharedPreferences localStore) {
     List notifiCntList = new List();
@@ -411,6 +416,29 @@ static void openFile(File file,String url){
     }
   }
 
+  static void showLoadingPop(BuildContext context){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext bCont) {
+          return new Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
+              child: AlertDialog(
+                title: Text(
+                  "Uploading file",
+                  textAlign: TextAlign.center,
+                ),
+                content:
+                SizedBox(
+                  child:  new LinearProgressIndicator(),
+                  width: 10,
+                  height: 10,
+                )                               
+              ));
+        });
+  }
+  
   static Widget buildGalleryFileItem(
       BuildContext context, String url, String name, String type) {
     if (getImageFormats(type)) {
@@ -439,6 +467,7 @@ static void openFile(File file,String url){
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
+                      style: TextStyle(fontSize:11),
                       textAlign: TextAlign.center))
             ],
           ),
@@ -475,6 +504,7 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize:11),
                       maxLines: 1,
                       textAlign: TextAlign.center))
             ],
@@ -493,15 +523,15 @@ static void openFile(File file,String url){
     }
     else if("pdf".contains(type)){
             return Container(
-        child: FlatButton(
+        child: FlatButton( 
           child: Column(
             children: [
               Material(
                     child: Image.asset(
-              "assets/pdfthumbnail.jpg",
+              "assets/pdfthumbnail.png", 
               width: 120,
               height: 86,
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
             ),
         
                 borderRadius: BorderRadius.all(
@@ -514,6 +544,7 @@ static void openFile(File file,String url){
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
+                      style: TextStyle(fontSize:11),                                                                  
                       textAlign: TextAlign.center))
             ],
           ),

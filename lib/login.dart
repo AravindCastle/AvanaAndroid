@@ -59,6 +59,9 @@ class _LoginPageState extends State<LoginPage> {
         final List<DocumentSnapshot> documents = userDetails.documents;
         if (documents.length > 0) {
           int membershipDate = documents[0]["membershipdate"];
+          Utils.userRole=documents[0]["userrole"]; 
+          Utils.userName=documents[0]["username"];
+
           int currDate = new DateTime.now().millisecondsSinceEpoch;
           isActive = membershipDate - currDate > 31540000000
               ? false
