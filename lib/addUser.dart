@@ -16,6 +16,7 @@ class _AddUserPageState extends State<AddUserPage> {
   TextEditingController userName = new TextEditingController();
   TextEditingController emailId = new TextEditingController();
   TextEditingController password = new TextEditingController();
+ TextEditingController description = new TextEditingController();
 
   void initState() => loading = false;
 
@@ -24,27 +25,6 @@ class _AddUserPageState extends State<AddUserPage> {
       return new LinearProgressIndicator();
     else {
       return SizedBox();
-      /*Builder(builder: (BuildContext context) {
-                        return ButtonTheme(
-                            height: 30,
-                            minWidth: 300,
-                            child: RaisedButton(
-                              onPressed: () {
-                                addnewUser(context);
-                              },
-                           //   color: Colors.black,
-                              padding: const EdgeInsets.all(10.0),
-                              shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(30.0),
-                              ),
-                              child: const Text('Add New User',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w400)),
-                            ));
-                      });*/
-
     }
   }
 
@@ -64,12 +44,14 @@ class _AddUserPageState extends State<AddUserPage> {
         "password": password.text,
         "isactive": isActive,
         "userrole": int.parse(userRole),
-        "membershipdate": new DateTime.now().millisecondsSinceEpoch
+        "membershipdate": new DateTime.now().millisecondsSinceEpoch,
+        "description": new DateTime.now().millisecondsSinceEpoch
       });
 
       userName.clear();
       emailId.clear();
       password.clear();
+      description.clear();
       if (this.mounted) {
         setState(() {
           loading = false;
@@ -125,6 +107,17 @@ class _AddUserPageState extends State<AddUserPage> {
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Password")),
+                      SizedBox(height: 10),
+                      TextField(
+                          controller: description,
+                          decoration: InputDecoration(
+                            
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              hintText: "Description"),
+                              maxLines: 5,
+                              
+                              ),
                       SizedBox(height: 10),
                       SwitchListTile(
                         title: const Text('Activate User'),

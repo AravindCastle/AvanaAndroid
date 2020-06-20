@@ -149,20 +149,7 @@ await Firestore.instance.collection('userdata').document(docId).updateData({
                   ),
                 ],
               )),
-             /* Padding(padding: EdgeInsets.all(medQry.size.width*.04), child:Row(                
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: medQry.size.width * .27,
-                    child: Text("Membership validity ",maxLines: 2,style: TextStyle(fontSize:16)),
-                  ),
-                  SizedBox(
-                    width: medQry.size.width * .40,
-                    child: Text(":  "+Utils.getTimeFrmt(membershipDate),style: TextStyle(fontSize:15)),
-                  ),
-                ],
-              )),*/
+         
                   Align(
                     alignment: Alignment.topLeft,
                       child: SizedBox( 

@@ -79,6 +79,13 @@ MediaQueryData medQry;
                 ):SizedBox(height:0),
                 ListTile(
                   leading: Icon(Icons.image),
+                  title: Text('Faculties'),
+                  onTap: () {
+                     Navigator.pushNamed(context, "/facultyPage" );  
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.image),
                   title: Text('Resources'),
                   onTap: () {
                     Navigator.pushNamed(context, "/gallery",arguments:{"superLevel":0,"parentid":"0","title":"Gallery"} ); 
