@@ -37,7 +37,7 @@ class _MessageEditorState extends State<MessageEditor> {
 
   Future<void> saveThread(BuildContext context) async {
     var uuid = new Uuid();
-    String folderId = uuid.v4();
+    String folderId = uuid.v4(); 
     if (!isSaving) {
       if (!isSaving && this.mounted)
         setState(() {

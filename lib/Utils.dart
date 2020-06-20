@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class Utils {
     800: Color.fromRGBO(25, 118, 210, .9),
     900: Color.fromRGBO(25, 118, 210, 1),
   };
-
+  static Map<String, int> threadCount = new Map();
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
     imgFrmt.add("jpeg");
@@ -34,8 +35,8 @@ class Utils {
     return imgFrmt.contains(isSupported.toLowerCase());
   }
 
-  static String userName="";
-  static int userRole=1;
+  static String userName = "";
+  static int userRole = 1;
   static bool getVideoFormats(String isSupported) {
     List<String> imgFrmt = new List();
 
@@ -330,10 +331,15 @@ static void openFile(File file,String url){
     }
   }
 
+  static bool isDeleteAvail(int threadTime) {
+    DateTime todat = new DateTime.now();
+    int diffTime = threadTime - todat.millisecondsSinceEpoch;
+    return diffTime < 28800000;
+  }
+
   static Future<void> sendPushNotification(
-    
-    String title, String body, String screenName, String docId) async {
-      return false;
+      String title, String body, String screenName, String docId) async {
+    return false;
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     String ownerId = localStore.getString("userId");
     String serverToken =
@@ -402,7 +408,6 @@ static void openFile(File file,String url){
       localStore.setStringList("notifylist", listDocId);
     }
   }
-  
 
   static Widget getNewMessageCount(SharedPreferences localStore) {
     List notifiCntList = new List();
@@ -416,7 +421,7 @@ static void openFile(File file,String url){
     }
   }
 
-  static void showLoadingPop(BuildContext context){
+  static void showLoadingPop(BuildContext context) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -425,20 +430,18 @@ static void openFile(File file,String url){
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(95)),
               child: AlertDialog(
-                title: Text(
-                  "Uploading file",
-                  textAlign: TextAlign.center,
-                ),
-                content:
-                SizedBox(
-                  child:  new LinearProgressIndicator(),
-                  width: 10,
-                  height: 10,
-                )                               
-              ));
+                  title: Text(
+                    "Uploading file",
+                    textAlign: TextAlign.center,
+                  ),
+                  content: SizedBox(
+                    child: new LinearProgressIndicator(),
+                    width: 10,
+                    height: 10,
+                  )));
         });
   }
-  
+
   static Widget buildGalleryFileItem(
       BuildContext context, String url, String name, String type) {
     if (getImageFormats(type)) {
@@ -467,7 +470,7 @@ static void openFile(File file,String url){
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
-                      style: TextStyle(fontSize:11),
+                      style: TextStyle(fontSize: 11),
                       textAlign: TextAlign.center))
             ],
           ),
@@ -483,18 +486,17 @@ static void openFile(File file,String url){
         ),
       );
     } else if (getVideoFormats(type)) {
-              return Container(
+      return Container(
         child: FlatButton(
           child: Column(
             children: [
               Material(
-                    child: Image.asset(
-              "assets/videothumbnail.png",
-              width: 120,
-              height: 86,
-              fit: BoxFit.cover,
-            ),
-        
+                child: Image.asset(
+                  "assets/videothumbnail.png",
+                  width: 120,
+                  height: 86,
+                  fit: BoxFit.cover,
+                ),
                 borderRadius: BorderRadius.all(
                   Radius.circular(8.0),
                 ),
@@ -504,8 +506,45 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize:11),
+                      style: TextStyle(fontSize: 11),
                       maxLines: 1,
+                      textAlign: TextAlign.center))
+            ],
+          ),
+
+          onPressed: () {
+            Navigator.pushNamed(context, "/videoview",
+                arguments: {"url": url, "name": name});
+          },
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0)),
+          //  borderSide: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+        ),
+      );
+    } else if ("pdf".contains(type)) {
+      return Container(
+        child: FlatButton(
+          child: Column(
+            children: [
+              Material(
+                child: Image.asset(
+                  "assets/pdfthumbnail.png",
+                  width: 120,
+                  height: 86,
+                  fit: BoxFit.fill,
+                ),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
+                ),
+                clipBehavior: Clip.hardEdge,
+              ),
+              Padding(
+                  padding: EdgeInsets.only(left: 15, right: 5),
+                  child: Text(name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 11),
                       textAlign: TextAlign.center))
             ],
           ),
@@ -521,44 +560,37 @@ static void openFile(File file,String url){
         ),
       );
     }
-    else if("pdf".contains(type)){
-            return Container(
-        child: FlatButton( 
-          child: Column(
-            children: [
-              Material(
-                    child: Image.asset(
-              "assets/pdfthumbnail.png", 
-              width: 120,
-              height: 86,
-              fit: BoxFit.fill,
-            ),
-        
-                borderRadius: BorderRadius.all(
-                  Radius.circular(8.0),
-                ),
-                clipBehavior: Clip.hardEdge,
-              ),
-              Padding(
-                  padding: EdgeInsets.only(left: 15, right: 5),
-                  child: Text(name,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(fontSize:11),                                                                  
-                      textAlign: TextAlign.center))
-            ],
-          ),
+  }
 
-          onPressed: () {
-            Navigator.pushNamed(context, "/videoview",
-                arguments: {"url": url, "name": name});
-          },
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          //  borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-        ),
-      );
-    }    
+  static void getAllComments() async {
+    List<DocumentSnapshot> commentsDoc = null;
+    final QuerySnapshot userDetails =
+        await Firestore.instance.collection('comments').getDocuments();
+    commentsDoc = userDetails.documents;
+
+    if (commentsDoc != null && commentsDoc.length > 0) {
+      for (int i = 0; i < commentsDoc.length; i++) {
+        String threadId = commentsDoc[i]["thread_id"];
+        if (threadCount != null && threadCount.containsKey(threadId)) {
+          var cnt = threadCount[threadId];
+          threadCount[threadId] = cnt + 1;
+        } else {
+          threadCount[threadId] = 1;
+        }
+      }
+    }
+  }
+
+  static void updateCommentCount(String threadId, bool increase) {
+    if (threadCount != null && threadCount.containsKey(threadId)) {
+      var cnt = threadCount[threadId];
+      if (increase) {
+        threadCount[threadId] = cnt + 1;
+      } else {
+        threadCount[threadId] = cnt - 1;
+      }
+    } else {
+      threadCount[threadId] = 1;
+    }
   }
 }

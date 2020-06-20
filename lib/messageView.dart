@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:avana_academy/Utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +24,38 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   var focusNode = new FocusNode();
   String userId;
   int userRole;
+  BuildContext commonContext = null;
+
+  Future<void> _addImage() async {
+    Utils.showLoadingPop(commonContext);
+    File selectedFile = await FilePicker.getFile(type: FileType.image);
+    final SharedPreferences localStore = await SharedPreferences.getInstance();
+    List<Map> fileUrls = new List();
+    String folderId = threadDetails["folderid"];
+    String fileName = selectedFile.path.split("/").last;
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('AvanaFiles/' + folderId + '/' + fileName);
+    StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
+    await uploadTask.onComplete;
+    fileUrls.add({
+      "url": await storageReference.getDownloadURL(),
+      "name": fileName,
+      "type": fileName.split(".").last
+    });
+
+    await Firestore.instance.collection("comments").add({
+      "comment": "",
+      "created_time": new DateTime.now().millisecondsSinceEpoch,
+      "owner": localStore.getString("userId"),
+      "owner_name": localStore.getString("name"),
+      "ownerrole": localStore.getInt("role"),
+      "thread_id": threadID,
+      "isattachment": true,
+      "attachment": fileUrls,
+    });
+    Navigator.pop(context);
+  }
 
   Future<void> addComment() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
@@ -30,6 +67,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       "owner_name": localStore.getString("name"),
       "ownerrole": localStore.getInt("role"),
       "thread_id": threadID,
+      "isattachment": false
     });
 
     focusNode.unfocus();
@@ -37,6 +75,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     commentEditor.clear();
     Utils.sendPushNotification(
         "New Comment", notfyStr, "messageview", threadID);
+    Utils.updateCommentCount(threadID, true);
   }
 
   Future<void> getComments() async {
@@ -57,21 +96,32 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   Widget buildInput() {
     return Container(
       decoration: BoxDecoration(
-          border: Border(
-              top: BorderSide(
-        color: Colors.black54,
-      ))),
+        color: Colors.black87,
+        //   borderRadius:new BorderRadius.all(const Radius.circular(10.0)),
+      ),
       padding: EdgeInsets.all(3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          SizedBox(width: 6), // Edit text
+          Material(
+            child: new Container(
+              color: Colors.black87,
+              child: new IconButton(
+                icon: new Icon(
+                  Icons.add_to_photos,
+                  color: Colors.white,
+                ),
+                onPressed: _addImage,
+              ),
+            ),
+          ),
           Flexible(
             child: Container(
               decoration: new BoxDecoration(
-                  color: Color.fromRGBO(250, 250, 250, 1),
-                  borderRadius:
-                      new BorderRadius.all(const Radius.circular(10.0))),
+                color: Color.fromRGBO(250, 250, 250, 1),
+                borderRadius: new BorderRadius.all(const Radius.circular(20.0)),
+                // border: Border.all(width: 2.0, color:Colors.lightBlue),
+              ),
               child: TextField(
                 focusNode: focusNode,
                 scrollPadding: EdgeInsets.all(3),
@@ -79,7 +129,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                 controller: commentEditor,
                 decoration: InputDecoration(
                   hintText: 'Add Comment...',
-                  contentPadding: const EdgeInsets.all(4),
+                  contentPadding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -94,10 +144,12 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           // Button send message
           Material(
             child: new Container(
-              color: Colors.transparent,
-              margin: new EdgeInsets.symmetric(horizontal: 8.0),
+              color: Colors.black87,
               child: new IconButton(
-                icon: new Icon(Icons.send),
+                icon: new Icon(
+                  Icons.send,
+                  color: Colors.blue,
+                ),
                 onPressed: addComment,
               ),
             ),
@@ -122,7 +174,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
             SizedBox(
-              width: medQry.size.width * .68,
+              width: medQry.size.width * .60,
               child: Text(threadDetails['ownername'].toString(),
                   softWrap: true,
                   style: TextStyle(
@@ -153,7 +205,46 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
         ));
   }
 
-  List<Widget> commentRowWid() {
+  void deleteCommentAlert(BuildContext context, String commentId) {
+    showDialog(
+        context: context,
+        builder: (BuildContext bCont) {
+          return new Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
+              child: AlertDialog(
+                title: Text(
+                  "Do you want to delete this comment",
+                  textAlign: TextAlign.center,
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('Delete'),
+                    onPressed: () {
+                      deleteComment(commentId);
+                    },
+                  ),
+                ],
+              ));
+        });
+  }
+
+  void deleteComment(String commentId) {
+    Firestore.instance.collection('comments').document(commentId).delete();
+    setState(() {
+      Utils.updateCommentCount(threadDetails.documentID, false);
+    });
+
+    Navigator.of(context).pop();
+  }
+
+  List<Widget> commentRowWid(BuildContext context) {
     List<Widget> cmtRow = new List();
     if (!isCmntLoading) {
       cmtRow.add(Padding(
@@ -165,46 +256,90 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       cmtRow.add(SizedBox(height: 12));
       if (commentsDoc.length > 0) {
         for (int i = 0; i < commentsDoc.length; i++) {
-          cmtRow.add(Container(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        commentsDoc[i]["owner_name"],
-                        style: TextStyle(
-                            color: Colors.black,
-                            //fontWeight: FontWeight.normal,
-                            fontSize: 18),
-                      )
-                    ],
-                  ),
-                  //Padding(
-                  //  padding: EdgeInsets.only(left: 10),
-                  //child:
-                  Text(
-                    commentsDoc[i]["comment"],
-                    style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal),
-                  ),
-                  //)
-                  Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        Utils.getTimeFrmt(commentsDoc[i]["created_time"]),
-                        style: TextStyle(fontSize: 10, color: Colors.black54),
-                      ))
-                ]),
-            padding: EdgeInsets.all(medQry.size.width * .03),
-            width: medQry.size.width * .85,
-            decoration: BoxDecoration(
-                color: Color.fromRGBO(238, 238, 238, 1),
-                borderRadius: BorderRadius.circular(8.0)),
-          ));
+          cmtRow.add(
+            Container(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: <Widget>[
+                            SizedBox(width:  medQry.size.width*.65 ,
+                            child:Text(
+                              commentsDoc[i]["owner_name"],
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 18),
+                            )),
+                              SizedBox(
+                           child: new IconButton(icon: Icon(Icons.delete_forever),onPressed: (){deleteCommentAlert(context, commentsDoc[i].documentID);},)
+                              )
+                          ]
+                          ,
+                        ),
+                        commentsDoc[i]["isattachment"]
+                            ? Container(
+                                width: medQry.size.width * .29,
+                                height: medQry.size.width * .29,
+                                child: OutlineButton(
+                                  child: Material(
+                                    child:  CachedNetworkImage(
+                                            width: medQry.size.width * .29,
+                                            height: medQry.size.width * .29,
+                                            fit: BoxFit.contain,
+                                            progressIndicatorBuilder:
+                                                (context, url, progress) =>
+                                                    CircularProgressIndicator(
+                                              value: progress.progress,
+                                            ),
+                                            imageUrl: commentsDoc[i]["attachment"][0]["url"],
+                                          ),
+                                        
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                    clipBehavior: Clip.hardEdge,
+                                  ),
+                                  onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, "/photoview",
+                                              arguments: {
+                                                "url": commentsDoc[i]["attachment"][0]["url"],
+                                                "name": commentsDoc[i]["attachment"][0]["name"]
+                                              });
+                                        },
+                                  shape: new RoundedRectangleBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(8.0)),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                  padding: EdgeInsets.all(0),
+                                ),
+                                margin: EdgeInsets.only(
+                                    left: medQry.size.width * .03,
+                                    top: medQry.size.width * .03),
+                              )
+                            : Text(
+                                commentsDoc[i]["comment"],
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                        Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              Utils.getTimeFrmt(commentsDoc[i]["created_time"]),
+                              style: TextStyle(
+                                  fontSize: 10, color: Colors.black54),
+                            ))
+                      ]),
+                  padding: EdgeInsets.all(medQry.size.width * .03),
+                  width: medQry.size.width * .85,
+                  //height: commentsDoc[i]["isattachment"]?100:double.infinity,
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(238, 238, 238, 1),
+                      borderRadius: BorderRadius.circular(8.0)),
+                ));
+          
           //cmtRow.add();
           cmtRow.add(SizedBox(height: 9));
         }
@@ -219,13 +354,13 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     return cmtRow;
   }
 
-  Widget buildCommentSection() {
+  Widget buildCommentSection(BuildContext context) {
     return new Container(
       padding: const EdgeInsets.all(15.0),
       child: new Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: commentRowWid()),
+          children: commentRowWid(context)),
     );
   }
 
@@ -267,14 +402,26 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     }
   }
 
-  void deleteThread(String threadId){
-    Firestore.instance.collection('Threads').document(threadId).delete();
-    for (int i = 0; i < commentsDoc.length; i++) {    
-         Firestore.instance.collection('comments').document(commentsDoc[i].documentID).delete();
+  void deleteThread(String threadId) {
+    try {
+      StorageReference storageReference = FirebaseStorage.instance
+          .ref()
+          .child('AvanaFiles/' + threadDetails["folderid"] + "/");
+      storageReference.delete();
+      storageReference.delete();
+    } catch (e) {}
+    for (int i = 0; i < commentsDoc.length; i++) {
+      Firestore.instance
+          .collection('comments')
+          .document(commentsDoc[i].documentID)
+          .delete();
     }
-    
+    Firestore.instance.collection('Threads').document(threadId).delete();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
-  void deleteAlert(BuildContext context){
+
+  void deleteAlert(BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext bCont) {
@@ -304,16 +451,32 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
         });
   }
 
-
+  @override
+  void initState() {
+    super.initState();
+    getThreadDetails();
+  }
 
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
     threadID = ModalRoute.of(context).settings.arguments;
     getThreadDetails();
+    commonContext = context;
     return new Scaffold(
       appBar: AppBar(
         title: isLoading ? Text("") : buildMessageInfo(),
-        actions: <Widget>[ IconButton(icon:Icon(Icons.delete),onPressed: null,)],
+        actions: <Widget>[
+          (!isLoading &&
+                  (Utils.isDeleteAvail(threadDetails['created_time']) ||
+                      userRole == 1))
+              ? IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    deleteAlert(context);
+                  },
+                )
+              : SizedBox()
+        ],
       ),
       body: isLoading
           ? new Container(
@@ -332,7 +495,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                           SizedBox(height: 10),
                           buildAttachmentSection(context),
                           //Divider(color: Colors.black),
-                          buildCommentSection()
+                          buildCommentSection(context)
                           // Display your list,
                         ],
                         reverse: false,

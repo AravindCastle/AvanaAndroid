@@ -16,9 +16,13 @@ class _MessagePageState extends State<MessagePage> {
   SharedPreferences prefs ;
   String userName="";
   int userRole=1;
-  //void initState() {
-    
-  //}
+ 
+ 
+  @override
+  void initState() {
+      super.initState();    
+      Utils.getAllComments();  
+  }
 
   void getUserName() async{
       prefs = await SharedPreferences.getInstance();
@@ -30,12 +34,14 @@ class _MessagePageState extends State<MessagePage> {
     });     
     }
   }
+ 
+
   Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
     return new GestureDetector(
         child: Card(
             elevation: 3,
             child: new Container(
-              height: 95,
+              height:  messageDoc["content"].length>150?145:125,
               child: new Padding(
                   padding: EdgeInsets.only(top:10,bottom:10,left:8,right:8),
                   child: new Column(children: [
@@ -77,7 +83,7 @@ class _MessagePageState extends State<MessagePage> {
                           width: medQry.size.width * .89,
                           child: Text(
                             messageDoc["content"],
-                            maxLines: 2,
+                            maxLines: 3,                                                      
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
                             style: TextStyle(
@@ -86,6 +92,18 @@ class _MessagePageState extends State<MessagePage> {
                         ),                       
                       ],
                     ),
+                    SizedBox(height: 7),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[  
+                        SizedBox(width:15),                   
+                        Icon(Icons.comment,color: Colors.green),
+                        Text(Utils.threadCount.containsKey(messageDoc.documentID)?"  "+Utils.threadCount[messageDoc.documentID].toString():"  0"),
+                        SizedBox(width:10),
+                        Icon(Icons.attachment,color: Colors.deepOrange),
+                        Text((messageDoc["attachments"].length>0)?"  "+messageDoc["attachments"].length.toString():"  0"),                    
+                      ],)
                   ])),
             )),
         onTap: () {
@@ -95,7 +113,7 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Widget build(BuildContext context) {
-      getUserName();
+       getUserName();
     medQry = MediaQuery.of(context);
     return WillPopScope(
         onWillPop: () async => false,
