@@ -6,18 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
-class userListPage extends StatefulWidget {
-  _userListPageState createState() => _userListPageState();
+class facultyListPage extends StatefulWidget {
+  _facultyListPageState createState() => _facultyListPageState();
 }
 
-class _userListPageState extends State<userListPage> {
+class _facultyListPageState extends State<facultyListPage> {
 MediaQueryData medQry;
   Widget build(BuildContext context) {
      medQry = MediaQuery.of(context);
     return Scaffold(
       appBar: AppBar(title: Text("Users")),
       body:new StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('userdata').orderBy("username").snapshots(),
+              stream: Firestore.instance.collection('userdata').where("userrole",isEqualTo: 2).orderBy("username").snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) return new Text('Loading...');
@@ -34,7 +34,7 @@ MediaQueryData medQry;
                       )),
                       subtitle: new Text(document['email']),
                      onTap: (){
-                       Navigator.pushNamed(context, "/userdetailpage",arguments:UserDetailsArguement(document.documentID)) ;
+                       Navigator.pushNamed(context, "/facultyDetail",arguments:document.documentID) ;
                      },
                     );
                   }).toList(),

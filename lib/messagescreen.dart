@@ -172,7 +172,7 @@ class _MessagePageState extends State<MessagePage> {
                   },
                 ):SizedBox(height:0),
                 ListTile(
-                  leading: Icon(Icons.image),
+                  leading: Icon(Icons.supervisor_account),
                   title: Text('Faculties'),
                   onTap: () {
                      Navigator.pushNamed(context, "/facultyPage" );  

@@ -14,6 +14,7 @@ class GalleryPage extends StatefulWidget {
 
 class GalleryPageState extends State<GalleryPage> {
   TextEditingController folderName = new TextEditingController();
+  TextEditingController urlContrl = new TextEditingController();
   Map argMap;
   void showAddType(BuildContext context) {
     showModalBottomSheet(
@@ -37,17 +38,42 @@ class GalleryPageState extends State<GalleryPage> {
                     uploadFile(context);
                   },
                 ),
+                 new ListTile(
+                  leading: new Icon(Icons.insert_link),
+                  title: new Text('Youtube'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showAddYoutubePop(context);
+                  },
+                ),
               ],
             ),
           );
         });
   }
 
+  Future<void> createYoutubeLink() async {
+    String name = folderName.text;
+    String url =urlContrl.text;
+    if (name.isNotEmpty) {
+      Firestore.instance.collection("gallery").add({
+        "name": name,
+        "type": "youtube",
+        "level": argMap["superLevel"],
+        "parentid": argMap["parentid"],
+        "ordertype": 3,
+        "url":url ,
+        "filetype":"youttube",
+        "created_time": new DateTime.now().millisecondsSinceEpoch,
+      });
+      Navigator.pop(context);
+    }
+  }
+
   Future<void> createFolder() async {
     String name = folderName.text;
     if (name.isNotEmpty) {
-      DocumentReference newThread =
-          await Firestore.instance.collection("gallery").add({
+      Firestore.instance.collection("gallery").add({
         "name": name,
         "type": "folder",
         "level": argMap["superLevel"],
@@ -60,6 +86,7 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   Future<void> uploadFile(BuildContext context) async {
+try{
     File selectedFile = await FilePicker.getFile(type: FileType.any);
     if (selectedFile != null) {
       String fileName = selectedFile.path.split("/").last;
@@ -77,7 +104,7 @@ class GalleryPageState extends State<GalleryPage> {
         await uploadTask.onComplete;
         String url = await storageReference.getDownloadURL();
 
-        Navigator.of(context).pop();
+        
         DocumentReference newThread =
             await Firestore.instance.collection("gallery").add({
           "name": fileName,
@@ -89,8 +116,13 @@ class GalleryPageState extends State<GalleryPage> {
           "filetype": fileType,
           "created_time": new DateTime.now().millisecondsSinceEpoch,
         });
+        Navigator.of(context).pop();
       }
     }
+}
+catch(e){
+Navigator.of(context).pop();
+}
   }
 
   void showAddFolderPop(BuildContext context) {
@@ -124,6 +156,57 @@ class GalleryPageState extends State<GalleryPage> {
                     child: Text('Create'),
                     onPressed: () {
                       createFolder();
+                    },
+                  ),
+                ],
+              ));
+        });
+  }
+
+  void showAddYoutubePop(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext bCont) {
+          return new Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
+              child: AlertDialog(
+                title: Text(
+                  "Youtube",
+                  textAlign: TextAlign.center,
+                ),
+                content:Column(children:[
+                 TextField(
+                    controller: folderName,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: "Title",
+                    //  fillColor: Color.fromRGBO(117, 117, 117, .2),
+                      contentPadding: EdgeInsets.all(2),
+                    )),
+                    SizedBox(height:10),
+                    TextField(
+                    controller: urlContrl,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: "URL",
+                    //  fillColor: Color.fromRGBO(117, 117, 117, .2),
+                      contentPadding: EdgeInsets.all(2),
+                    )),
+                    ]),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('Add'),
+                    onPressed: () {
+                      createYoutubeLink();
                     },
                   ),
                 ],
@@ -190,17 +273,16 @@ class GalleryPageState extends State<GalleryPage> {
                         style: TextStyle(fontSize: 11),
                         textAlign: TextAlign.center))
               ])));
-    } else if (galleryItem["type"] == "file") {
+    } else if (galleryItem["type"] == "file" || galleryItem["type"] == "youtube") {
       return Utils.buildGalleryFileItem(context, galleryItem["url"],
           galleryItem["name"], galleryItem["filetype"]);
     } else {
       return SizedBox();
     }
   }
-MediaQueryData medQry;
-  Widget build(BuildContext context) {
-     medQry = MediaQuery.of(context);
-    argMap = ModalRoute.of(context).settings.arguments;
+ 
+Widget buildPage(BuildContext context)  {   
+  if(argMap["superLevel"].toString().contains("0")){
     return Scaffold(
         appBar: AppBar(title: Text(argMap["title"])),
         body: new Container(
@@ -243,7 +325,7 @@ MediaQueryData medQry;
                   },
                 ):SizedBox(height:0),
                 ListTile(
-                  leading: Icon(Icons.image),
+                  leading: Icon(Icons.supervisor_account),
                   title: Text('Faculties'),
                   onTap: () {
                      Navigator.pushNamed(context, "/facultyPage" );  
@@ -270,7 +352,7 @@ MediaQueryData medQry;
             ),
           ),
         floatingActionButton: FloatingActionButton(
-          onPressed: argMap["superLevel"] < 10
+          onPressed: (Utils.userRole==1 && argMap["superLevel"] < 10)
               ? () {
                   showAddType(context);
                 }
@@ -278,6 +360,21 @@ MediaQueryData medQry;
           child: Icon(Icons.add),
           backgroundColor: Theme.of(context).secondaryHeaderColor,
         ));
+  }
+  else{
+    return Scaffold(
+        appBar: AppBar(title: Text(argMap["title"])),
+        body: new Container(
+          child: buildGallery(context),
+        ),
+        );
+  }  
+}
+MediaQueryData medQry;
+  Widget build(BuildContext context) {
+     medQry = MediaQuery.of(context);
+    argMap = ModalRoute.of(context).settings.arguments;
+    return buildPage(context);
   }
 
   @override

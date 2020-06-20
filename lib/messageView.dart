@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:avana_academy/Utils.dart';
+import 'package:avana_academy/addUser.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -256,90 +257,97 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       cmtRow.add(SizedBox(height: 12));
       if (commentsDoc.length > 0) {
         for (int i = 0; i < commentsDoc.length; i++) {
-          cmtRow.add(
-            Container(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: <Widget>[
-                            SizedBox(width:  medQry.size.width*.65 ,
-                            child:Text(
-                              commentsDoc[i]["owner_name"],
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 18),
-                            )),
-                              SizedBox(
-                           child: new IconButton(icon: Icon(Icons.delete_forever),onPressed: (){deleteCommentAlert(context, commentsDoc[i].documentID);},)
-                              )
-                          ]
-                          ,
-                        ),
-                        commentsDoc[i]["isattachment"]
-                            ? Container(
+          cmtRow.add(Container(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: <Widget>[
+                      (commentsDoc[i]["ownerrole"]==1 || commentsDoc[i]["ownerrole"]==2)?Icon(Icons.verified_user,color: Colors.teal,size: 15,): SizedBox(),
+                      SizedBox(
+                          width: medQry.size.width * .61,
+                          child: Text(
+                            commentsDoc[i]["owner_name"],
+                            style: TextStyle(color: Colors.black, fontSize: 18),
+                          )),
+                      SizedBox(
+                          child: new IconButton(
+                        icon: Icon(Icons.delete_forever),
+                        onPressed: (Utils.isDeleteAvail(
+                                    commentsDoc[i]['created_time']) ||
+                                userRole == 1)
+                            ? () {
+                                deleteCommentAlert(
+                                    context, commentsDoc[i].documentID);
+                              }
+                            : null,
+                      ))
+                    ],
+                  ),
+                  commentsDoc[i]["isattachment"]
+                      ? Container(
+                          width: medQry.size.width * .29,
+                          height: medQry.size.width * .29,
+                          child: OutlineButton(
+                            child: Material(
+                              child: CachedNetworkImage(
                                 width: medQry.size.width * .29,
                                 height: medQry.size.width * .29,
-                                child: OutlineButton(
-                                  child: Material(
-                                    child:  CachedNetworkImage(
-                                            width: medQry.size.width * .29,
-                                            height: medQry.size.width * .29,
-                                            fit: BoxFit.contain,
-                                            progressIndicatorBuilder:
-                                                (context, url, progress) =>
-                                                    CircularProgressIndicator(
-                                              value: progress.progress,
-                                            ),
-                                            imageUrl: commentsDoc[i]["attachment"][0]["url"],
-                                          ),
-                                        
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(8.0),
-                                    ),
-                                    clipBehavior: Clip.hardEdge,
-                                  ),
-                                  onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, "/photoview",
-                                              arguments: {
-                                                "url": commentsDoc[i]["attachment"][0]["url"],
-                                                "name": commentsDoc[i]["attachment"][0]["name"]
-                                              });
-                                        },
-                                  shape: new RoundedRectangleBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(8.0)),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                  padding: EdgeInsets.all(0),
+                                fit: BoxFit.contain,
+                                progressIndicatorBuilder:
+                                    (context, url, progress) =>
+                                        CircularProgressIndicator(
+                                  value: progress.progress,
                                 ),
-                                margin: EdgeInsets.only(
-                                    left: medQry.size.width * .03,
-                                    top: medQry.size.width * .03),
-                              )
-                            : Text(
-                                commentsDoc[i]["comment"],
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.normal),
+                                imageUrl: commentsDoc[i]["attachment"][0]
+                                    ["url"],
                               ),
-                        Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: Text(
-                              Utils.getTimeFrmt(commentsDoc[i]["created_time"]),
-                              style: TextStyle(
-                                  fontSize: 10, color: Colors.black54),
-                            ))
-                      ]),
-                  padding: EdgeInsets.all(medQry.size.width * .03),
-                  width: medQry.size.width * .85,
-                  //height: commentsDoc[i]["isattachment"]?100:double.infinity,
-                  decoration: BoxDecoration(
-                      color: Color.fromRGBO(238, 238, 238, 1),
-                      borderRadius: BorderRadius.circular(8.0)),
-                ));
-          
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, "/photoview",
+                                  arguments: {
+                                    "url": commentsDoc[i]["attachment"][0]
+                                        ["url"],
+                                    "name": commentsDoc[i]["attachment"][0]
+                                        ["name"]
+                                  });
+                            },
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(8.0)),
+                            borderSide: BorderSide(color: Colors.grey),
+                            padding: EdgeInsets.all(0),
+                          ),
+                          margin: EdgeInsets.only(
+                              left: medQry.size.width * .03,
+                              top: medQry.size.width * .03),
+                        )
+                      : Text(
+                          commentsDoc[i]["comment"],
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 15,
+                              fontWeight: FontWeight.normal),
+                        ),
+                  Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        Utils.getTimeFrmt(commentsDoc[i]["created_time"]),
+                        style: TextStyle(fontSize: 10, color: Colors.black54),
+                      ))
+                ]),
+            padding: EdgeInsets.all(medQry.size.width * .03),
+            width: medQry.size.width * .85,
+            //height: commentsDoc[i]["isattachment"]?100:double.infinity,
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(238, 238, 238, 1),
+                borderRadius: BorderRadius.circular(8.0)),
+          ));
+
           //cmtRow.add();
           cmtRow.add(SizedBox(height: 9));
         }

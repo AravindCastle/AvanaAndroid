@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:avana_academy/MessageEditor.dart';
+import 'package:avana_academy/facultyDetails.dart';
+import 'package:avana_academy/facultyList.dart';
 import 'package:avana_academy/galleryPage.dart';
 import 'package:avana_academy/messageView.dart';
 import 'package:avana_academy/messagescreen.dart';
@@ -59,6 +61,11 @@ class AvanaHome extends StatelessWidget {
       break;      
        case '/gallery':
        return PageTransition(child: GalleryPage(), type: PageTransitionType.fade,settings: settings);             
+      case '/facultyPage':
+       return PageTransition(child: facultyListPage(), type: PageTransitionType.fade,settings: settings);             
+       case '/facultyDetail':
+       return PageTransition(child: FacultyDetailsPage(), type: PageTransitionType.fade,settings: settings);   
+     
       break;      
 
     }

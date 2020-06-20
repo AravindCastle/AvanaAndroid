@@ -4,9 +4,12 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
+import 'package:path_provider/path_provider.dart';
 
 class Utils {
   static Map<int, Color> primColor = {
@@ -157,8 +160,10 @@ class Utils {
                     height: medQry.size.width * .29,
                     fit: BoxFit.contain,
                     progressIndicatorBuilder: (context, url, progress) =>
-                        CircularProgressIndicator(
-                      value: progress.progress,
+                        Image.asset(
+                      "assets/imagethumbnail.png",
+                      width: medQry.size.width * .29,
+                      height: medQry.size.width * .29,
                     ),
                     imageUrl: url,
                   )
@@ -333,7 +338,7 @@ static void openFile(File file,String url){
 
   static bool isDeleteAvail(int threadTime) {
     DateTime todat = new DateTime.now();
-    int diffTime = threadTime - todat.millisecondsSinceEpoch;
+    int diffTime = todat.millisecondsSinceEpoch - threadTime;
     return diffTime < 28800000;
   }
 
@@ -422,6 +427,10 @@ static void openFile(File file,String url){
   }
 
   static void showLoadingPop(BuildContext context) {
+    showLoadingPopText(context, "Uploading file");
+  }
+
+  static void showLoadingPopText(BuildContext context, String text) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -431,7 +440,7 @@ static void openFile(File file,String url){
                   BoxDecoration(borderRadius: BorderRadius.circular(95)),
               child: AlertDialog(
                   title: Text(
-                    "Uploading file",
+                    text,
                     textAlign: TextAlign.center,
                   ),
                   content: SizedBox(
@@ -455,8 +464,10 @@ static void openFile(File file,String url){
                   height: 86,
                   fit: BoxFit.fill,
                   progressIndicatorBuilder: (context, url, progress) =>
-                      CircularProgressIndicator(
-                    value: progress.progress,
+                      Image.asset(
+                    "assets/imagethumbnail.png",
+                    width: 120,
+                    height: 86,
                   ),
                   imageUrl: url,
                 ),
@@ -513,8 +524,7 @@ static void openFile(File file,String url){
           ),
 
           onPressed: () {
-            Navigator.pushNamed(context, "/videoview",
-                arguments: {"url": url, "name": name});
+            openFile(url, name, context);
           },
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
@@ -550,8 +560,7 @@ static void openFile(File file,String url){
           ),
 
           onPressed: () {
-            Navigator.pushNamed(context, "/videoview",
-                arguments: {"url": url, "name": name});
+            openFile(url, name, context);
           },
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
@@ -559,6 +568,76 @@ static void openFile(File file,String url){
           padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
         ),
       );
+    } else if ("youtube".contains(type)) {
+      return Container(
+        child: FlatButton(
+          child: Column(
+            children: [
+              Material(
+                child: Image.asset(
+                  "assets/youtubethumbnail.png",
+                  width: 120,
+                  height: 86,
+                  fit: BoxFit.fill,
+                ),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
+                ),
+                clipBehavior: Clip.hardEdge,
+              ),
+              Padding(
+                  padding: EdgeInsets.only(left: 15, right: 5),
+                  child: Text(name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 11),
+                      textAlign: TextAlign.center))
+            ],
+          ),
+          onPressed: () {
+            _launchInBrowser(url);
+          },
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0)),
+          //  borderSide: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+        ),
+      );
+    }
+  }
+
+  static Future<File> fileAsset(String url, String filename) async {
+    Directory tempDir = await getTemporaryDirectory();
+    http.Client client = new http.Client();
+    var req = await client.get(Uri.parse(url));
+    var bytes = req.bodyBytes;
+    File tempFile = File('${tempDir.path}/' + filename);
+    await tempFile.writeAsBytes(bytes, flush: true);
+    return tempFile;
+  }
+
+  static Future<void> openFile(
+      String filePath, String filename, BuildContext context) async {
+    showLoadingPopText(context, "Loading File ");
+    try {
+      fileAsset(filePath, filename).then((file) {
+        OpenFile.open(file.path);
+        Navigator.pop(context);
+      });
+    } catch (e) {
+      Navigator.pop(context);
+    }
+  }
+
+  static Future<void> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+      );
+    } else {
+      throw 'Could not launch $url';
     }
   }
 

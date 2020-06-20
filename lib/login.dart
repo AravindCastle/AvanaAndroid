@@ -187,15 +187,13 @@ class _LoginPageState extends State<LoginPage> {
                                     child: Padding(
                                   padding:
                                       EdgeInsets.all(medQry.size.width * .06),
-                                  child: Text("Sign In",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                      )),
+                                  child:SizedBox(),
                                 )),
                                 Builder(builder: (BuildContext context) {
                                   return ButtonTheme(
                                       height: 60,
                                       minWidth: 60,
+                                      buttonColor: Colors.red,
                                       child: RaisedButton(
                                           onPressed: () {
                                             handleSignIn(context);
