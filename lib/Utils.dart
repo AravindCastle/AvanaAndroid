@@ -25,6 +25,7 @@ class Utils {
     900: Color.fromRGBO(25, 118, 210, 1),
   };
   static Map<String, int> threadCount = new Map();
+  static const String notifyTopic="test1";
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
     imgFrmt.add("jpeg");
@@ -344,7 +345,7 @@ static void openFile(File file,String url){
 
   static Future<void> sendPushNotification(
       String title, String body, String screenName, String docId) async {
-    return false;
+  
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     String ownerId = localStore.getString("userId");
     String serverToken =
@@ -367,7 +368,7 @@ static void openFile(File file,String url){
             'docid': docId,
             'ownerId': ownerId
           },
-          'to': "/topics/all",
+          'to': "/topics/"+notifyTopic,
         },
       ),
     );
@@ -642,6 +643,7 @@ static void openFile(File file,String url){
   }
 
   static void getAllComments() async {
+    threadCount=new Map();
     List<DocumentSnapshot> commentsDoc = null;
     final QuerySnapshot userDetails =
         await Firestore.instance.collection('comments').getDocuments();

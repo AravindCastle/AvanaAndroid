@@ -57,10 +57,12 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     });
     Navigator.pop(context);
   }
-
+  bool isCommentSaved=true;
   Future<void> addComment() async {
+    if(isCommentSaved){
+      Utils.showLoadingPopText(context,"Adding Comment");
+      isCommentSaved=false;
     final SharedPreferences localStore = await SharedPreferences.getInstance();
-
     await Firestore.instance.collection("comments").add({
       "comment": commentEditor.text,
       "created_time": new DateTime.now().millisecondsSinceEpoch,
@@ -77,6 +79,10 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     Utils.sendPushNotification(
         "New Comment", notfyStr, "messageview", threadID);
     Utils.updateCommentCount(threadID, true);
+    isCommentSaved=true;
+    Navigator.pop(context);
+    focusNode.unfocus();
+    }
   }
 
   Future<void> getComments() async {

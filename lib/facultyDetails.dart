@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +59,7 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
                 child: Icon(
                   Icons.account_circle,
                   size: medQry.size.width * .35,
-                  color: Colors.lightBlue,
+                  color: Colors.teal,
                 ),
               ),
               SizedBox(height: 10, width: 10),

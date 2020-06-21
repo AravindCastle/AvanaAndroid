@@ -157,7 +157,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     // TODO: implement initState
     super.initState();
      checkUserLogged();
-     _fcm.subscribeToTopic("all");
+     _fcm.subscribeToTopic(Utils.notifyTopic);
      if (Platform.isIOS) {
             iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
                 // save the token  OR subscribe to a topic here

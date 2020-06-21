@@ -15,7 +15,7 @@ MediaQueryData medQry;
   Widget build(BuildContext context) {
      medQry = MediaQuery.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Users")),
+      appBar: AppBar(title: Text("Faculties")),
       body:new StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance.collection('userdata').where("userrole",isEqualTo: 2).orderBy("username").snapshots(),
               builder: (BuildContext context,
