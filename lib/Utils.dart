@@ -281,7 +281,7 @@ static void openFile(File file,String url){
   static Color getColor(String key) {
     key = key.toLowerCase();
     var colors = new Map();
-    colors["a"] = Color.fromRGBO(252, 4, 4, 1);
+    /*colors["a"] = Color.fromRGBO(252, 4, 4, 1);
     colors["b"] = Color.fromRGBO(4, 4, 252, 1);
     colors["c"] = Color.fromRGBO(217, 83, 79, 1);
     colors["d"] = Color.fromRGBO(252, 68, 68, 1);
@@ -301,6 +301,33 @@ static void openFile(File file,String url){
     colors["r"] = Color.fromRGBO(36, 36, 36, 1);
     colors["s"] = Color.fromRGBO(76, 68, 36, 1);
     colors["t"] = Color.fromRGBO(252, 204, 92, 1);
+    colors["u"] = Color.fromRGBO(252, 4, 4, 1);
+    colors["v"] = Color.fromRGBO(4, 4, 252, 1);
+    colors["w"] = Color.fromRGBO(217, 83, 79, 1);
+    colors["x"] = Color.fromRGBO(252, 68, 68, 1);
+    colors["y"] = Color.fromRGBO(84, 36, 52, 1);
+    colors["z"] = Color.fromRGBO(68, 44, 76, 1);
+    */
+    colors["a"] =Colors.teal;
+    colors["b"] = Colors.tealAccent;
+    colors["c"] = Colors.red;
+    colors["d"] = Colors.purple;
+    colors["e"] = Colors.orange;
+    colors["f"] = Color.fromRGBO(68, 44, 76, 1);
+    colors["g"] = Colors.lightGreen;
+    colors["h"] = Colors.lightBlue;
+    colors["i"] =Colors.indigo;
+    colors["j"] = Colors.grey;
+    colors["k"] = Colors.green;
+    colors["l"] = Colors.deepPurple;
+    colors["m"] = Colors.deepOrange;
+    colors["n"] = Colors.brown;
+    colors["o"] = Colors.blueGrey;
+    colors["p"] = Colors.blue;
+    colors["q"] = Colors.black87;
+    colors["r"] = Color.fromRGBO(36, 36, 36, 1);
+    colors["s"] = Colors.deepPurpleAccent;
+    colors["t"] =Colors.amberAccent;
     colors["u"] = Color.fromRGBO(252, 4, 4, 1);
     colors["v"] = Color.fromRGBO(4, 4, 252, 1);
     colors["w"] = Color.fromRGBO(217, 83, 79, 1);

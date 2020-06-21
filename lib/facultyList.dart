@@ -104,14 +104,7 @@ MediaQueryData medQry;
               ],
             ),
           ),  
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, "/adduser");
-          // Add your onPressed code here!
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Theme.of(context).secondaryHeaderColor,
-      ),
+     
     );
   }
 }
