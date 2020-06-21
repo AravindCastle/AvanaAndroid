@@ -480,8 +480,8 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 11),
+                      maxLines: 2,
+                      style: TextStyle(fontSize: 13),
                       textAlign: TextAlign.center))
             ],
           ),
@@ -517,8 +517,8 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 11),
-                      maxLines: 1,
+                      style: TextStyle(fontSize: 13),
+                      maxLines: 2,
                       textAlign: TextAlign.center))
             ],
           ),
@@ -553,8 +553,8 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 11),
+                      maxLines: 2,
+                      style: TextStyle(fontSize: 13),
                       textAlign: TextAlign.center))
             ],
           ),
@@ -589,8 +589,8 @@ static void openFile(File file,String url){
                   padding: EdgeInsets.only(left: 15, right: 5),
                   child: Text(name,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 11),
+                      maxLines: 2,
+                      style: TextStyle(fontSize: 13),
                       textAlign: TextAlign.center))
             ],
           ),

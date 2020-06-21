@@ -228,6 +228,7 @@ Navigator.of(context).pop();
             padding: EdgeInsets.all(1),
             child: GridView.builder(
               itemCount: messageCount,
+              
               itemBuilder: (_, int index) {
                 final DocumentSnapshot document =
                     snapshot.data.documents[index];
@@ -235,6 +236,7 @@ Navigator.of(context).pop();
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
+                childAspectRatio:9/11,
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
               ),
@@ -269,8 +271,8 @@ Navigator.of(context).pop();
                     padding: EdgeInsets.only(left: 15, right: 5),
                     child: Text(galleryItem["name"],
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(fontSize: 11),
+                        maxLines: 2,
+                        style: TextStyle(fontSize: 13),
                         textAlign: TextAlign.center))
               ])));
     } else if (galleryItem["type"] == "file" || galleryItem["type"] == "youtube") {
