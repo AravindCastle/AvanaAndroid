@@ -326,7 +326,7 @@ static void openFile(File file,String url){
     colors["p"] = Colors.blue;
     colors["q"] = Colors.black87;
     colors["r"] = Color.fromRGBO(36, 36, 36, 1);
-    colors["s"] = Colors.deepPurpleAccent;
+    colors["s"] = Colors.deepPurpleAccent; 
     colors["t"] =Colors.amberAccent;
     colors["u"] = Color.fromRGBO(252, 4, 4, 1);
     colors["v"] = Color.fromRGBO(4, 4, 252, 1);
