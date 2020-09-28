@@ -37,12 +37,11 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<Void> handleSignIn(BuildContext context) async {
     bool isActive = false;
-   if (this.mounted){
-
-    setState(() {
-      isLoading = true;
-    });
-   }
+    if (this.mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
     if (!Utils.validateLogin(emailField.text, passwordField.text)) {
       final snackBar = SnackBar(content: Text('Invalid Email or Password ! '));
       Scaffold.of(context).showSnackBar(snackBar);
@@ -53,14 +52,14 @@ class _LoginPageState extends State<LoginPage> {
         prefs.clear();
         final QuerySnapshot userDetails = await Firestore.instance
             .collection('userdata')
-            .where("email", isEqualTo: emailField.text)
-            .where("password", isEqualTo: passwordField.text.trim())
+            //    .where("email", isEqualTo: emailField.text)
+            //  .where("password", isEqualTo: passwordField.text.trim())
             .getDocuments();
         final List<DocumentSnapshot> documents = userDetails.documents;
         if (documents.length > 0) {
           int membershipDate = documents[0]["membershipdate"];
-          Utils.userRole=documents[0]["userrole"]; 
-          Utils.userName=documents[0]["username"];
+          Utils.userRole = documents[0]["userrole"];
+          Utils.userName = documents[0]["username"];
 
           int currDate = new DateTime.now().millisecondsSinceEpoch;
           isActive = membershipDate - currDate > 31540000000
@@ -85,11 +84,10 @@ class _LoginPageState extends State<LoginPage> {
         print(Exception);
       }
     }
-    if (this.mounted){
-
-    setState(() {
-      isLoading = false;
-    });
+    if (this.mounted) {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -126,8 +124,11 @@ class _LoginPageState extends State<LoginPage> {
                                   child: Container(
                                     height: medQry.size.height * .25,
                                     width: medQry.size.width * .90,
-                                    padding:
-                                        EdgeInsets.only(left:medQry.size.width * .02,right:medQry.size.width * .03,top:medQry.size.width * .03,bottom:medQry.size.width * .03),
+                                    padding: EdgeInsets.only(
+                                        left: medQry.size.width * .02,
+                                        right: medQry.size.width * .03,
+                                        top: medQry.size.width * .03,
+                                        bottom: medQry.size.width * .03),
                                     child: Image.asset(
                                       'assets/avanalogo.png',
                                       fit: BoxFit.cover,
@@ -153,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     focusColor: Colors.blue,
                                     border: OutlineInputBorder(),
-                                   // icon: Icon(Icons.perm_identity),
+                                    // icon: Icon(Icons.perm_identity),
                                     labelStyle: TextStyle(color: Colors.black),
                                     labelText: "Email"),
                               ),
@@ -177,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     focusColor: Colors.blue,
                                     border: OutlineInputBorder(),
-                                  //  icon: Icon(Icons.vpn_key),
+                                    //  icon: Icon(Icons.vpn_key),
                                     labelStyle: TextStyle(color: Colors.black),
                                     labelText: "Password"),
                               ),
@@ -187,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                                     child: Padding(
                                   padding:
                                       EdgeInsets.all(medQry.size.width * .06),
-                                  child:SizedBox(),
+                                  child: SizedBox(),
                                 )),
                                 Builder(builder: (BuildContext context) {
                                   return ButtonTheme(
@@ -200,8 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                                           },
                                           shape: new RoundedRectangleBorder(
                                             borderRadius:
-                                                new BorderRadius.circular(
-                                                    60),
+                                                new BorderRadius.circular(60),
                                           ),
                                           child: new Icon(Icons.arrow_forward,
                                               color: Colors.white)));

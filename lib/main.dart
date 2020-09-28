@@ -31,108 +31,147 @@ void main() => runApp(AvanaHome());
 class AvanaHome extends StatelessWidget {
   // This widget is the root of your application.
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {          
+    switch (settings.name) {
       case '/login':
-        return PageTransition(child: LoginPage(), type: PageTransitionType.fade,settings: settings);  //MaterialPageRoute(builder: (_) => LoginPage());     
-      break;
+        return PageTransition(
+            child: LoginPage(),
+            type: PageTransitionType.fade,
+            settings:
+                settings); //MaterialPageRoute(builder: (_) => LoginPage());
+        break;
+      case '/home':
+        return PageTransition(
+            child: LoginPage(),
+            type: PageTransitionType.fade,
+            settings:
+                settings); //MaterialPageRoute(builder: (_) => LoginPage());
+        break;
       case '/messagePage':
-       return PageTransition(child: MessagePage(), type: PageTransitionType.fade,settings: settings);           
-      break;
+        return PageTransition(
+            child: MessagePage(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
       case '/userlist':
-        return PageTransition(child: userListPage(), type: PageTransitionType.fade,settings: settings);                
-      break;
+        return PageTransition(
+            child: userListPage(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
       case '/adduser':
-       return PageTransition(child: AddUserPage(), type: PageTransitionType.fade,settings: settings);               
-      break;
+        return PageTransition(
+            child: AddUserPage(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
       case '/userdetailpage':
-       return PageTransition(child: UserDetailsPage(), type: PageTransitionType.leftToRightWithFade,settings: settings);                
-      break;
+        return PageTransition(
+            child: UserDetailsPage(),
+            type: PageTransitionType.leftToRightWithFade,
+            settings: settings);
+        break;
       case '/messageeditor':
-       return PageTransition(child: MessageEditor(), type: PageTransitionType.fade,settings: settings);           
-      break;
+        return PageTransition(
+            child: MessageEditor(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
       case '/messageview':
-       return PageTransition(child: MessageViewScreen(), type: PageTransitionType.fade,settings: settings);             
-      break;   
-       case '/photoview':
-       return PageTransition(child: PhotoViewr(), type: PageTransitionType.fade,settings: settings);             
-      break;      
-       case '/videoview':
-       return PageTransition(child: VideoViewer(), type: PageTransitionType.fade,settings: settings);             
-      break;      
-       case '/gallery':
-       return PageTransition(child: GalleryPage(), type: PageTransitionType.fade,settings: settings);             
+        return PageTransition(
+            child: MessageViewScreen(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
+      case '/photoview':
+        return PageTransition(
+            child: PhotoViewr(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
+      case '/videoview':
+        return PageTransition(
+            child: VideoViewer(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
+      case '/gallery':
+        return PageTransition(
+            child: GalleryPage(),
+            type: PageTransitionType.fade,
+            settings: settings);
       case '/facultyPage':
-       return PageTransition(child: facultyListPage(), type: PageTransitionType.fade,settings: settings);             
-       case '/facultyDetail':
-       return PageTransition(child: FacultyDetailsPage(), type: PageTransitionType.fade,settings: settings);   
-     
-      break;      
+        return PageTransition(
+            child: facultyListPage(),
+            type: PageTransitionType.fade,
+            settings: settings);
+      case '/facultyDetail':
+        return PageTransition(
+            child: FacultyDetailsPage(),
+            type: PageTransitionType.fade,
+            settings: settings);
 
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-      ]);
-      
+      DeviceOrientation.portraitUp,
+    ]);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Avana Academy',
       onGenerateRoute: generateRoute,
-      theme: ThemeData(     
-        textTheme: GoogleFonts.openSansTextTheme(),   
-        primarySwatch: MaterialColor(
-            Color.fromRGBO(25, 118, 210, 1).value,
-            {
-              50: Color.fromRGBO(25, 118, 210, 0) ,
-              100: Color.fromRGBO(25, 118, 210, .1),
-              200: Color.fromRGBO(25, 118, 210, .2),
-              300: Color.fromRGBO(25, 118, 210, .3),
-              400: Color.fromRGBO(25, 118, 210, .4),
-              500: Color.fromRGBO(25, 118, 210, .5),
-              600: Color.fromRGBO(25, 118, 210, .6),
-              700: Color.fromRGBO(25, 118, 210, .7),
-              800: Color.fromRGBO(25, 118, 210, .8),
-              900: Color.fromRGBO(25, 118, 210, .9)
-            }
-          ),
-        secondaryHeaderColor: MaterialColor(
-            Color.fromRGBO(117,117,117, 1).value,
-            {
-              50: Color.fromRGBO(117,117,117, 0) ,
-              100: Color.fromRGBO(117,117,117, .1),
-              200: Color.fromRGBO(117,117,117, .2),
-              300: Color.fromRGBO(117,117,117, .3),
-              400: Color.fromRGBO(117,117,117, .4),
-              500: Color.fromRGBO(117,117,117, .5),
-              600: Color.fromRGBO(117,117,117, .6),
-              700: Color.fromRGBO(117,117,117, .7),
-              800: Color.fromRGBO(117,117,117, .8),
-              900: Color.fromRGBO(117,117,117, .9)
-            }
-          ),          
+      theme: ThemeData(
+        textTheme: GoogleFonts.openSansTextTheme(),
+        primarySwatch: MaterialColor(Color.fromRGBO(25, 118, 210, 1).value, {
+          50: Color.fromRGBO(25, 118, 210, 0),
+          100: Color.fromRGBO(25, 118, 210, .1),
+          200: Color.fromRGBO(25, 118, 210, .2),
+          300: Color.fromRGBO(25, 118, 210, .3),
+          400: Color.fromRGBO(25, 118, 210, .4),
+          500: Color.fromRGBO(25, 118, 210, .5),
+          600: Color.fromRGBO(25, 118, 210, .6),
+          700: Color.fromRGBO(25, 118, 210, .7),
+          800: Color.fromRGBO(25, 118, 210, .8),
+          900: Color.fromRGBO(25, 118, 210, .9)
+        }),
+        secondaryHeaderColor:
+            MaterialColor(Color.fromRGBO(117, 117, 117, 1).value, {
+          50: Color.fromRGBO(117, 117, 117, 0),
+          100: Color.fromRGBO(117, 117, 117, .1),
+          200: Color.fromRGBO(117, 117, 117, .2),
+          300: Color.fromRGBO(117, 117, 117, .3),
+          400: Color.fromRGBO(117, 117, 117, .4),
+          500: Color.fromRGBO(117, 117, 117, .5),
+          600: Color.fromRGBO(117, 117, 117, .6),
+          700: Color.fromRGBO(117, 117, 117, .7),
+          800: Color.fromRGBO(117, 117, 117, .8),
+          900: Color.fromRGBO(117, 117, 117, .9)
+        }),
       ),
       home: SplashScreen.navigate(
         name: 'assets/splashScreen.flr',
         next: (context) => AvanaHomePage(title: 'Avana Academy'),
         until: () => Future.delayed(Duration(seconds: 1)),
         startAnimation: 'splash',
-        loopAnimation:"splash",
+        loopAnimation: "splash",
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      var begin = Offset(0.0, 1.0);
-      var end = Offset.zero;
-      var curve = Curves.ease;
+          var begin = Offset(0.0, 1.0);
+          var end = Offset.zero;
+          var curve = Curves.ease;
 
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
-    },
-      ),            
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
     );
   }
 }
@@ -146,92 +185,86 @@ class AvanaHomePage extends StatefulWidget {
 }
 
 class _AvanaHomePageState extends State<AvanaHomePage> {
-  
-  bool isUserLogged=false;
-   final FirebaseMessaging _fcm = FirebaseMessaging();
-      StreamSubscription iosSubscription;
-
+  bool isUserLogged = false;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+  StreamSubscription iosSubscription;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-     checkUserLogged();
-     _fcm.subscribeToTopic(Utils.notifyTopic);
-     if (Platform.isIOS) {
-            iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
-                // save the token  OR subscribe to a topic here
-            });
+    checkUserLogged();
+    _fcm.subscribeToTopic(Utils.notifyTopic);
+    if (Platform.isIOS) {
+      iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
+        // save the token  OR subscribe to a topic here
+      });
 
-            _fcm.requestNotificationPermissions(IosNotificationSettings());
+      _fcm.requestNotificationPermissions(IosNotificationSettings());
+    }
+    _fcm.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("ara");
+        if (this.mounted) {
+          setState(() {
+            Utils.addNotificationId(
+                message["data"]["docid"], message["data"]["ownerId"]);
+          });
         }
-        _fcm.configure(
-          onMessage: (Map<String, dynamic> message) async {
-            print("ara");
-            if(this.mounted){
-              setState(() {
-                 Utils.addNotificationId(message["data"]["docid"],message["data"]["ownerId"]);  
-              });
-            }
-            
-                 
-        },
-        onLaunch: (Map<String, dynamic> message) async {
-             print("ara");
-          if(this.mounted){
-              setState(() {
-                 Utils.addNotificationId(message["data"]["docid"],message["data"]["ownerId"]);              });
-            }
-          
-          },
-        onResume: (Map<String, dynamic> message) async {             
-          if(this.mounted){
-              setState(() {
-                 Utils.addNotificationId(message["data"]["docid"],message["data"]["ownerId"]);
-              });
-            }
-        },
-      );
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("ara");
+        if (this.mounted) {
+          setState(() {
+            Utils.addNotificationId(
+                message["data"]["docid"], message["data"]["ownerId"]);
+          });
+        }
+      },
+      onResume: (Map<String, dynamic> message) async {
+        if (this.mounted) {
+          setState(() {
+            Utils.addNotificationId(
+                message["data"]["docid"], message["data"]["ownerId"]);
+          });
+        }
+      },
+    );
   }
 
-   void checkUserLogged() async {
+  void checkUserLogged() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('userId')) {
-      String userId = prefs.getString("userId");     
+      String userId = prefs.getString("userId");
       DocumentSnapshot userDetails = await Firestore.instance
           .collection('userdata')
           .document(userId)
-          .get();          
+          .get();
       if (userDetails.data.length > 0) {
-          bool activeState=userDetails.data["isactive"];
-          int membershipDate=userDetails.data["membershipdate"];
-          int currDate=new DateTime.now().millisecondsSinceEpoch;
-          Utils.userRole=userDetails.data["userrole"];
-          Utils.userName=userDetails.data["username"];
-          isUserLogged=(currDate-membershipDate) > 31540000000?false:activeState;          
-          
+        bool activeState = userDetails.data["isactive"];
+        int membershipDate = userDetails.data["membershipdate"];
+        int currDate = new DateTime.now().millisecondsSinceEpoch;
+        Utils.userRole = userDetails.data["userrole"];
+        Utils.userName = userDetails.data["username"];
+        isUserLogged =
+            (currDate - membershipDate) > 31540000000 ? false : activeState;
       }
     }
-    if(!isUserLogged){
+    if (!isUserLogged) {
       Navigator.pushNamed(context, "/login");
-    }
-    else{
-      Navigator.pushNamed(context, "/messagePage");    
+    } else {
+      Navigator.pushNamed(context, "/messagePage");
     }
   }
 
-  
-
- 
   @override
   Widget build(BuildContext context) {
-     MediaQueryData md=MediaQuery.of(context);
-     return Scaffold(
-       body: new Container(            
-         decoration: BoxDecoration( color: Colors.black, border: Border.all(color:Colors.black) ),
-         child:FlareActor('assets/splashScreen.flr', animation: 'splash')
-       ),
-     );
-      
+    MediaQueryData md = MediaQuery.of(context);
+    return Scaffold(
+      body: new Container(
+          decoration: BoxDecoration(
+              color: Colors.black, border: Border.all(color: Colors.black)),
+          child: FlareActor('assets/splashScreen.flr', animation: 'splash')),
+    );
   }
 }
