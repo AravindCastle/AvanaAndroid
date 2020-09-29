@@ -12,7 +12,7 @@ class FeedPage extends StatefulWidget {
 
 class _FeedPageState extends State<FeedPage> {
   MediaQueryData medQry = null;
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   void _onItemTapped(int index) {
     Utils.bottomNavAction(index, context);
   }
@@ -124,39 +124,11 @@ class _FeedPageState extends State<FeedPage> {
                 Utils.showUserPop(context);
               },
             ),
-            title: Text('Home'),
+            title: Text('Feed'),
           ),
-          body: Stack(children: <Widget>[
-            Column(children: <Widget>[
-              Flexible(
-                  child: ListView(children: [
-                new Container(
-                    height: 300,
-                    width: medQry.size.width,
-                    child: new Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Feed",
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        ))),
-                new Container(
-                    height: 300,
-                    width: medQry.size.width,
-                    child: new Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Messages",
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        )))
-              ]))
-            ])
-          ])
-
-          /* new StreamBuilder<QuerySnapshot>(
+          body: new StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
-                .collection('Threads')
+                .collection('feed')
                 .orderBy("created_time", descending: true)
                 .snapshots(),
             builder:
@@ -166,12 +138,68 @@ class _FeedPageState extends State<FeedPage> {
                     child: new LinearProgressIndicator(), height: 5);
               return new ListView(
                 children: snapshot.data.documents.map((document) {
-                  return feedItem(document, context);
+                  return new Card(
+                      child: new Padding(
+                    padding: EdgeInsets.all(10),
+                    child: new Flexible(
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        document["feedtype"] == 1
+                            ? new Container(
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: document["ownername"],
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
+                                        fontSize: 16),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: document["content"],
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.black)),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : new Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(document["ownername"],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black,
+                                            fontSize: 16)),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(document["content"],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 16,
+                                            color: Colors.black))
+                                  ],
+                                ),
+                              ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                            Utils.getMessageTimerFrmt(document["created_time"]),
+                            style:
+                                TextStyle(color: Colors.black45, fontSize: 12))
+                      ],
+                    )),
+                  ));
                 }).toList(),
               );
             },
-          )*/
-          ,
+          ),
           bottomNavigationBar: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
@@ -179,7 +207,7 @@ class _FeedPageState extends State<FeedPage> {
                 title: Text('Home'),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.message),
+                icon: Icon(Icons.rss_feed),
                 title: Text('Feed'),
               ),
               BottomNavigationBarItem(
@@ -209,6 +237,13 @@ class _FeedPageState extends State<FeedPage> {
             unselectedItemColor: Colors.grey,
             //unselectedLabelStyle: TextStyle(color: Colors.grey),
             onTap: _onItemTapped,
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.pushNamed(context, "/feededitor");
+            },
+            child: Icon(Icons.add, color: Theme.of(context).primaryColor),
+            backgroundColor: Theme.of(context).secondaryHeaderColor,
           ),
         ));
   }

@@ -96,7 +96,7 @@ class _userListPageState extends State<userListPage> {
               title: Text('Home'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.message),
+              icon: Icon(Icons.rss_feed),
               title: Text('Feed'),
             ),
             BottomNavigationBarItem(

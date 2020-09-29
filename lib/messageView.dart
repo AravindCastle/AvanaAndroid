@@ -83,6 +83,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       commentEditor.clear();
       Utils.sendPushNotification(
           "New Comment", notfyStr, "messageview", threadID);
+      Utils.pushFeed(" has added new comment.", 1);
       Utils.updateCommentCount(threadID, true);
       isCommentSaved = true;
       Navigator.pop(context);

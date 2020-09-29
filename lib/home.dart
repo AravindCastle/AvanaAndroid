@@ -138,13 +138,15 @@ class _HomePageState extends State<HomePage> {
                 new Container(
                     height: 300,
                     width: medQry.size.width,
-                    child: new Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Feed",
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        ))),
+                    child: Column(children: [
+                      new Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            "Feed",
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold),
+                          )),
+                    ])),
                 new Container(
                     height: 300,
                     width: medQry.size.width,
@@ -184,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                 title: Text('Home'),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.message),
+                icon: Icon(Icons.rss_feed),
                 title: Text('Feed'),
               ),
               BottomNavigationBarItem(

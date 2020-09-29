@@ -33,6 +33,26 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
+    var children2 = <Widget>[
+      SizedBox(width: 15),
+      messageDoc["attachments"].length > 0
+          ? Text(
+              "Attachment " +
+                  "  " +
+                  messageDoc["attachments"].length.toString(),
+              style: TextStyle(fontSize: 14),
+            )
+          : SizedBox(),
+      Spacer(),
+      Utils.threadCount.containsKey(messageDoc.documentID)
+          ? Text(
+              Utils.threadCount[messageDoc.documentID].toString() +
+                  " "
+                      "Comments",
+              style: TextStyle(fontSize: 14),
+            )
+          : SizedBox(),
+    ];
     return new GestureDetector(
         child: Card(
             elevation: 1,
@@ -95,27 +115,7 @@ class _MessagePageState extends State<MessagePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(width: 15),
-                        Text(
-                          "Comments :",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                            Utils.threadCount.containsKey(messageDoc.documentID)
-                                ? "  " +
-                                    Utils.threadCount[messageDoc.documentID]
-                                        .toString()
-                                : "  0"),
-                        SizedBox(width: 10),
-                        Text(
-                          "Attachment :",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text((messageDoc["attachments"].length > 0)
-                            ? "  " + messageDoc["attachments"].length.toString()
-                            : "  0"),
-                      ],
+                      children: children2,
                     )
                   ])),
             )),
@@ -170,7 +170,7 @@ class _MessagePageState extends State<MessagePage> {
                 title: Text('Home'),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.message),
+                icon: Icon(Icons.rss_feed),
                 title: Text('Feed'),
               ),
               BottomNavigationBarItem(

@@ -61,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
           int membershipDate = documents[0]["membershipdate"];
           Utils.userRole = documents[0]["userrole"];
           Utils.userName = documents[0]["username"];
+          Utils.userEmail = documents[0]["email"];
 
           int currDate = new DateTime.now().millisecondsSinceEpoch;
           isActive = membershipDate - currDate > 31540000000

@@ -68,6 +68,7 @@ class GalleryPageState extends State<GalleryPage> {
         "created_time": new DateTime.now().millisecondsSinceEpoch,
       });
       Navigator.pop(context);
+      Utils.pushFeed(" has added a youtube link", 1);
     }
   }
 
@@ -105,8 +106,7 @@ class GalleryPageState extends State<GalleryPage> {
           await uploadTask.onComplete;
           String url = await storageReference.getDownloadURL();
 
-          DocumentReference newThread =
-              await Firestore.instance.collection("gallery").add({
+          await Firestore.instance.collection("gallery").add({
             "name": fileName,
             "type": "file",
             "level": argMap["superLevel"],
@@ -116,6 +116,7 @@ class GalleryPageState extends State<GalleryPage> {
             "filetype": fileType,
             "created_time": new DateTime.now().millisecondsSinceEpoch,
           });
+          Utils.pushFeed(" has added a new file ", 1);
           Navigator.of(context).pop();
         }
       }
@@ -312,7 +313,7 @@ class GalleryPageState extends State<GalleryPage> {
                 title: Text('Home'),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.message),
+                icon: Icon(Icons.rss_feed),
                 title: Text('Feed'),
               ),
               BottomNavigationBarItem(

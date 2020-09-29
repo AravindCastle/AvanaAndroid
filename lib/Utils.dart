@@ -797,4 +797,16 @@ static void openFile(File file,String url){
       Navigator.pushNamed(context, "/facultyPage");
     }
   }
+
+  static pushFeed(String content, int feedType) async {
+    final SharedPreferences localStore = await SharedPreferences.getInstance();
+    Firestore.instance.collection("feed").add({
+      "content": content,
+      "owner": localStore.getString("userId"),
+      "ownername": localStore.getString("name"),
+      "ownerrole": localStore.getInt("role"),
+      "feedtype": feedType,
+      "created_time": new DateTime.now().millisecondsSinceEpoch,
+    });
+  }
 }
