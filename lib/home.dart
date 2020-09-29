@@ -131,7 +131,34 @@ class _HomePageState extends State<HomePage> {
             ),
             title: Text('Home'),
           ),
-          body: SizedBox()
+          body: Stack(children: <Widget>[
+            Column(children: <Widget>[
+              Flexible(
+                  child: ListView(children: [
+                new Container(
+                    height: 300,
+                    width: medQry.size.width,
+                    child: new Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Feed",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ))),
+                new Container(
+                    height: 300,
+                    width: medQry.size.width,
+                    child: new Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Messages",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        )))
+              ]))
+            ])
+          ])
+
           /* new StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
                 .collection('Threads')
@@ -155,6 +182,10 @@ class _HomePageState extends State<HomePage> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 title: Text('Home'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.message),
+                title: Text('Feed'),
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.message),

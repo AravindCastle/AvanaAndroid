@@ -6,33 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Utils.dart';
 
-class MessagePage extends StatefulWidget {
-  _MessagePageState createState() => _MessagePageState();
+class FeedPage extends StatefulWidget {
+  _FeedPageState createState() => _FeedPageState();
 }
 
-class _MessagePageState extends State<MessagePage> {
+class _FeedPageState extends State<FeedPage> {
   MediaQueryData medQry = null;
-  SharedPreferences prefs;
-  String userName = "";
-  int userRole = 1;
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    Utils.bottomNavAction(index, context);
+  }
 
   @override
   void initState() {
     super.initState();
-    Utils.getAllComments();
   }
 
-  void getUserName() async {
-    prefs = await SharedPreferences.getInstance();
-    if (this.mounted) {
-      setState(() {
-        userName = prefs.getString("name");
-        userRole = prefs.getInt("role");
-      });
-    }
-  }
-
-  Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
+  Widget feedItem(DocumentSnapshot feedDoc, BuildContext context) {
     return new GestureDetector(
         child: Card(
             elevation: 1,
@@ -43,7 +33,6 @@ class _MessagePageState extends State<MessagePage> {
                       EdgeInsets.only(top: 10, bottom: 0, left: 8, right: 8),
                   child: new Column(children: [
                     Row(children: [
-                      Utils.isNewMessage(messageDoc.documentID, prefs),
                       SizedBox(
                         width: 22,
                         child: Icon(
@@ -54,7 +43,7 @@ class _MessagePageState extends State<MessagePage> {
                       ),
                       SizedBox(
                         width: medQry.size.width * .64,
-                        child: Text(messageDoc["ownername"],
+                        child: Text(feedDoc["ownername"],
                             overflow: TextOverflow.fade,
                             softWrap: false,
                             style:
@@ -63,7 +52,7 @@ class _MessagePageState extends State<MessagePage> {
                       SizedBox(
                         width: medQry.size.width * .19,
                         child: Text(
-                          Utils.getTimeFrmt(messageDoc["created_time"]),
+                          Utils.getTimeFrmt(feedDoc["created_time"]),
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
                           textAlign: TextAlign.right,
@@ -81,7 +70,7 @@ class _MessagePageState extends State<MessagePage> {
                         SizedBox(
                           width: medQry.size.width * .89,
                           child: Text(
-                            messageDoc["subject"],
+                            feedDoc["subject"],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
@@ -101,19 +90,17 @@ class _MessagePageState extends State<MessagePage> {
                           "Comments :",
                           style: TextStyle(fontSize: 14),
                         ),
-                        Text(
-                            Utils.threadCount.containsKey(messageDoc.documentID)
-                                ? "  " +
-                                    Utils.threadCount[messageDoc.documentID]
-                                        .toString()
-                                : "  0"),
+                        Text(Utils.threadCount.containsKey(feedDoc.documentID)
+                            ? "  " +
+                                Utils.threadCount[feedDoc.documentID].toString()
+                            : "  0"),
                         SizedBox(width: 10),
                         Text(
                           "Attachment :",
                           style: TextStyle(fontSize: 14),
                         ),
-                        Text((messageDoc["attachments"].length > 0)
-                            ? "  " + messageDoc["attachments"].length.toString()
+                        Text((feedDoc["attachments"].length > 0)
+                            ? "  " + feedDoc["attachments"].length.toString()
                             : "  0"),
                       ],
                     )
@@ -121,22 +108,15 @@ class _MessagePageState extends State<MessagePage> {
             )),
         onTap: () {
           Navigator.pushNamed(context, "/messageview",
-              arguments: messageDoc.documentID);
+              arguments: feedDoc.documentID);
         });
   }
 
-  int _selectedIndex = 2;
-  void _onItemTapped(int index) {
-    Utils.bottomNavAction(index, context);
-  }
-
   Widget build(BuildContext context) {
-    getUserName();
     medQry = MediaQuery.of(context);
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
-          backgroundColor: Colors.white,
           appBar: AppBar(
             leading: IconButton(
               icon: Icon(Icons.account_circle),
@@ -144,9 +124,37 @@ class _MessagePageState extends State<MessagePage> {
                 Utils.showUserPop(context);
               },
             ),
-            title: Utils.getNewMessageCount(prefs, context),
+            title: Text('Home'),
           ),
-          body: new StreamBuilder<QuerySnapshot>(
+          body: Stack(children: <Widget>[
+            Column(children: <Widget>[
+              Flexible(
+                  child: ListView(children: [
+                new Container(
+                    height: 300,
+                    width: medQry.size.width,
+                    child: new Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Feed",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ))),
+                new Container(
+                    height: 300,
+                    width: medQry.size.width,
+                    child: new Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Messages",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        )))
+              ]))
+            ])
+          ])
+
+          /* new StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
                 .collection('Threads')
                 .orderBy("created_time", descending: true)
@@ -158,11 +166,12 @@ class _MessagePageState extends State<MessagePage> {
                     child: new LinearProgressIndicator(), height: 5);
               return new ListView(
                 children: snapshot.data.documents.map((document) {
-                  return messageItem(document, context);
+                  return feedItem(document, context);
                 }).toList(),
               );
             },
-          ),
+          )*/
+          ,
           bottomNavigationBar: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
@@ -195,89 +204,11 @@ class _MessagePageState extends State<MessagePage> {
               )
             ],
             currentIndex: _selectedIndex,
-            // backgroundColor: Colors.white,
+            backgroundColor: Colors.white,
             selectedItemColor: Theme.of(context).primaryColor,
             unselectedItemColor: Colors.grey,
             //unselectedLabelStyle: TextStyle(color: Colors.grey),
             onTap: _onItemTapped,
-          ),
-          /*drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(25, 118, 210, 1),
-                    ),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: medQry.size.width * .15,
-                            width: medQry.size.width * .15,
-                            child: CircleAvatar(
-                              child: Icon(Icons.account_circle,
-                                  size: medQry.size.width * .15),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(userName,
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white))
-                        ])),
-                ListTile(
-                  leading: Icon(Icons.message),
-                  title: Text('Messages'),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/messagePage");
-                  },
-                ),
-                (userRole == 1)
-                    ? ListTile(
-                        leading: Icon(Icons.account_circle),
-                        title: Text('Users'),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/userlist");
-                        },
-                      )
-                    : SizedBox(height: 0),
-                ListTile(
-                  leading: Icon(Icons.supervisor_account),
-                  title: Text('Faculties'),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/facultyPage");
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.image),
-                  title: Text('Resources'),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/gallery", arguments: {
-                      "superLevel": 0,
-                      "parentid": "0",
-                      "title": "Gallery"
-                    });
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.exit_to_app),
-                  title: Text('Log out'),
-                  onTap: () async {
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.clear();
-                    Navigator.pushNamed(context, "/login");
-                  },
-                ),
-              ],
-            ),
-          ),*/
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.pushNamed(context, "/messageeditor");
-            },
-            child: Icon(Icons.add, color: Theme.of(context).primaryColor),
-            backgroundColor: Theme.of(context).secondaryHeaderColor,
           ),
         ));
   }

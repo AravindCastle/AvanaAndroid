@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:avana_academy/MessageEditor.dart';
 import 'package:avana_academy/facultyDetails.dart';
 import 'package:avana_academy/facultyList.dart';
+import 'package:avana_academy/feed.dart';
 import 'package:avana_academy/galleryPage.dart';
 import 'package:avana_academy/home.dart';
 import 'package:avana_academy/messageView.dart';
@@ -110,7 +111,11 @@ class AvanaHome extends StatelessWidget {
             child: FacultyDetailsPage(),
             type: PageTransitionType.fade,
             settings: settings);
-
+      case '/feed':
+        return PageTransition(
+            child: FeedPage(),
+            type: PageTransitionType.fade,
+            settings: settings);
         break;
     }
   }

@@ -785,13 +785,15 @@ static void openFile(File file,String url){
     if (selectedIndex == 0) {
       Navigator.pushNamed(context, "/home");
     } else if (selectedIndex == 1) {
-      Navigator.pushNamed(context, "/messagePage");
+      Navigator.pushNamed(context, "/feed");
     } else if (selectedIndex == 2) {
+      Navigator.pushNamed(context, "/messagePage");
+    } else if (selectedIndex == 3) {
       Navigator.pushNamed(context, "/gallery",
           arguments: {"superLevel": 0, "parentid": "0", "title": "Resources"});
-    } else if (selectedIndex == 3) {
-      Navigator.pushNamed(context, "/userlist");
     } else if (selectedIndex == 4) {
+      Navigator.pushNamed(context, "/userlist");
+    } else if (selectedIndex == 5) {
       Navigator.pushNamed(context, "/facultyPage");
     }
   }
