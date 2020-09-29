@@ -5,43 +5,112 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class facultyListPage extends StatefulWidget {
   _facultyListPageState createState() => _facultyListPageState();
 }
 
 class _facultyListPageState extends State<facultyListPage> {
-MediaQueryData medQry;
+  MediaQueryData medQry;
+  int _selectedIndex = 4;
+  void _onItemTapped(int index) {
+    Utils.bottomNavAction(index, context);
+  }
+
   Widget build(BuildContext context) {
-     medQry = MediaQuery.of(context);
+    medQry = MediaQuery.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Faculties")),
-      body:new StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('userdata').where("userrole",isEqualTo: 2).orderBy("username").snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (!snapshot.hasData) return new Text('Loading...');
-                return new ListView(
-                  children: snapshot.data.documents.map((document) {
-                    return new ListTile(
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                      leading: CircleAvatar(
-                          backgroundColor:  Utils.getColor(document['username'].toString().substring(0,1).toUpperCase()),
-                          child:Text(document['username'].toString().substring(0,1).toUpperCase(),style:TextStyle(color: Colors.white ),)
-                        ),
-                      title: new Text(document['username'],style: TextStyle(
-                        fontWeight: FontWeight.bold
-                      )),
-                      subtitle: new Text(document['email']),
-                     onTap: (){
-                       Navigator.pushNamed(context, "/facultyDetail",arguments:document.documentID) ;
-                     },
-                    );
-                  }).toList(),
-                );
-              },
+      appBar: AppBar(
+        title: Text("Faculties"),
+        leading: IconButton(
+          icon: Icon(Icons.account_circle),
+          onPressed: () {
+            Utils.showUserPop(context);
+          },
+        ),
+      ),
+      body: new StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance
+            .collection('userdata')
+            .where("userrole", isEqualTo: 2)
+            .orderBy("username")
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) return new Text('Loading...');
+          return new ListView(
+            children: snapshot.data.documents.map((document) {
+              return new ListTile(
+                trailing: Icon(Icons.keyboard_arrow_right),
+                leading: CircleAvatar(
+                    backgroundColor: Utils.getColor(document['username']
+                        .toString()
+                        .substring(0, 1)
+                        .toUpperCase()),
+                    child: Text(
+                      document['username']
+                          .toString()
+                          .substring(0, 1)
+                          .toUpperCase(),
+                      style: TextStyle(color: Colors.white),
+                    )),
+                title: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      new Padding(
+                          padding: EdgeInsets.fromLTRB(0, 4, 3, 0),
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 16,
+                            color: Colors.blueAccent,
+                          )),
+                      new Text(document['username'],
+                          style: TextStyle(fontWeight: FontWeight.bold))
+                    ]),
+                subtitle: new Text(document['email']),
+                onTap: () {
+                  Navigator.pushNamed(context, "/facultyDetail",
+                      arguments: document.documentID);
+                },
+              );
+            }).toList(),
+          );
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            title: Text('Message'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.image),
+            title: Text('Resources'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.supervisor_account),
+            title: Text(
+              'Users',
             ),
-      drawer: Drawer(
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.verified_user),
+            title: Text(
+              'Faculties',
+            ),
+          )
+        ],
+        currentIndex: _selectedIndex,
+        // backgroundColor: Colors.white,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+        //unselectedLabelStyle: TextStyle(color: Colors.grey),
+        onTap: _onItemTapped,
+      )
+      /*drawer: Drawer(
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
@@ -103,8 +172,8 @@ MediaQueryData medQry;
                 ),
               ],
             ),
-          ),  
-     
+          )*/
+      ,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:avana_academy/Utils.dart';
+import 'package:avana_academy/home.dart';
 import 'package:avana_academy/messagescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   MediaQueryData medQry = null;
   Route _moveToHome() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => MessagePage(),
+      pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(0.0, 1.0);
         var end = Offset.zero;
@@ -52,8 +53,8 @@ class _LoginPageState extends State<LoginPage> {
         prefs.clear();
         final QuerySnapshot userDetails = await Firestore.instance
             .collection('userdata')
-            //    .where("email", isEqualTo: emailField.text)
-            //  .where("password", isEqualTo: passwordField.text.trim())
+            .where("email", isEqualTo: emailField.text)
+            .where("password", isEqualTo: passwordField.text.trim())
             .getDocuments();
         final List<DocumentSnapshot> documents = userDetails.documents;
         if (documents.length > 0) {

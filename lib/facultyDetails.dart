@@ -43,11 +43,10 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
   }
 
   Widget buildUserCard(BuildContext context) {
-    return Card(
-      elevation: 3,
+    return Flexible(
       child: Container(
           width: medQry.size.width * .95,
-         padding: EdgeInsets.all(5),
+          padding: EdgeInsets.fromLTRB(5, 10, 5, 5),
           //  padding:EdgeInsets.all(10),
           child: new Column(
             //  mainAxisAlignment: MainAxisAlignment.center,
@@ -69,31 +68,27 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
                 children: <Widget>[
                   SizedBox(height: 10, width: 10),
                   Text(userName,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold
-                      ),
+                      style:
+                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center),
                 ],
               ),
               SizedBox(height: medQry.size.height * .03),
               Row(
-                
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   SizedBox(height: 10, width: 10),
                   SizedBox(
-                          width: medQry.size.width * .89,
-                          child: Text(
-                            description,
-                            maxLines: 50,                                                      
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            style: TextStyle(
-                                fontSize: 17,color: Colors.black54),
-                          ),
-                        ),
+                    width: medQry.size.width * .89,
+                    child: Text(
+                      description,
+                      maxLines: 50,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      style: TextStyle(fontSize: 17, color: Colors.black54),
+                    ),
+                  ),
                 ],
               )
             ],
@@ -107,7 +102,8 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
     getUserDetails(docmtId);
     return new Scaffold(
         appBar: AppBar(title: Text("Faculty Detail")),
-        body: SingleChildScrollView(child:new Container(
+        body: SingleChildScrollView(
+            child: new Container(
           padding: const EdgeInsets.all(1.0),
           alignment: Alignment.center,
           child: (isPageLoading

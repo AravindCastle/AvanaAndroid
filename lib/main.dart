@@ -4,6 +4,7 @@ import 'package:avana_academy/MessageEditor.dart';
 import 'package:avana_academy/facultyDetails.dart';
 import 'package:avana_academy/facultyList.dart';
 import 'package:avana_academy/galleryPage.dart';
+import 'package:avana_academy/home.dart';
 import 'package:avana_academy/messageView.dart';
 import 'package:avana_academy/messagescreen.dart';
 import 'package:avana_academy/photoview.dart';
@@ -41,7 +42,7 @@ class AvanaHome extends StatelessWidget {
         break;
       case '/home':
         return PageTransition(
-            child: LoginPage(),
+            child: HomePage(),
             type: PageTransitionType.fade,
             settings:
                 settings); //MaterialPageRoute(builder: (_) => LoginPage());
@@ -125,21 +126,23 @@ class AvanaHome extends StatelessWidget {
       title: 'Avana Academy',
       onGenerateRoute: generateRoute,
       theme: ThemeData(
-        textTheme: GoogleFonts.openSansTextTheme(),
-        primarySwatch: MaterialColor(Color.fromRGBO(25, 118, 210, 1).value, {
-          50: Color.fromRGBO(25, 118, 210, 0),
-          100: Color.fromRGBO(25, 118, 210, .1),
-          200: Color.fromRGBO(25, 118, 210, .2),
-          300: Color.fromRGBO(25, 118, 210, .3),
-          400: Color.fromRGBO(25, 118, 210, .4),
-          500: Color.fromRGBO(25, 118, 210, .5),
-          600: Color.fromRGBO(25, 118, 210, .6),
-          700: Color.fromRGBO(25, 118, 210, .7),
-          800: Color.fromRGBO(25, 118, 210, .8),
-          900: Color.fromRGBO(25, 118, 210, .9)
-        }),
-        secondaryHeaderColor:
-            MaterialColor(Color.fromRGBO(117, 117, 117, 1).value, {
+          textTheme: GoogleFonts.openSansTextTheme(),
+          primaryIconTheme: IconThemeData(color: Colors.white),
+          primarySwatch: MaterialColor(Color.fromRGBO(25, 118, 210, 1).value, {
+            50: Color.fromRGBO(25, 118, 210, 0),
+            100: Color.fromRGBO(25, 118, 210, .1),
+            200: Color.fromRGBO(25, 118, 210, .2),
+            300: Color.fromRGBO(25, 118, 210, .3),
+            400: Color.fromRGBO(25, 118, 210, .4),
+            500: Color.fromRGBO(25, 118, 210, .5),
+            600: Color.fromRGBO(25, 118, 210, .6),
+            700: Color.fromRGBO(25, 118, 210, .7),
+            800: Color.fromRGBO(25, 118, 210, .8),
+            900: Color.fromRGBO(25, 118, 210, .9)
+          }),
+          secondaryHeaderColor: Colors.white
+
+          /* MaterialColor(Color.fromRGBO(117, 117, 117, 1).value, {
           50: Color.fromRGBO(117, 117, 117, 0),
           100: Color.fromRGBO(117, 117, 117, .1),
           200: Color.fromRGBO(117, 117, 117, .2),
@@ -150,8 +153,8 @@ class AvanaHome extends StatelessWidget {
           700: Color.fromRGBO(117, 117, 117, .7),
           800: Color.fromRGBO(117, 117, 117, .8),
           900: Color.fromRGBO(117, 117, 117, .9)
-        }),
-      ),
+        }),*/
+          ),
       home: SplashScreen.navigate(
         name: 'assets/splashScreen.flr',
         next: (context) => AvanaHomePage(title: 'Avana Academy'),
@@ -204,7 +207,6 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     }
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("ara");
         if (this.mounted) {
           setState(() {
             Utils.addNotificationId(
@@ -246,6 +248,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
         int currDate = new DateTime.now().millisecondsSinceEpoch;
         Utils.userRole = userDetails.data["userrole"];
         Utils.userName = userDetails.data["username"];
+        Utils.userEmail = userDetails.data["email"];
         isUserLogged =
             (currDate - membershipDate) > 31540000000 ? false : activeState;
       }
@@ -253,7 +256,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     if (!isUserLogged) {
       Navigator.pushNamed(context, "/login");
     } else {
-      Navigator.pushNamed(context, "/messagePage");
+      Navigator.pushNamed(context, "/home");
     }
   }
 

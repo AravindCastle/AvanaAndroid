@@ -22,9 +22,11 @@ class _MessageEditorState extends State<MessageEditor> {
   List<File> uploaderImgs = new List();
   List<String> videoFrmts = new List();
   TextEditingController messageContr = new TextEditingController();
+  String dropDownValue = "First Item";
+
 //videoFrmts.addAll({'.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'});
   Future<void> _pickImage() async {
-    if (uploaderImgs.length < 6) {
+    if (uploaderImgs.length < 10) {
       File selectedFile = await FilePicker.getFile(type: FileType.any);
       //await ImagePicker.pickImage(source: source);
       if (selectedFile != null && this.mounted) {
@@ -37,7 +39,7 @@ class _MessageEditorState extends State<MessageEditor> {
 
   Future<void> saveThread(BuildContext context) async {
     var uuid = new Uuid();
-    String folderId = uuid.v4(); 
+    String folderId = uuid.v4();
     if (!isSaving) {
       if (!isSaving && this.mounted)
         setState(() {
@@ -65,6 +67,7 @@ class _MessageEditorState extends State<MessageEditor> {
             });
           }
           Navigator.pop(context);
+          Utils.showLoadingPopText(context, "Saving");
           DocumentReference newThread =
               await Firestore.instance.collection("Threads").add({
             "content": messageContr.text,
@@ -73,8 +76,10 @@ class _MessageEditorState extends State<MessageEditor> {
             "ownerrole": localStore.getInt("role"),
             "attachments": fileUrls.toList(),
             "created_time": new DateTime.now().millisecondsSinceEpoch,
-            "folderid": folderId
+            "folderid": folderId,
+            "subject": dropDownValue
           });
+
           String notfyStr = messageContr.text;
           Utils.sendPushNotification(
               "New Message", notfyStr, "messageview", newThread.documentID);
@@ -140,19 +145,71 @@ class _MessageEditorState extends State<MessageEditor> {
                   isSaving
                       ? SizedBox(
                           height: medQry.size.height * .01,
-                          child: LinearProgressIndicator(),
+                          //child: LinearProgressIndicator(),
                         )
                       : SizedBox(
                           height: medQry.size.height * .01,
                         ),
-                  new TextField(
-                      autofocus: true,
-                      controller: messageContr,
-                      maxLines: 15,
-                      decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                          hintText: "Type ...")),
+                  Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
+                      child: SizedBox(
+                          child: Text(
+                        "Subject",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ))),
+                  SizedBox(
+                    height: medQry.size.height * .01,
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 0, 3),
+                      child: new Container(
+                          width: medQry.size.height,
+                          child: DropdownButton(
+                              value: dropDownValue,
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text("First Item"),
+                                  value: "First Item",
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Second Item"),
+                                  value: "Second Item",
+                                ),
+                                DropdownMenuItem(
+                                    child: Text("Third Item"),
+                                    value: "Third Item"),
+                                DropdownMenuItem(
+                                    child: Text("Fourth Item"),
+                                    value: "Fourth Item")
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  dropDownValue = value;
+                                });
+                              }))),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
+                    child: SizedBox(
+                        child: Text(
+                      "Content",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    )),
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: new TextField(
+                          autofocus: true,
+                          controller: messageContr,
+                          maxLines: 15,
+                          decoration: InputDecoration(
+                              border: new OutlineInputBorder(
+                                  borderSide: new BorderSide(
+                                      color: Theme.of(context).primaryColor)),
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              hintText: "Type ..."))),
                   buildAttachmentSection(context)
                 ]),
           ),

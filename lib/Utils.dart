@@ -25,7 +25,7 @@ class Utils {
     900: Color.fromRGBO(25, 118, 210, 1),
   };
   static Map<String, int> threadCount = new Map();
-  static const String notifyTopic="test1";
+  static const String notifyTopic = "test1";
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
     imgFrmt.add("jpeg");
@@ -41,6 +41,7 @@ class Utils {
 
   static String userName = "";
   static int userRole = 1;
+  static String userEmail = "";
   static bool getVideoFormats(String isSupported) {
     List<String> imgFrmt = new List();
 
@@ -308,7 +309,7 @@ static void openFile(File file,String url){
     colors["y"] = Color.fromRGBO(84, 36, 52, 1);
     colors["z"] = Color.fromRGBO(68, 44, 76, 1);
     */
-    colors["a"] =Colors.teal;
+    colors["a"] = Colors.teal;
     colors["b"] = Colors.tealAccent;
     colors["c"] = Colors.red;
     colors["d"] = Colors.purple;
@@ -316,7 +317,7 @@ static void openFile(File file,String url){
     colors["f"] = Color.fromRGBO(68, 44, 76, 1);
     colors["g"] = Colors.lightGreen;
     colors["h"] = Colors.lightBlue;
-    colors["i"] =Colors.indigo;
+    colors["i"] = Colors.indigo;
     colors["j"] = Colors.grey;
     colors["k"] = Colors.green;
     colors["l"] = Colors.deepPurple;
@@ -326,8 +327,8 @@ static void openFile(File file,String url){
     colors["p"] = Colors.blue;
     colors["q"] = Colors.black87;
     colors["r"] = Color.fromRGBO(36, 36, 36, 1);
-    colors["s"] = Colors.deepPurpleAccent; 
-    colors["t"] =Colors.amberAccent;
+    colors["s"] = Colors.deepPurpleAccent;
+    colors["t"] = Colors.amberAccent;
     colors["u"] = Color.fromRGBO(252, 4, 4, 1);
     colors["v"] = Color.fromRGBO(4, 4, 252, 1);
     colors["w"] = Color.fromRGBO(217, 83, 79, 1);
@@ -372,7 +373,7 @@ static void openFile(File file,String url){
 
   static Future<void> sendPushNotification(
       String title, String body, String screenName, String docId) async {
-  
+    return false;
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     String ownerId = localStore.getString("userId");
     String serverToken =
@@ -395,7 +396,7 @@ static void openFile(File file,String url){
             'docid': docId,
             'ownerId': ownerId
           },
-          'to': "/topics/"+notifyTopic,
+          'to': "/topics/" + notifyTopic,
         },
       ),
     );
@@ -442,15 +443,18 @@ static void openFile(File file,String url){
     }
   }
 
-  static Widget getNewMessageCount(SharedPreferences localStore) {
+  static Widget getNewMessageCount(
+      SharedPreferences localStore, BuildContext context) {
     List notifiCntList = new List();
     if (localStore != null && localStore.containsKey("notifylist")) {
       notifiCntList = localStore.getStringList("notifylist");
     }
     if (notifiCntList != null && notifiCntList.length > 0) {
-      return Text("Messages (" + notifiCntList.length.toString() + ")");
+      return Text("Messages (" + notifiCntList.length.toString() + ")",
+          style: TextStyle(color: Colors.white, fontSize: 24));
     } else {
-      return Text("Messages");
+      return Text("Messages",
+          style: TextStyle(color: Colors.white, fontSize: 24));
     }
   }
 
@@ -476,6 +480,81 @@ static void openFile(File file,String url){
                     width: 10,
                     height: 10,
                   )));
+        });
+  }
+
+  static void showUserPop(BuildContext context) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext bCont) {
+          return new Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
+              child: AlertDialog(
+                  title: Text(Utils.userName,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  content: SizedBox(
+                      height: 120,
+                      child: new Container(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Email : ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(Utils.userEmail)
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            children: [
+                              Text("Role : ",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(getRoleString(Utils.userRole.toString()))
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              RaisedButton(
+                                color: Colors.white,
+                                onPressed: () async {
+                                  final SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.clear();
+                                  Navigator.pushNamed(context, "/login");
+                                },
+                                child: Text(
+                                  "Logout",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                              ),
+                              SizedBox(width: 20),
+                              RaisedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                                color: Colors.white,
+                              )
+                            ],
+                          )
+                        ],
+                      )))));
         });
   }
 
@@ -670,7 +749,7 @@ static void openFile(File file,String url){
   }
 
   static void getAllComments() async {
-    threadCount=new Map();
+    threadCount = new Map();
     List<DocumentSnapshot> commentsDoc = null;
     final QuerySnapshot userDetails =
         await Firestore.instance.collection('comments').getDocuments();
@@ -699,6 +778,21 @@ static void openFile(File file,String url){
       }
     } else {
       threadCount[threadId] = 1;
+    }
+  }
+
+  static void bottomNavAction(int selectedIndex, BuildContext context) {
+    if (selectedIndex == 0) {
+      Navigator.pushNamed(context, "/home");
+    } else if (selectedIndex == 1) {
+      Navigator.pushNamed(context, "/messagePage");
+    } else if (selectedIndex == 2) {
+      Navigator.pushNamed(context, "/gallery",
+          arguments: {"superLevel": 0, "parentid": "0", "title": "Resources"});
+    } else if (selectedIndex == 3) {
+      Navigator.pushNamed(context, "/userlist");
+    } else if (selectedIndex == 4) {
+      Navigator.pushNamed(context, "/facultyPage");
     }
   }
 }

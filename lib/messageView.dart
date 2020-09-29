@@ -28,60 +28,65 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   BuildContext commonContext = null;
 
   Future<void> _addImage() async {
-    Utils.showLoadingPop(commonContext);
     File selectedFile = await FilePicker.getFile(type: FileType.image);
-    final SharedPreferences localStore = await SharedPreferences.getInstance();
-    List<Map> fileUrls = new List();
-    String folderId = threadDetails["folderid"];
-    String fileName = selectedFile.path.split("/").last;
-    StorageReference storageReference = FirebaseStorage.instance
-        .ref()
-        .child('AvanaFiles/' + folderId + '/' + fileName);
-    StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
-    await uploadTask.onComplete;
-    fileUrls.add({
-      "url": await storageReference.getDownloadURL(),
-      "name": fileName,
-      "type": fileName.split(".").last
-    });
+    if (selectedFile != null && this.mounted) {
+      Utils.showLoadingPop(commonContext);
+      final SharedPreferences localStore =
+          await SharedPreferences.getInstance();
+      List<Map> fileUrls = new List();
+      String folderId = threadDetails["folderid"];
+      String fileName = selectedFile.path.split("/").last;
+      StorageReference storageReference = FirebaseStorage.instance
+          .ref()
+          .child('AvanaFiles/' + folderId + '/' + fileName);
+      StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
+      await uploadTask.onComplete;
+      fileUrls.add({
+        "url": await storageReference.getDownloadURL(),
+        "name": fileName,
+        "type": fileName.split(".").last
+      });
 
-    await Firestore.instance.collection("comments").add({
-      "comment": "",
-      "created_time": new DateTime.now().millisecondsSinceEpoch,
-      "owner": localStore.getString("userId"),
-      "owner_name": localStore.getString("name"),
-      "ownerrole": localStore.getInt("role"),
-      "thread_id": threadID,
-      "isattachment": true,
-      "attachment": fileUrls,
-    });
-    Navigator.pop(context);
+      await Firestore.instance.collection("comments").add({
+        "comment": "",
+        "created_time": new DateTime.now().millisecondsSinceEpoch,
+        "owner": localStore.getString("userId"),
+        "owner_name": localStore.getString("name"),
+        "ownerrole": localStore.getInt("role"),
+        "thread_id": threadID,
+        "isattachment": true,
+        "attachment": fileUrls,
+      });
+      Navigator.pop(context);
+    }
   }
-  bool isCommentSaved=true;
-  Future<void> addComment() async {
-    if(isCommentSaved){
-      Utils.showLoadingPopText(context,"Adding Comment");
-      isCommentSaved=false;
-    final SharedPreferences localStore = await SharedPreferences.getInstance();
-    await Firestore.instance.collection("comments").add({
-      "comment": commentEditor.text,
-      "created_time": new DateTime.now().millisecondsSinceEpoch,
-      "owner": localStore.getString("userId"),
-      "owner_name": localStore.getString("name"),
-      "ownerrole": localStore.getInt("role"),
-      "thread_id": threadID,
-      "isattachment": false
-    });
 
-    focusNode.unfocus();
-    String notfyStr = localStore.getString("name") + ":" + commentEditor.text;
-    commentEditor.clear();
-    Utils.sendPushNotification(
-        "New Comment", notfyStr, "messageview", threadID);
-    Utils.updateCommentCount(threadID, true);
-    isCommentSaved=true;
-    Navigator.pop(context);
-    focusNode.unfocus();
+  bool isCommentSaved = true;
+  Future<void> addComment() async {
+    if (isCommentSaved) {
+      Utils.showLoadingPopText(context, "Adding Comment");
+      isCommentSaved = false;
+      final SharedPreferences localStore =
+          await SharedPreferences.getInstance();
+      await Firestore.instance.collection("comments").add({
+        "comment": commentEditor.text,
+        "created_time": new DateTime.now().millisecondsSinceEpoch,
+        "owner": localStore.getString("userId"),
+        "owner_name": localStore.getString("name"),
+        "ownerrole": localStore.getInt("role"),
+        "thread_id": threadID,
+        "isattachment": false
+      });
+
+      focusNode.unfocus();
+      String notfyStr = localStore.getString("name") + ":" + commentEditor.text;
+      commentEditor.clear();
+      Utils.sendPushNotification(
+          "New Comment", notfyStr, "messageview", threadID);
+      Utils.updateCommentCount(threadID, true);
+      isCommentSaved = true;
+      Navigator.pop(context);
+      focusNode.unfocus();
     }
   }
 
@@ -201,15 +206,31 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   }
 
   Widget buildMessageContent() {
-    return new Container(
-        padding: EdgeInsets.only(
-            left: medQry.size.width * .03,
-            right: medQry.size.width * .02,
-            top: medQry.size.width * .05),
-        child: Text(
-          "\t\t\t\t" + threadDetails["content"],
-          style: TextStyle(fontSize: 17),
-        ));
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+            padding: EdgeInsets.only(
+              left: 15,
+              right: 0,
+              top: 8,
+            ),
+            child: new Text(
+              threadDetails["subject"],
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            )),
+        new Container(
+            padding: EdgeInsets.only(
+                left: 5,
+                right: medQry.size.width * .02,
+                top: medQry.size.width * .05),
+            child: Text(
+              "\t\t\t\t" + threadDetails["content"],
+              style: TextStyle(fontSize: 17),
+            ))
+      ],
+    );
   }
 
   void deleteCommentAlert(BuildContext context, String commentId) {
@@ -270,7 +291,14 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                 children: [
                   Row(
                     children: <Widget>[
-                      (commentsDoc[i]["ownerrole"]==1 || commentsDoc[i]["ownerrole"]==2)?Icon(Icons.verified_user,color: Colors.teal,size: 15,): SizedBox(),
+                      (commentsDoc[i]["ownerrole"] == 1 ||
+                              commentsDoc[i]["ownerrole"] == 2)
+                          ? Icon(
+                              Icons.check_circle,
+                              size: 16,
+                              color: Colors.blueAccent,
+                            )
+                          : SizedBox(),
                       SizedBox(
                           width: medQry.size.width * .61,
                           child: Text(

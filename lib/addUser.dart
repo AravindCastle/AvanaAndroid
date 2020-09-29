@@ -16,7 +16,7 @@ class _AddUserPageState extends State<AddUserPage> {
   TextEditingController userName = new TextEditingController();
   TextEditingController emailId = new TextEditingController();
   TextEditingController password = new TextEditingController();
- TextEditingController description = new TextEditingController();
+  TextEditingController description = new TextEditingController();
 
   void initState() => loading = false;
 
@@ -31,33 +31,35 @@ class _AddUserPageState extends State<AddUserPage> {
   void addnewUser(BuildContext context) async {
     try {
       HashMap userDetail = new HashMap();
-     if(userName.text.isNotEmpty && password.text.isNotEmpty && emailId.text.isNotEmpty){
-      if (this.mounted) {
-        setState(() {
-          loading = true;
-        });
-      }
+      if (userName.text.isNotEmpty &&
+          password.text.isNotEmpty &&
+          emailId.text.isNotEmpty) {
+        if (this.mounted) {
+          setState(() {
+            loading = true;
+          });
+        }
 
-      Firestore.instance.collection("userdata").add({
-        "username": userName.text,
-        "email": emailId.text,
-        "password": password.text,
-        "isactive": isActive,
-        "userrole": int.parse(userRole),
-        "membershipdate": new DateTime.now().millisecondsSinceEpoch,
-        "description": new DateTime.now().millisecondsSinceEpoch
-      });
-
-      userName.clear();
-      emailId.clear();
-      password.clear();
-      description.clear();
-      if (this.mounted) {
-        setState(() {
-          loading = false;
+        Firestore.instance.collection("userdata").add({
+          "username": userName.text,
+          "email": emailId.text,
+          "password": password.text,
+          "isactive": isActive,
+          "userrole": int.parse(userRole),
+          "membershipdate": new DateTime.now().millisecondsSinceEpoch,
+          "description": new DateTime.now().millisecondsSinceEpoch
         });
+
+        userName.clear();
+        emailId.clear();
+        password.clear();
+        description.clear();
+        if (this.mounted) {
+          setState(() {
+            loading = false;
+          });
+        }
       }
-     }
     } catch (Exception) {
       setState(() {
         loading = false;
@@ -69,13 +71,6 @@ class _AddUserPageState extends State<AddUserPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Add user"),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.person_add),
-                onPressed: () {
-                  addnewUser(context);
-                })
-          ],
         ),
         body: SingleChildScrollView(
             child: Container(
@@ -90,6 +85,7 @@ class _AddUserPageState extends State<AddUserPage> {
                       TextField(
                           controller: userName,
                           decoration: InputDecoration(
+                              border: OutlineInputBorder(),
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Username")),
@@ -97,6 +93,7 @@ class _AddUserPageState extends State<AddUserPage> {
                       TextField(
                           controller: emailId,
                           decoration: InputDecoration(
+                              border: OutlineInputBorder(),
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Email Id")),
@@ -104,23 +101,26 @@ class _AddUserPageState extends State<AddUserPage> {
                       TextField(
                           controller: password,
                           decoration: InputDecoration(
+                              border: OutlineInputBorder(),
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Password")),
                       SizedBox(height: 10),
                       TextField(
-                          controller: description,
-                          decoration: InputDecoration(
-                            
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                              hintText: "Description"),
-                              maxLines: 5,
-                              
-                              ),
+                        controller: description,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding:
+                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                            hintText: "Description"),
+                        maxLines: 5,
+                      ),
                       SizedBox(height: 10),
                       SwitchListTile(
-                        title: const Text('Activate User'),
+                        title: const Text(
+                          'Activate User',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         value: isActive,
                         onChanged: (bool value) {
                           setState(() {
@@ -128,6 +128,13 @@ class _AddUserPageState extends State<AddUserPage> {
                           });
                         },
                       ),
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                          child: Text(
+                            "Choose user role :",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          )),
                       ListTile(
                         title: new Text('Admin'),
                         leading: Radio(
@@ -168,6 +175,16 @@ class _AddUserPageState extends State<AddUserPage> {
                       buttonOrLoading(),
                     ],
                   ),
-                ))));
+                ))),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            addnewUser(context);
+          },
+          child: Icon(
+            Icons.person_add,
+            color: Theme.of(context).primaryColor,
+          ),
+          backgroundColor: Theme.of(context).secondaryHeaderColor,
+        ));
   }
 }

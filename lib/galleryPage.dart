@@ -1,4 +1,5 @@
 import 'dart:core';
+
 import 'dart:io';
 
 import 'package:avana_academy/Utils.dart';
@@ -38,7 +39,7 @@ class GalleryPageState extends State<GalleryPage> {
                     uploadFile(context);
                   },
                 ),
-                 new ListTile(
+                new ListTile(
                   leading: new Icon(Icons.insert_link),
                   title: new Text('Youtube'),
                   onTap: () {
@@ -54,7 +55,7 @@ class GalleryPageState extends State<GalleryPage> {
 
   Future<void> createYoutubeLink() async {
     String name = folderName.text;
-    String url =urlContrl.text;
+    String url = urlContrl.text;
     if (name.isNotEmpty) {
       Firestore.instance.collection("gallery").add({
         "name": name,
@@ -62,8 +63,8 @@ class GalleryPageState extends State<GalleryPage> {
         "level": argMap["superLevel"],
         "parentid": argMap["parentid"],
         "ordertype": 3,
-        "url":url ,
-        "filetype":"youttube",
+        "url": url,
+        "filetype": "youttube",
         "created_time": new DateTime.now().millisecondsSinceEpoch,
       });
       Navigator.pop(context);
@@ -86,43 +87,41 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   Future<void> uploadFile(BuildContext context) async {
-try{
-    File selectedFile = await FilePicker.getFile(type: FileType.any);
-    if (selectedFile != null) {
-      String fileName = selectedFile.path.split("/").last;
-      String fileType = fileName.split(".").last;
-      if (fileType == "pdf" ||
-          Utils.getImageFormats(fileType) ||
-          Utils.getVideoFormats(fileType)) {
-        Utils.showLoadingPop(context);
-        StorageReference storageReference = FirebaseStorage.instance
-            .ref()
-            .child('AvanaFiles/' +
-                fileName +
-                DateTime.now().millisecondsSinceEpoch.toString());
-        StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
-        await uploadTask.onComplete;
-        String url = await storageReference.getDownloadURL();
+    try {
+      File selectedFile = await FilePicker.getFile(type: FileType.any);
+      if (selectedFile != null) {
+        String fileName = selectedFile.path.split("/").last;
+        String fileType = fileName.split(".").last;
+        if (fileType == "pdf" ||
+            Utils.getImageFormats(fileType) ||
+            Utils.getVideoFormats(fileType)) {
+          Utils.showLoadingPop(context);
+          StorageReference storageReference = FirebaseStorage.instance
+              .ref()
+              .child('AvanaFiles/' +
+                  fileName +
+                  DateTime.now().millisecondsSinceEpoch.toString());
+          StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
+          await uploadTask.onComplete;
+          String url = await storageReference.getDownloadURL();
 
-        
-        DocumentReference newThread =
-            await Firestore.instance.collection("gallery").add({
-          "name": fileName,
-          "type": "file",
-          "level": argMap["superLevel"],
-          "parentid": argMap["parentid"],
-          "ordertype": 2,
-          "url": url,
-          "filetype": fileType,
-          "created_time": new DateTime.now().millisecondsSinceEpoch,
-        });
-        Navigator.of(context).pop();
+          DocumentReference newThread =
+              await Firestore.instance.collection("gallery").add({
+            "name": fileName,
+            "type": "file",
+            "level": argMap["superLevel"],
+            "parentid": argMap["parentid"],
+            "ordertype": 2,
+            "url": url,
+            "filetype": fileType,
+            "created_time": new DateTime.now().millisecondsSinceEpoch,
+          });
+          Navigator.of(context).pop();
+        }
       }
+    } catch (e) {
+      Navigator.of(context).pop();
     }
-}
-catch(e){
-Navigator.of(context).pop();
-}
   }
 
   void showAddFolderPop(BuildContext context) {
@@ -175,27 +174,27 @@ Navigator.of(context).pop();
                   "Youtube",
                   textAlign: TextAlign.center,
                 ),
-                content:Column(children:[
-                 TextField(
-                    controller: folderName,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: "Title",
-                    //  fillColor: Color.fromRGBO(117, 117, 117, .2),
-                      contentPadding: EdgeInsets.all(2),
-                    )),
-                    SizedBox(height:10),
-                    TextField(
-                    controller: urlContrl,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: "URL",
-                    //  fillColor: Color.fromRGBO(117, 117, 117, .2),
-                      contentPadding: EdgeInsets.all(2),
-                    )),
-                    ]),
+                content: Column(children: [
+                  TextField(
+                      controller: folderName,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        hintText: "Title",
+                        //  fillColor: Color.fromRGBO(117, 117, 117, .2),
+                        contentPadding: EdgeInsets.all(2),
+                      )),
+                  SizedBox(height: 10),
+                  TextField(
+                      controller: urlContrl,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        hintText: "URL",
+                        //  fillColor: Color.fromRGBO(117, 117, 117, .2),
+                        contentPadding: EdgeInsets.all(2),
+                      )),
+                ]),
                 actions: <Widget>[
                   FlatButton(
                     child: Text('Cancel'),
@@ -228,7 +227,6 @@ Navigator.of(context).pop();
             padding: EdgeInsets.all(1),
             child: GridView.builder(
               itemCount: messageCount,
-              
               itemBuilder: (_, int index) {
                 final DocumentSnapshot document =
                     snapshot.data.documents[index];
@@ -236,7 +234,7 @@ Navigator.of(context).pop();
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                childAspectRatio:9/11,
+                childAspectRatio: 9 / 11,
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
               ),
@@ -275,22 +273,73 @@ Navigator.of(context).pop();
                         style: TextStyle(fontSize: 13),
                         textAlign: TextAlign.center))
               ])));
-    } else if (galleryItem["type"] == "file" || galleryItem["type"] == "youtube") {
+    } else if (galleryItem["type"] == "file" ||
+        galleryItem["type"] == "youtube") {
       return Utils.buildGalleryFileItem(context, galleryItem["url"],
           galleryItem["name"], galleryItem["filetype"]);
     } else {
       return SizedBox();
     }
   }
- 
-Widget buildPage(BuildContext context)  {   
-  if(argMap["superLevel"].toString().contains("0")){
-    return Scaffold(
-        appBar: AppBar(title: Text(argMap["title"])),
-        body: new Container(
-          child: buildGallery(context),
-        ),
-        drawer: Drawer(
+
+  int _selectedIndex = 2;
+  void _onItemTapped(int index) {
+    Utils.bottomNavAction(index, context);
+  }
+
+  Widget buildPage(BuildContext context) {
+    if (argMap["superLevel"].toString().contains("0")) {
+      return Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.account_circle),
+              onPressed: () {
+                Utils.showUserPop(context);
+              },
+            ),
+            title: Text(
+              argMap["title"],
+            ),
+            elevation: 0,
+          ),
+          body: new Container(
+            child: buildGallery(context),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text('Home'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.message),
+                title: Text('Message'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.image),
+                title: Text('Resources'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.supervisor_account),
+                title: Text(
+                  'Users',
+                ),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.verified_user),
+                title: Text(
+                  'Faculties',
+                ),
+              )
+            ],
+            currentIndex: _selectedIndex,
+            // backgroundColor: Colors.white,
+            selectedItemColor: Theme.of(context).primaryColor,
+            unselectedItemColor: Colors.grey,
+            //unselectedLabelStyle: TextStyle(color: Colors.grey),
+            onTap: _onItemTapped,
+          ),
+          /*drawer: Drawer(
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
@@ -352,29 +401,41 @@ Widget buildPage(BuildContext context)  {
                 ),
               ],
             ),
+          ),*/
+
+          floatingActionButton: new Visibility(
+              visible: Utils.userRole == 1 || Utils.userRole == 2,
+              child: FloatingActionButton(
+                onPressed: ((Utils.userRole == 1 || Utils.userRole == 2) &&
+                        argMap["superLevel"] < 10)
+                    ? () {
+                        showAddType(context);
+                      }
+                    : null,
+                child: Icon(
+                  Icons.add,
+                  color: Theme.of(context).primaryColor,
+                ),
+                backgroundColor: Theme.of(context).secondaryHeaderColor,
+              )));
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            argMap["title"],
           ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (Utils.userRole==1 && argMap["superLevel"] < 10)
-              ? () {
-                  showAddType(context);
-                }
-              : null,
-          child: Icon(Icons.add),
-          backgroundColor: Theme.of(context).secondaryHeaderColor,
-        ));
-  }
-  else{
-    return Scaffold(
-        appBar: AppBar(title: Text(argMap["title"])),
+          elevation: 0,
+        ),
         body: new Container(
           child: buildGallery(context),
         ),
-        );
-  }  
-}
-MediaQueryData medQry;
+      );
+    }
+  }
+
+  MediaQueryData medQry;
   Widget build(BuildContext context) {
-     medQry = MediaQuery.of(context);
+    medQry = MediaQuery.of(context);
     argMap = ModalRoute.of(context).settings.arguments;
     return buildPage(context);
   }
