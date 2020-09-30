@@ -66,7 +66,7 @@ class _userListPageState extends State<userListPage> {
                             (1 == document['userrole'] ||
                                     2 == document['userrole'])
                                 ? new Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 4, 3, 0),
+                                    padding: EdgeInsets.fromLTRB(0, 2, 3, 0),
                                     child: Icon(
                                       Icons.check_circle,
                                       size: 16,

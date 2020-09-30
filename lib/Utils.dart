@@ -484,77 +484,68 @@ static void openFile(File file,String url){
   }
 
   static void showUserPop(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
         context: context,
-        barrierDismissible: false,
-        builder: (BuildContext bCont) {
-          return new Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
-              child: AlertDialog(
-                  title: Text(Utils.userName,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  content: SizedBox(
-                      height: 120,
-                      child: new Container(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "Email : ",
-                                style: TextStyle(fontWeight: FontWeight.bold),
+        builder: (BuildContext bc) {
+          return Container(
+            padding: EdgeInsets.all(30),
+            height: 200,
+            child: new Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(Utils.userName,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                SizedBox(
+                  height: 15,
+                ),
+                new Container(
+                    height: 100,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Email : ",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(Utils.userEmail)
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Text("Role : ",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(getRoleString(Utils.userRole.toString()))
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            RaisedButton(
+                              color: Colors.white,
+                              onPressed: () async {
+                                final SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.clear();
+                                Navigator.pushNamed(context, "/login");
+                              },
+                              child: Text(
+                                "Logout",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: Theme.of(context).primaryColor),
                               ),
-                              Text(Utils.userEmail)
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Text("Role : ",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              Text(getRoleString(Utils.userRole.toString()))
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              RaisedButton(
-                                color: Colors.white,
-                                onPressed: () async {
-                                  final SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
-                                  prefs.clear();
-                                  Navigator.pushNamed(context, "/login");
-                                },
-                                child: Text(
-                                  "Logout",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: Theme.of(context).primaryColor),
-                                ),
-                              ),
-                              SizedBox(width: 20),
-                              RaisedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Cancel",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: Theme.of(context).primaryColor),
-                                ),
-                                color: Colors.white,
-                              )
-                            ],
-                          )
-                        ],
-                      )))));
+                            ),
+                          ],
+                        )
+                      ],
+                    ))
+              ],
+            ),
+          );
         });
   }
 
@@ -808,5 +799,57 @@ static void openFile(File file,String url){
       "feedtype": feedType,
       "created_time": new DateTime.now().millisecondsSinceEpoch,
     });
+  }
+
+  static Widget attachmentPreviewSlider(
+      BuildContext context, DocumentSnapshot doc) {
+    List<dynamic> attachmentList = doc["attachments"];
+    List<Widget> attach = new List();
+
+    for (int i = 0; i < attachmentList.length; i++) {
+      String type = attachmentList[i]["type"];
+      String url = attachmentList[i]["url"];
+      if (getImageFormats(type)) {
+        attach.add(Container(
+          width: 100,
+          height: 100,
+          child: OutlineButton(
+            child: Material(
+              child: CachedNetworkImage(
+                width: 100,
+                height: 100,
+                fit: BoxFit.fill,
+                progressIndicatorBuilder: (context, url, progress) =>
+                    Image.asset(
+                  "assets/imagethumbnail.png",
+                  width: 100,
+                  height: 100,
+                ),
+                imageUrl: url,
+              ),
+              borderRadius: BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              clipBehavior: Clip.hardEdge,
+            ),
+            onPressed: null,
+            shape: new RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(8.0)),
+            borderSide: BorderSide(color: Colors.grey),
+            padding: EdgeInsets.all(0),
+          ),
+          margin: EdgeInsets.only(left: 8, top: 3),
+        ));
+      }
+    }
+
+    if (attach.length > 0) {
+      return ListView(
+        scrollDirection: Axis.horizontal,
+        children: attach,
+      );
+    } else {
+      return SizedBox();
+    }
   }
 }

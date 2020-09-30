@@ -43,57 +43,54 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
   }
 
   Widget buildUserCard(BuildContext context) {
-    return Flexible(
-      child: Container(
-          width: medQry.size.width * .95,
-          padding: EdgeInsets.fromLTRB(5, 10, 5, 5),
-          //  padding:EdgeInsets.all(10),
-          child: new Column(
-            //  mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                width: medQry.size.width * .35,
-                height: medQry.size.width * .35,
-                child: Icon(
-                  Icons.account_circle,
-                  size: medQry.size.width * .35,
-                  color: Colors.teal,
-                ),
+    return Container(
+        width: medQry.size.width * .95,
+        padding: EdgeInsets.fromLTRB(5, 10, 5, 5),
+        //  padding:EdgeInsets.all(10),
+        child: new Column(
+          //  mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              width: medQry.size.width * .35,
+              height: medQry.size.width * .35,
+              child: Icon(
+                Icons.account_circle,
+                size: medQry.size.width * .35,
+                color: Theme.of(context).primaryColor,
               ),
-              SizedBox(height: 10, width: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(height: 10, width: 10),
-                  Text(userName,
-                      style:
-                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center),
-                ],
-              ),
-              SizedBox(height: medQry.size.height * .03),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(height: 10, width: 10),
-                  SizedBox(
-                    width: medQry.size.width * .89,
-                    child: Text(
-                      description,
-                      maxLines: 50,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      style: TextStyle(fontSize: 17, color: Colors.black54),
-                    ),
+            ),
+            SizedBox(height: 10, width: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 10, width: 10),
+                Text(userName,
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center),
+              ],
+            ),
+            SizedBox(height: medQry.size.height * .03),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 10, width: 10),
+                SizedBox(
+                  width: medQry.size.width * .89,
+                  child: Text(
+                    description,
+                    maxLines: 50,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                    style: TextStyle(fontSize: 17, color: Colors.black54),
                   ),
-                ],
-              )
-            ],
-          )),
-    );
+                ),
+              ],
+            )
+          ],
+        ));
   }
 
   Widget build(BuildContext context) {

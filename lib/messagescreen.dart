@@ -37,9 +37,7 @@ class _MessagePageState extends State<MessagePage> {
       SizedBox(width: 15),
       messageDoc["attachments"].length > 0
           ? Text(
-              "Attachment " +
-                  "  " +
-                  messageDoc["attachments"].length.toString(),
+              messageDoc["attachments"].length.toString() + " Attachment",
               style: TextStyle(fontSize: 14),
             )
           : SizedBox(),
@@ -48,7 +46,7 @@ class _MessagePageState extends State<MessagePage> {
           ? Text(
               Utils.threadCount[messageDoc.documentID].toString() +
                   " "
-                      "Comments",
+                      "Comment",
               style: TextStyle(fontSize: 14),
             )
           : SizedBox(),
@@ -57,10 +55,10 @@ class _MessagePageState extends State<MessagePage> {
         child: Card(
             elevation: 1,
             child: new Container(
-              height: 125,
+              height: messageDoc["attachments"].length > 0 ? 190 : 100,
               child: new Padding(
                   padding:
-                      EdgeInsets.only(top: 10, bottom: 0, left: 8, right: 8),
+                      EdgeInsets.only(top: 10, bottom: 10, left: 8, right: 8),
                   child: new Column(children: [
                     Row(children: [
                       Utils.isNewMessage(messageDoc.documentID, prefs),
@@ -111,7 +109,16 @@ class _MessagePageState extends State<MessagePage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 15),
+                    messageDoc["attachments"].length > 0
+                        ? new Container(
+                            padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                            child: Utils.attachmentPreviewSlider(
+                                context, messageDoc),
+                            height: 100,
+                            width: medQry.size.width * .9,
+                          )
+                        : SizedBox(),
+                    Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,6 +157,7 @@ class _MessagePageState extends State<MessagePage> {
             stream: Firestore.instance
                 .collection('Threads')
                 .orderBy("created_time", descending: true)
+                .limit(200)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

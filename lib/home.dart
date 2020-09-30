@@ -26,95 +26,121 @@ class _HomePageState extends State<HomePage> {
     Utils.getAllComments();
   }
 
-  Widget feedItem(DocumentSnapshot feedDoc, BuildContext context) {
-    return new GestureDetector(
-        child: Card(
-            elevation: 1,
-            child: new Container(
-              height: 125,
-              child: new Padding(
-                  padding:
-                      EdgeInsets.only(top: 10, bottom: 0, left: 8, right: 8),
-                  child: new Column(children: [
-                    Row(children: [
-                      Utils.isNewMessage(feedDoc.documentID, prefs),
-                      SizedBox(
-                        width: 22,
-                        child: Icon(
+  Widget feedCard(BuildContext context) {
+    return new StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('feed')
+          .where("feedtype", isEqualTo: 0)
+          .orderBy("created_time", descending: true)
+          .limit(10)
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData)
+          return SizedBox(child: new LinearProgressIndicator(), height: 5);
+        return new ListView(
+          scrollDirection: Axis.horizontal,
+          children: snapshot.data.documents.map((document) {
+            return Card(
+              elevation: 2,
+              child: new Container(
+                padding: EdgeInsets.all(20),
+                height: 180,
+                width: medQry.size.width * .9,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
                           Icons.check_circle,
                           size: 16,
                           color: Colors.blueAccent,
                         ),
-                      ),
-                      SizedBox(
-                        width: medQry.size.width * .64,
-                        child: Text(feedDoc["ownername"],
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            style:
-                                TextStyle(fontSize: 19, color: Colors.black)),
-                      ),
-                      SizedBox(
-                        width: medQry.size.width * .19,
-                        child: Text(
-                          Utils.getTimeFrmt(feedDoc["created_time"]),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          textAlign: TextAlign.right,
+                        Text(
+                          document["ownername"],
                           style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ),
-                    ]),
-                    SizedBox(height: medQry.size.height * .01),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 15),
-                        SizedBox(
-                          width: medQry.size.width * .89,
-                          child: Text(
-                            feedDoc["subject"],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            style:
-                                TextStyle(fontSize: 15, color: Colors.black54),
-                          ),
-                        ),
+                              fontSize: 18, fontWeight: FontWeight.w700),
+                        )
                       ],
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(document["content"],
+                        maxLines: 3, style: TextStyle(fontSize: 16)),
+                    Spacer(),
+                    Text(Utils.getMessageTimerFrmt(document["created_time"]),
+                        style: TextStyle(color: Colors.black45, fontSize: 12))
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  Widget messageCard(BuildContext context) {
+    return new StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('Threads')
+          .orderBy("created_time", descending: true)
+          .limit(10)
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData)
+          return SizedBox(child: new LinearProgressIndicator(), height: 5);
+        return new ListView(
+          scrollDirection: Axis.horizontal,
+          children: snapshot.data.documents.map((document) {
+            return Card(
+              elevation: 2,
+              child: new Container(
+                padding: EdgeInsets.all(20),
+                height: 180,
+                width: medQry.size.width * .9,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(width: 15),
-                        Text(
-                          "Comments :",
-                          style: TextStyle(fontSize: 14),
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          size: 16,
+                          color: Colors.blueAccent,
                         ),
-                        Text(Utils.threadCount.containsKey(feedDoc.documentID)
-                            ? "  " +
-                                Utils.threadCount[feedDoc.documentID].toString()
-                            : "  0"),
-                        SizedBox(width: 10),
                         Text(
-                          "Attachment :",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text((feedDoc["attachments"].length > 0)
-                            ? "  " + feedDoc["attachments"].length.toString()
-                            : "  0"),
+                          document["ownername"],
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w700),
+                        )
                       ],
-                    )
-                  ])),
-            )),
-        onTap: () {
-          Navigator.pushNamed(context, "/messageview",
-              arguments: feedDoc.documentID);
-        });
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(document["subject"],
+                        maxLines: 1, style: TextStyle(fontSize: 16)),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text("   " + document["content"],
+                        maxLines: 2,
+                        style: TextStyle(fontSize: 14, color: Colors.black87)),
+                    Spacer(),
+                    Text(Utils.getMessageTimerFrmt(document["created_time"]),
+                        style: TextStyle(color: Colors.black45, fontSize: 12))
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
   }
 
   Widget build(BuildContext context) {
@@ -131,35 +157,34 @@ class _HomePageState extends State<HomePage> {
             ),
             title: Text('Home'),
           ),
-          body: Stack(children: <Widget>[
-            Column(children: <Widget>[
-              Flexible(
-                  child: ListView(children: [
+          body: SingleChildScrollView(
+            child: new Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text("Feed",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ),
                 new Container(
-                    height: 300,
-                    width: medQry.size.width,
-                    child: Column(children: [
-                      new Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            "Feed",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.bold),
-                          )),
-                    ])),
+                  height: 200,
+                  child: feedCard(context),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text("Messages",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ),
                 new Container(
-                    height: 300,
-                    width: medQry.size.width,
-                    child: new Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Messages",
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        )))
-              ]))
-            ])
-          ])
+                  height: 200,
+                  child: messageCard(context),
+                )
+              ],
+            ),
+          )
 
           /* new StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance

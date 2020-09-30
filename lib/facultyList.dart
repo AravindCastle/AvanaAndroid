@@ -57,7 +57,7 @@ class _facultyListPageState extends State<facultyListPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       new Padding(
-                          padding: EdgeInsets.fromLTRB(0, 4, 3, 0),
+                          padding: EdgeInsets.fromLTRB(0, 2, 3, 0),
                           child: Icon(
                             Icons.check_circle,
                             size: 16,
