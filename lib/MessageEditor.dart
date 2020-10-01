@@ -99,6 +99,8 @@ class _MessageEditorState extends State<MessageEditor> {
   Widget buildAttachmentSection(BuildContext context) {
     List<Widget> row1 = new List();
     List<Widget> row2 = new List();
+    List<Widget> row3 = new List();
+    List<Widget> row4 = new List();
     for (int i = 0; i < uploaderImgs.length; i++) {
       File prevFile = uploaderImgs[i];
       String fileName = prevFile.path.split("/").last;
@@ -106,15 +108,26 @@ class _MessageEditorState extends State<MessageEditor> {
       if (i < 3) {
         row1.add((Utils.attachmentWid(
             fileName, prevFile, null, fileType, context, medQry)));
-      } else {
+      } else if (i < 6) {
         row2.add((Utils.attachmentWid(
+            fileName, prevFile, null, fileType, context, medQry)));
+      } else if (i < 9) {
+        row3.add((Utils.attachmentWid(
+            fileName, prevFile, null, fileType, context, medQry)));
+      } else {
+        row4.add((Utils.attachmentWid(
             fileName, prevFile, null, fileType, context, medQry)));
       }
     }
 
     return new Container(
       child: Column(
-        children: <Widget>[Row(children: row1), Row(children: row2)],
+        children: <Widget>[
+          Row(children: row1),
+          Row(children: row2),
+          Row(children: row3),
+          Row(children: row4)
+        ],
       ),
     );
   }

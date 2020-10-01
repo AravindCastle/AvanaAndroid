@@ -55,7 +55,7 @@ class _MessagePageState extends State<MessagePage> {
         child: Card(
             elevation: 1,
             child: new Container(
-              height: messageDoc["attachments"].length > 0 ? 190 : 100,
+              height: 190,
               child: new Padding(
                   padding:
                       EdgeInsets.only(top: 10, bottom: 10, left: 8, right: 8),
@@ -104,20 +104,21 @@ class _MessagePageState extends State<MessagePage> {
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
                             style:
-                                TextStyle(fontSize: 15, color: Colors.black54),
+                                TextStyle(fontSize: 16, color: Colors.black54),
                           ),
                         ),
                       ],
                     ),
-                    messageDoc["attachments"].length > 0
-                        ? new Container(
-                            padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                            child: Utils.attachmentPreviewSlider(
-                                context, messageDoc),
-                            height: 100,
-                            width: medQry.size.width * .9,
-                          )
-                        : SizedBox(),
+                    new Container(
+                      padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
+                      child: Utils.attachmentPreviewSlider(
+                          context,
+                          messageDoc["attachments"].length > 0
+                              ? messageDoc
+                              : null),
+                      height: 100,
+                      width: medQry.size.width * .9,
+                    ),
                     Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,

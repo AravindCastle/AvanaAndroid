@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,8 +36,7 @@ class _HomePageState extends State<HomePage> {
           .limit(10)
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData)
-          return SizedBox(child: new LinearProgressIndicator(), height: 5);
+        if (!snapshot.hasData) return SizedBox();
         return new ListView(
           scrollDirection: Axis.horizontal,
           children: snapshot.data.documents.map((document) {
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                       height: 10,
                     ),
                     Text(document["content"],
-                        maxLines: 3, style: TextStyle(fontSize: 16)),
+                        maxLines: 4, style: TextStyle(fontSize: 16)),
                     Spacer(),
                     Text(Utils.getMessageTimerFrmt(document["created_time"]),
                         style: TextStyle(color: Colors.black45, fontSize: 12))
@@ -123,13 +123,14 @@ class _HomePageState extends State<HomePage> {
                       height: 10,
                     ),
                     Text(document["subject"],
-                        maxLines: 1, style: TextStyle(fontSize: 16)),
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 17, color: Colors.black)),
                     SizedBox(
                       height: 5,
                     ),
-                    Text("   " + document["content"],
-                        maxLines: 2,
-                        style: TextStyle(fontSize: 14, color: Colors.black87)),
+                    Text(document["content"],
+                        maxLines: 3,
+                        style: TextStyle(fontSize: 15, color: Colors.black87)),
                     Spacer(),
                     Text(Utils.getMessageTimerFrmt(document["created_time"]),
                         style: TextStyle(color: Colors.black45, fontSize: 12))
@@ -144,6 +145,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget build(BuildContext context) {
+    if (Utils.isNewResourcesAdded) {
+      Utils.isNewResourcesAdded = false;
+      Fluttertoast.showToast(
+          msg: "New resources added please checkout",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+
     medQry = MediaQuery.of(context);
     return WillPopScope(
         onWillPop: () async => false,

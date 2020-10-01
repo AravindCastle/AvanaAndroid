@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class Utils {
     900: Color.fromRGBO(25, 118, 210, 1),
   };
   static Map<String, int> threadCount = new Map();
-  static const String notifyTopic = "test1";
+  static const String notifyTopic = "test2";
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
     imgFrmt.add("jpeg");
@@ -42,6 +43,8 @@ class Utils {
   static String userName = "";
   static int userRole = 1;
   static String userEmail = "";
+  static String userId = "";
+  static bool isNewResourcesAdded = false;
   static bool getVideoFormats(String isSupported) {
     List<String> imgFrmt = new List();
 
@@ -373,7 +376,6 @@ static void openFile(File file,String url){
 
   static Future<void> sendPushNotification(
       String title, String body, String screenName, String docId) async {
-    return false;
     final SharedPreferences localStore = await SharedPreferences.getInstance();
     String ownerId = localStore.getString("userId");
     String serverToken =
@@ -803,53 +805,81 @@ static void openFile(File file,String url){
 
   static Widget attachmentPreviewSlider(
       BuildContext context, DocumentSnapshot doc) {
-    List<dynamic> attachmentList = doc["attachments"];
     List<Widget> attach = new List();
-
-    for (int i = 0; i < attachmentList.length; i++) {
-      String type = attachmentList[i]["type"];
-      String url = attachmentList[i]["url"];
-      if (getImageFormats(type)) {
-        attach.add(Container(
-          width: 100,
-          height: 100,
-          child: OutlineButton(
-            child: Material(
-              child: CachedNetworkImage(
-                width: 100,
-                height: 100,
-                fit: BoxFit.fill,
-                progressIndicatorBuilder: (context, url, progress) =>
-                    Image.asset(
-                  "assets/imagethumbnail.png",
+    if (doc != null) {
+      List<dynamic> attachmentList = doc["attachments"];
+      for (int i = 0; i < attachmentList.length; i++) {
+        String type = attachmentList[i]["type"];
+        String url = attachmentList[i]["url"];
+        if (getImageFormats(type)) {
+          attach.add(Container(
+            width: 100,
+            height: 100,
+            child: OutlineButton(
+              child: Material(
+                child: CachedNetworkImage(
                   width: 100,
                   height: 100,
+                  fit: BoxFit.fill,
+                  progressIndicatorBuilder: (context, url, progress) =>
+                      Image.asset(
+                    "assets/imagethumbnail.png",
+                    width: 100,
+                    height: 100,
+                  ),
+                  imageUrl: url,
                 ),
-                imageUrl: url,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
+                ),
+                clipBehavior: Clip.hardEdge,
               ),
-              borderRadius: BorderRadius.all(
-                Radius.circular(8.0),
-              ),
-              clipBehavior: Clip.hardEdge,
+              onPressed: null,
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(8.0)),
+              borderSide: BorderSide(color: Colors.grey),
+              padding: EdgeInsets.all(0),
             ),
-            onPressed: null,
-            shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.grey),
-            padding: EdgeInsets.all(0),
-          ),
-          margin: EdgeInsets.only(left: 8, top: 3),
-        ));
+            margin: EdgeInsets.only(left: 8, top: 3),
+          ));
+        }
       }
     }
-
-    if (attach.length > 0) {
-      return ListView(
-        scrollDirection: Axis.horizontal,
-        children: attach,
-      );
-    } else {
-      return SizedBox();
+    if (attach.length == 0) {
+      attach.add(Container(
+        width: 100,
+        height: 100,
+        child: OutlineButton(
+          child: Material(
+            child: Image.asset(
+              "assets/imagethumbnail.png",
+              width: 100,
+              height: 100,
+              fit: BoxFit.fill,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+            clipBehavior: Clip.hardEdge,
+          ),
+          onPressed: null,
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(8.0)),
+          borderSide: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.all(0),
+        ),
+        margin: EdgeInsets.only(left: 8, top: 3),
+      ));
     }
+
+    return ListView(
+      scrollDirection: Axis.horizontal,
+      children: attach,
+    );
+  }
+
+  static bool isSuperAdmin() {
+    return (Utils.userEmail == "admin@avana.com" ||
+        Utils.userEmail == "admin@admin.com");
   }
 }

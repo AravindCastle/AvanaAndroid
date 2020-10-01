@@ -43,10 +43,9 @@ class _FeedEditorState extends State<FeedEditor> {
           isSaving = true;
         });
       try {
-        // Utils.showLoadingPop(context);
+        Utils.showLoadingPop(context);
         String content = messageContr.text;
         if (content.isNotEmpty) {
-          /*
           List<Map> fileUrls = new List();
           final SharedPreferences localStore =
               await SharedPreferences.getInstance();
@@ -61,15 +60,14 @@ class _FeedEditorState extends State<FeedEditor> {
             fileUrls.add({
               "url": await storageReference.getDownloadURL(),
               "name": fileName,
-              "type": fileName.split(".").last
+              "type": fileName.split(".").last,
             });
           }
           Navigator.pop(context);
-          */
+
           Utils.showLoadingPopText(context, "Saving");
 
-          final SharedPreferences localStore =
-              await SharedPreferences.getInstance();
+          final SharedPreferences store = await SharedPreferences.getInstance();
           DocumentReference newFeed =
               await Firestore.instance.collection("feed").add({
             "content": content,
@@ -78,14 +76,15 @@ class _FeedEditorState extends State<FeedEditor> {
             "ownerrole": localStore.getInt("role"),
             "feedtype": 0,
             "created_time": new DateTime.now().millisecondsSinceEpoch,
+            "attachments": fileUrls
           });
 
-/*
-          String notfyStr = messageContr.text;
-         
+          String notfyStr =
+              localStore.getString("name") + " has added a new post ";
+
           Utils.sendPushNotification(
-              "New Message", notfyStr, "messageview", newFeed.documentID);
-          */
+              "New feed ", notfyStr, "feed", newFeed.documentID);
+
           Navigator.pushNamed(context, "/feed");
         }
       } catch (Exception) {
@@ -102,6 +101,8 @@ class _FeedEditorState extends State<FeedEditor> {
   Widget buildAttachmentSection(BuildContext context) {
     List<Widget> row1 = new List();
     List<Widget> row2 = new List();
+    List<Widget> row3 = new List();
+    List<Widget> row4 = new List();
     for (int i = 0; i < uploaderImgs.length; i++) {
       File prevFile = uploaderImgs[i];
       String fileName = prevFile.path.split("/").last;
@@ -109,15 +110,26 @@ class _FeedEditorState extends State<FeedEditor> {
       if (i < 3) {
         row1.add((Utils.attachmentWid(
             fileName, prevFile, null, fileType, context, medQry)));
-      } else {
+      } else if (i < 6) {
         row2.add((Utils.attachmentWid(
+            fileName, prevFile, null, fileType, context, medQry)));
+      } else if (i < 9) {
+        row3.add((Utils.attachmentWid(
+            fileName, prevFile, null, fileType, context, medQry)));
+      } else {
+        row4.add((Utils.attachmentWid(
             fileName, prevFile, null, fileType, context, medQry)));
       }
     }
 
     return new Container(
       child: Column(
-        children: <Widget>[Row(children: row1), Row(children: row2)],
+        children: <Widget>[
+          Row(children: row1),
+          Row(children: row2),
+          Row(children: row3),
+          Row(children: row4)
+        ],
       ),
     );
   }
@@ -129,7 +141,7 @@ class _FeedEditorState extends State<FeedEditor> {
         appBar: AppBar(
           title: Text("New  Feed"),
           actions: <Widget>[
-            //IconButton(icon: Icon(Icons.attach_file), onPressed: _pickImage),
+            IconButton(icon: Icon(Icons.attach_file), onPressed: _pickImage),
             IconButton(
                 icon: Icon(Icons.send),
                 onPressed: () {
@@ -167,7 +179,7 @@ class _FeedEditorState extends State<FeedEditor> {
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               hintText: "Type ..."))),
-                  // buildAttachmentSection(context)
+                  buildAttachmentSection(context)
                 ]),
           ),
         ));

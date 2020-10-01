@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:avana_academy/Utils.dart';
-import 'package:avana_academy/addUser.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -83,7 +82,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       commentEditor.clear();
       Utils.sendPushNotification(
           "New Comment", notfyStr, "messageview", threadID);
-      Utils.pushFeed(" has added new comment.", 1);
+      //Utils.pushFeed(" has added new comment.", 1);
       Utils.updateCommentCount(threadID, true);
       isCommentSaved = true;
       Navigator.pop(context);
@@ -412,20 +411,31 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
 
     List<Widget> row1 = new List();
     List<Widget> row2 = new List();
+    List<Widget> row3 = new List();
+    List<Widget> row4 = new List();
     for (int i = 0; i < attachmentList.length; i++) {
       String type = attachmentList[i]["type"];
       String url = attachmentList[i]["url"];
       String name = attachmentList[i]["name"];
       if (i < 3) {
         row1.add((Utils.attachmentWid(name, null, url, type, context, medQry)));
-      } else {
+      } else if (i < 6) {
         row2.add((Utils.attachmentWid(name, null, url, type, context, medQry)));
+      } else if (i < 9) {
+        row3.add((Utils.attachmentWid(name, null, url, type, context, medQry)));
+      } else {
+        row4.add((Utils.attachmentWid(name, null, url, type, context, medQry)));
       }
     }
 
     return new Container(
       child: Column(
-        children: <Widget>[Row(children: row1), Row(children: row2)],
+        children: <Widget>[
+          Row(children: row1),
+          Row(children: row2),
+          Row(children: row3),
+          Row(children: row4)
+        ],
       ),
     );
   }

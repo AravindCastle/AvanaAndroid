@@ -34,6 +34,7 @@ class _userListPageState extends State<userListPage> {
         body: new StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance
               .collection('userdata')
+              .orderBy("userrole", descending: true)
               .orderBy("username")
               .snapshots(),
           builder:
@@ -77,13 +78,13 @@ class _userListPageState extends State<userListPage> {
                                 style: TextStyle(fontWeight: FontWeight.bold))
                           ]),
                       subtitle: new Text(document['email']),
-                      onTap: Utils.userRole == 3
-                          ? null
-                          : () {
+                      onTap: Utils.isSuperAdmin()
+                          ? () {
                               Navigator.pushNamed(context, "/userdetailpage",
                                   arguments: UserDetailsArguement(
                                       document.documentID));
-                            },
+                            }
+                          : null,
                     ));
               }).toList(),
             );
@@ -198,7 +199,7 @@ class _userListPageState extends State<userListPage> {
         ),
       ),*/
         floatingActionButton: new Visibility(
-          visible: Utils.userRole == 1 || Utils.userRole == 2,
+          visible: (Utils.isSuperAdmin()),
           child: FloatingActionButton(
             onPressed: () {
               Navigator.pushNamed(context, "/adduser");

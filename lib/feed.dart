@@ -82,19 +82,36 @@ class _FeedPageState extends State<FeedPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        Text(document["ownername"],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                                fontSize: 17)),
+                                        Padding(
+                                            padding:
+                                                EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                            child: Text(document["ownername"],
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                    fontSize: 18))),
                                         SizedBox(
                                           height: 5,
                                         ),
-                                        Text(document["content"],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 15,
-                                                color: Colors.black))
+                                        Padding(
+                                            padding:
+                                                EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                            child: Text(document["content"],
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 15,
+                                                    color: Colors.black))),
+                                        document["attachments"].length > 0
+                                            ? new Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 5, 0, 5),
+                                                height: 100,
+                                                width: medQry.size.width * .88,
+                                                child: Utils
+                                                    .attachmentPreviewSlider(
+                                                        context, document))
+                                            : SizedBox()
                                       ],
                                     ),
                                   ),
@@ -152,13 +169,11 @@ class _FeedPageState extends State<FeedPage> {
             onTap: _onItemTapped,
           ),
           floatingActionButton: new Visibility(
-              visible: (Utils.userRole == 1),
+              visible: true,
               child: FloatingActionButton(
-                onPressed: (Utils.userRole == 1)
-                    ? () {
-                        Navigator.pushNamed(context, "/feededitor");
-                      }
-                    : null,
+                onPressed: () {
+                  Navigator.pushNamed(context, "/feededitor");
+                },
                 child: Icon(Icons.add, color: Theme.of(context).primaryColor),
                 backgroundColor: Theme.of(context).secondaryHeaderColor,
               )),

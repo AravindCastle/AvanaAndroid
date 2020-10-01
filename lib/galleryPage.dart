@@ -68,7 +68,8 @@ class GalleryPageState extends State<GalleryPage> {
         "created_time": new DateTime.now().millisecondsSinceEpoch,
       });
       Navigator.pop(context);
-      Utils.pushFeed(" has added a youtube link", 1);
+      //Utils.pushFeed(" has added a youtube link", 1);
+      Utils.sendPushNotification("New Resource ", "", "resource", "123");
     }
   }
 
@@ -116,7 +117,8 @@ class GalleryPageState extends State<GalleryPage> {
             "filetype": fileType,
             "created_time": new DateTime.now().millisecondsSinceEpoch,
           });
-          Utils.pushFeed(" has added a new file ", 1);
+          //Utils.pushFeed(" has added a new file ", 1);
+          Utils.sendPushNotification("New Resource ", "", "resource", "123");
           Navigator.of(context).pop();
         }
       }
