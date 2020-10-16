@@ -22,7 +22,7 @@ class _MessageEditorState extends State<MessageEditor> {
   List<File> uploaderImgs = new List();
   List<String> videoFrmts = new List();
   TextEditingController messageContr = new TextEditingController();
-  String dropDownValue = "First Item";
+  TextEditingController dropDownValue = new TextEditingController();
 
 //videoFrmts.addAll({'.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'});
   Future<void> _pickImage() async {
@@ -48,7 +48,8 @@ class _MessageEditorState extends State<MessageEditor> {
       try {
         Utils.showLoadingPop(context);
         String content = messageContr.text;
-        if (content.isNotEmpty) {
+        String sub = dropDownValue.text;
+        if (content.isNotEmpty && sub.isNotEmpty) {
           List<Map> fileUrls = new List();
           final SharedPreferences localStore =
               await SharedPreferences.getInstance();
@@ -77,7 +78,7 @@ class _MessageEditorState extends State<MessageEditor> {
             "attachments": fileUrls.toList(),
             "created_time": new DateTime.now().millisecondsSinceEpoch,
             "folderid": folderId,
-            "subject": dropDownValue
+            "subject": dropDownValue.text
           });
 
           String notfyStr = messageContr.text;
@@ -175,32 +176,15 @@ class _MessageEditorState extends State<MessageEditor> {
                     height: medQry.size.height * .01,
                   ),
                   Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 0, 3),
+                      padding: const EdgeInsets.all(15),
                       child: new Container(
                           width: medQry.size.height,
-                          child: DropdownButton(
-                              value: dropDownValue,
-                              items: [
-                                DropdownMenuItem(
-                                  child: Text("First Item"),
-                                  value: "First Item",
-                                ),
-                                DropdownMenuItem(
-                                  child: Text("Second Item"),
-                                  value: "Second Item",
-                                ),
-                                DropdownMenuItem(
-                                    child: Text("Third Item"),
-                                    value: "Third Item"),
-                                DropdownMenuItem(
-                                    child: Text("Fourth Item"),
-                                    value: "Fourth Item")
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  dropDownValue = value;
-                                });
-                              }))),
+                          child: TextField(
+                            decoration: InputDecoration(
+                                hintText: "Subject",
+                                border: OutlineInputBorder()),
+                            controller: dropDownValue,
+                          ))),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
                     child: SizedBox(

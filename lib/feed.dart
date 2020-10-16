@@ -49,83 +49,93 @@ class _FeedPageState extends State<FeedPage> {
                     child: new LinearProgressIndicator(), height: 5);
               return new ListView(
                 children: snapshot.data.documents.map((document) {
-                  return new Card(
-                    child: new Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            document["feedtype"] == 1
-                                ? new Container(
-                                    child: RichText(
-                                      text: TextSpan(
-                                        text: document["ownername"],
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                            fontSize: 16),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: document["content"],
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Colors.black)),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : new Container(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                            padding:
-                                                EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                            child: Text(document["ownername"],
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
-                                                    fontSize: 18))),
-                                        SizedBox(
-                                          height: 5,
+                  return GestureDetector(
+                      onTap: () => {
+                            Navigator.pushNamed(context, "/feeddetails",
+                                arguments: document.documentID)
+                          },
+                      child: new Card(
+                        child: new Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                document["feedtype"] == 1
+                                    ? new Container(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: document["ownername"],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                                fontSize: 16),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                  text: document["content"],
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      color: Colors.black)),
+                                            ],
+                                          ),
                                         ),
-                                        Padding(
-                                            padding:
-                                                EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                            child: Text(document["content"],
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 15,
-                                                    color: Colors.black))),
-                                        document["attachments"].length > 0
-                                            ? new Container(
+                                      )
+                                    : new Container(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Padding(
                                                 padding: EdgeInsets.fromLTRB(
-                                                    0, 5, 0, 5),
-                                                height: 100,
-                                                width: medQry.size.width * .88,
-                                                child: Utils
-                                                    .attachmentPreviewSlider(
-                                                        context, document))
-                                            : SizedBox()
-                                      ],
-                                    ),
-                                  ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                Utils.getMessageTimerFrmt(
-                                    document["created_time"]),
-                                style: TextStyle(
-                                    color: Colors.black45, fontSize: 12))
-                          ],
-                        )),
-                  );
+                                                    5, 0, 0, 0),
+                                                child: Text(
+                                                    document["ownername"],
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.black,
+                                                        fontSize: 18))),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    5, 0, 0, 0),
+                                                child: Text(document["content"],
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        fontSize: 15,
+                                                        color: Colors.black))),
+                                            document["attachments"].length > 0
+                                                ? new Container(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            0, 5, 0, 5),
+                                                    height: 100,
+                                                    width:
+                                                        medQry.size.width * .88,
+                                                    child: Utils
+                                                        .attachmentPreviewSlider(
+                                                            context, document))
+                                                : SizedBox()
+                                          ],
+                                        ),
+                                      ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                    Utils.getMessageTimerFrmt(
+                                        document["created_time"]),
+                                    style: TextStyle(
+                                        color: Colors.black45, fontSize: 12))
+                              ],
+                            )),
+                      ));
                 }).toList(),
               );
             },

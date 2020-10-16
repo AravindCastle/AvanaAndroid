@@ -852,10 +852,10 @@ static void openFile(File file,String url){
         child: OutlineButton(
           child: Material(
             child: Image.asset(
-              "assets/imagethumbnail.png",
+              "assets/Transforaminal.png",
               width: 100,
               height: 100,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
             ),
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),

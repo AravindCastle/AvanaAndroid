@@ -4,6 +4,7 @@ import 'package:avana_academy/MessageEditor.dart';
 import 'package:avana_academy/facultyDetails.dart';
 import 'package:avana_academy/facultyList.dart';
 import 'package:avana_academy/feed.dart';
+import 'package:avana_academy/feedDetails.dart';
 import 'package:avana_academy/feedEditor.dart';
 import 'package:avana_academy/galleryPage.dart';
 import 'package:avana_academy/home.dart';
@@ -12,7 +13,6 @@ import 'package:avana_academy/messagescreen.dart';
 import 'package:avana_academy/photoview.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
-import 'package:avana_academy/videoview.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -92,12 +92,7 @@ class AvanaHome extends StatelessWidget {
             type: PageTransitionType.fade,
             settings: settings);
         break;
-      case '/videoview':
-        return PageTransition(
-            child: VideoViewer(),
-            type: PageTransitionType.fade,
-            settings: settings);
-        break;
+
       case '/gallery':
         return PageTransition(
             child: GalleryPage(),
@@ -121,6 +116,12 @@ class AvanaHome extends StatelessWidget {
       case '/feededitor':
         return PageTransition(
             child: FeedEditor(),
+            type: PageTransitionType.fade,
+            settings: settings);
+        break;
+      case '/feeddetails':
+        return PageTransition(
+            child: FeedDetailScreen(),
             type: PageTransitionType.fade,
             settings: settings);
         break;

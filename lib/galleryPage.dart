@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GalleryPage extends StatefulWidget {
   GalleryPageState createState() => GalleryPageState();
@@ -69,7 +68,7 @@ class GalleryPageState extends State<GalleryPage> {
       });
       Navigator.pop(context);
       //Utils.pushFeed(" has added a youtube link", 1);
-      Utils.sendPushNotification("New Resource ", "", "resource", "123");
+      Utils.sendPushNotification("New Resource added", "", "resource", "123");
     }
   }
 
@@ -118,7 +117,8 @@ class GalleryPageState extends State<GalleryPage> {
             "created_time": new DateTime.now().millisecondsSinceEpoch,
           });
           //Utils.pushFeed(" has added a new file ", 1);
-          Utils.sendPushNotification("New Resource ", "", "resource", "123");
+          Utils.sendPushNotification(
+              "New Resource added", "", "resource", "123");
           Navigator.of(context).pop();
         }
       }

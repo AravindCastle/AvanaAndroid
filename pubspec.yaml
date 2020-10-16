@@ -29,8 +29,6 @@ dependencies:
   page_transition: "^1.1.5"
   cached_network_image: ^2.2.0
   photo_view: ^0.9.2
-  video_player: ^0.10.9+1
-  chewie: ^0.9.10
   google_fonts: ^1.1.0 
   uuid: ^2.0.4
   url_launcher: ^5.4.11
@@ -88,7 +86,8 @@ flutter:
      - assets/videothumbnail.png
      - assets/pdfthumbnail.png    
      - assets/youtubethumbnail.png   
-     - assets/imagethumbnail.png      
+     - assets/imagethumbnail.png 
+     - assets/Transforaminal.png
   # To add assets to your application, add an assets section, like this:
   
   #  - images/a_dot_ham.jpeg
