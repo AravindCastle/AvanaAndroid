@@ -26,7 +26,7 @@ class Utils {
     900: Color.fromRGBO(25, 118, 210, 1),
   };
   static Map<String, int> threadCount = new Map();
-  static const String notifyTopic = "test2";
+  static const String notifyTopic = "test3";
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
     imgFrmt.add("jpeg");
