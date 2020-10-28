@@ -141,17 +141,17 @@ class AvanaHome extends StatelessWidget {
       theme: ThemeData(
           textTheme: GoogleFonts.robotoTextTheme(),
           primaryIconTheme: IconThemeData(color: Colors.white),
-          primarySwatch: MaterialColor(Color.fromRGBO(25, 118, 210, 1).value, {
-            50: Color.fromRGBO(25, 118, 210, 0),
-            100: Color.fromRGBO(25, 118, 210, .1),
-            200: Color.fromRGBO(25, 118, 210, .2),
-            300: Color.fromRGBO(25, 118, 210, .3),
-            400: Color.fromRGBO(25, 118, 210, .4),
-            500: Color.fromRGBO(25, 118, 210, .5),
-            600: Color.fromRGBO(25, 118, 210, .6),
-            700: Color.fromRGBO(25, 118, 210, .7),
-            800: Color.fromRGBO(25, 118, 210, .8),
-            900: Color.fromRGBO(25, 118, 210, .9)
+          primarySwatch: MaterialColor(Color.fromRGBO(173, 19, 87, 1).value, {
+            50: Color.fromRGBO(173, 19, 87, 0),
+            100: Color.fromRGBO(173, 19, 87, .1),
+            200: Color.fromRGBO(173, 19, 87, .2),
+            300: Color.fromRGBO(173, 19, 87, .3),
+            400: Color.fromRGBO(173, 19, 87, .4),
+            500: Color.fromRGBO(173, 19, 87, .5),
+            600: Color.fromRGBO(173, 19, 87, .6),
+            700: Color.fromRGBO(173, 19, 87, .7),
+            800: Color.fromRGBO(173, 19, 87, .8),
+            900: Color.fromRGBO(173, 19, 87, .9)
           }),
           secondaryHeaderColor: Colors.white
 

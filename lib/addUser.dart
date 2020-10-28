@@ -40,7 +40,7 @@ class _AddUserPageState extends State<AddUserPage> {
           });
         }
 
-        Firestore.instance.collection("userdata").add({
+        await Firestore.instance.collection("userdata").add({
           "username": userName.text,
           "email": emailId.text,
           "password": password.text,
@@ -59,6 +59,7 @@ class _AddUserPageState extends State<AddUserPage> {
             loading = false;
           });
         }
+        Navigator.pop(context);
       }
     } catch (Exception) {
       setState(() {
