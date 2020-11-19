@@ -12,7 +12,7 @@ class userListPage extends StatefulWidget {
 class _userListPageState extends State<userListPage> {
   MediaQueryData medQry;
 
-  int _selectedIndex = 4;
+  int _selectedIndex = 3;
   void _onItemTapped(int index) {
     Utils.bottomNavAction(index, context);
   }
@@ -92,10 +92,6 @@ class _userListPageState extends State<userListPage> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Home'),
-            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.rss_feed),
               title: Text('Feed'),

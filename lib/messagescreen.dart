@@ -15,6 +15,9 @@ class _MessagePageState extends State<MessagePage> {
   SharedPreferences prefs;
   String userName = "";
   int userRole = 1;
+  bool showSearchBar = false;
+  TextEditingController searchBarController = new TextEditingController();
+  String searchText = null;
 
   @override
   void initState() {
@@ -33,107 +36,120 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Widget messageItem(DocumentSnapshot messageDoc, BuildContext context) {
-    var children2 = <Widget>[
-      SizedBox(width: 15),
-      messageDoc["attachments"].length > 0
-          ? Text(
-              messageDoc["attachments"].length.toString() + " Attachment",
-              style: TextStyle(fontSize: 14),
-            )
-          : SizedBox(),
-      Spacer(),
-      Utils.threadCount.containsKey(messageDoc.documentID)
-          ? Text(
-              Utils.threadCount[messageDoc.documentID].toString() +
-                  " "
-                      "Comment",
-              style: TextStyle(fontSize: 14),
-            )
-          : SizedBox(),
-    ];
-    return new GestureDetector(
-        child: Card(
-            elevation: 1,
-            child: new Container(
-              height: 190,
-              child: new Padding(
-                  padding:
-                      EdgeInsets.only(top: 10, bottom: 10, left: 8, right: 8),
-                  child: new Column(children: [
-                    Row(children: [
-                      Utils.isNewMessage(messageDoc.documentID, prefs),
-                      SizedBox(
-                        width: 22,
-                        child: Icon(
-                          Icons.check_circle,
-                          size: 16,
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-                      SizedBox(
-                        width: medQry.size.width * .64,
-                        child: Text(messageDoc["ownername"],
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            style:
-                                TextStyle(fontSize: 19, color: Colors.black)),
-                      ),
-                      SizedBox(
-                        width: medQry.size.width * .19,
-                        child: Text(
-                          Utils.getTimeFrmt(messageDoc["created_time"]),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 11,
+    if (searchText == null ||
+        searchText.trim() == "" ||
+        (messageDoc["ownername"]
+                .toString()
+                .toLowerCase()
+                .contains(searchText.trim()) ||
+            messageDoc["subject"]
+                .toString()
+                .toLowerCase()
+                .contains(searchText.trim()))) {
+      var children2 = <Widget>[
+        SizedBox(width: 15),
+        messageDoc["attachments"].length > 0
+            ? Text(
+                messageDoc["attachments"].length.toString() + " Attachment",
+                style: TextStyle(fontSize: 14),
+              )
+            : SizedBox(),
+        Spacer(),
+        Utils.threadCount.containsKey(messageDoc.documentID)
+            ? Text(
+                Utils.threadCount[messageDoc.documentID].toString() +
+                    " "
+                        "Comment",
+                style: TextStyle(fontSize: 14),
+              )
+            : SizedBox(),
+      ];
+      return new GestureDetector(
+          child: Card(
+              elevation: 1,
+              child: new Container(
+                height: 190,
+                child: new Padding(
+                    padding:
+                        EdgeInsets.only(top: 10, bottom: 10, left: 8, right: 8),
+                    child: new Column(children: [
+                      Row(children: [
+                        Utils.isNewMessage(messageDoc.documentID, prefs),
+                        SizedBox(
+                          width: 22,
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 16,
+                            color: Colors.blueAccent,
                           ),
                         ),
-                      ),
-                    ]),
-                    SizedBox(height: medQry.size.height * .01),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 15),
                         SizedBox(
-                          width: medQry.size.width * .89,
+                          width: medQry.size.width * .64,
+                          child: Text(messageDoc["ownername"],
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style:
+                                  TextStyle(fontSize: 19, color: Colors.black)),
+                        ),
+                        SizedBox(
+                          width: medQry.size.width * .19,
                           child: Text(
-                            messageDoc["subject"],
-                            maxLines: 1,
+                            Utils.getTimeFrmt(messageDoc["created_time"]),
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black54),
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 11,
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                    new Container(
-                      padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
-                      child: Utils.attachmentPreviewSlider(
-                          context,
-                          messageDoc["attachments"].length > 0
-                              ? messageDoc
-                              : null),
-                      height: 100,
-                      width: medQry.size.width * .9,
-                    ),
-                    Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: children2,
-                    )
-                  ])),
-            )),
-        onTap: () {
-          Navigator.pushNamed(context, "/messageview",
-              arguments: messageDoc.documentID);
-        });
+                      ]),
+                      SizedBox(height: medQry.size.height * .01),
+                      Row(
+                        children: <Widget>[
+                          SizedBox(width: 15),
+                          SizedBox(
+                            width: medQry.size.width * .89,
+                            child: Text(
+                              messageDoc["subject"],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.black54),
+                            ),
+                          ),
+                        ],
+                      ),
+                      new Container(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
+                        child: Utils.attachmentPreviewSlider(
+                            context,
+                            messageDoc["attachments"].length > 0
+                                ? messageDoc
+                                : null),
+                        height: 100,
+                        width: medQry.size.width * .9,
+                      ),
+                      Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: children2,
+                      )
+                    ])),
+              )),
+          onTap: () {
+            Navigator.pushNamed(context, "/messageview",
+                arguments: messageDoc.documentID);
+          });
+    } else {
+      return SizedBox();
+    }
   }
 
-  int _selectedIndex = 2;
+  int _selectedIndex = 1;
   void _onItemTapped(int index) {
     Utils.bottomNavAction(index, context);
   }
@@ -146,6 +162,15 @@ class _MessagePageState extends State<MessagePage> {
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
+            actions: [
+              IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () => {
+                        setState(() {
+                          showSearchBar = true;
+                        })
+                      })
+            ],
             leading: IconButton(
               icon: Icon(Icons.account_circle),
               onPressed: () {
@@ -154,30 +179,72 @@ class _MessagePageState extends State<MessagePage> {
             ),
             title: Utils.getNewMessageCount(prefs, context),
           ),
-          body: new StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance
-                .collection('Threads')
-                .orderBy("created_time", descending: true)
-                .limit(200)
-                .snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData)
-                return SizedBox(
-                    child: new LinearProgressIndicator(), height: 5);
-              return new ListView(
-                children: snapshot.data.documents.map((document) {
-                  return messageItem(document, context);
-                }).toList(),
-              );
-            },
+          body: Column(
+            children: [
+              Visibility(
+                  visible: showSearchBar,
+                  child: Padding(
+                    padding: EdgeInsets.all(7),
+                    child: Row(children: [
+                      SizedBox(
+                          height: 45,
+                          width: medQry.size.width * .80,
+                          child: new TextField(
+                            maxLines: 1,
+                            autofocus: true,
+                            controller: searchBarController,
+                            onChanged: (newval) => {
+                              setState(() {
+                                searchText = newval;
+                              })
+                            },
+                            decoration: new InputDecoration(
+                              border: new OutlineInputBorder(
+                                borderRadius: const BorderRadius.all(
+                                  const Radius.circular(10.0),
+                                ),
+                              ),
+                              hintText: "Search",
+                            ),
+                          )),
+                      Spacer(),
+                      IconButton(
+                          icon: Icon(
+                            Icons.cancel,
+                            color: Colors.black,
+                          ),
+                          onPressed: () => {
+                                setState(() {
+                                  searchBarController.clear();
+                                  searchText = null;
+                                  showSearchBar = false;
+                                })
+                              })
+                    ]),
+                  )),
+              Expanded(
+                  child: new StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance
+                    .collection('Threads')
+                    .orderBy("created_time", descending: true)
+                    .limit(showSearchBar ? 1000 : 200)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData)
+                    return SizedBox(
+                        child: new LinearProgressIndicator(), height: 5);
+                  return new ListView(
+                    children: snapshot.data.documents.map((document) {
+                      return messageItem(document, context);
+                    }).toList(),
+                  );
+                },
+              )),
+            ],
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                title: Text('Home'),
-              ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.rss_feed),
                 title: Text('Feed'),

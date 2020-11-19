@@ -12,7 +12,7 @@ class FeedPage extends StatefulWidget {
 
 class _FeedPageState extends State<FeedPage> {
   MediaQueryData medQry = null;
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   void _onItemTapped(int index) {
     Utils.bottomNavAction(index, context);
   }
@@ -142,10 +142,6 @@ class _FeedPageState extends State<FeedPage> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                title: Text('Home'),
-              ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.rss_feed),
                 title: Text('Feed'),

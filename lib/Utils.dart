@@ -26,7 +26,7 @@ class Utils {
     900: Color.fromRGBO(25, 118, 210, 1),
   };
   static Map<String, int> threadCount = new Map();
-  static const String notifyTopic = "test3";
+  static const String notifyTopic = "test4";
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
     imgFrmt.add("jpeg");
@@ -776,17 +776,15 @@ static void openFile(File file,String url){
 
   static void bottomNavAction(int selectedIndex, BuildContext context) {
     if (selectedIndex == 0) {
-      Navigator.pushNamed(context, "/home");
-    } else if (selectedIndex == 1) {
       Navigator.pushNamed(context, "/feed");
-    } else if (selectedIndex == 2) {
+    } else if (selectedIndex == 1) {
       Navigator.pushNamed(context, "/messagePage");
-    } else if (selectedIndex == 3) {
+    } else if (selectedIndex == 2) {
       Navigator.pushNamed(context, "/gallery",
           arguments: {"superLevel": 0, "parentid": "0", "title": "Resources"});
-    } else if (selectedIndex == 4) {
+    } else if (selectedIndex == 3) {
       Navigator.pushNamed(context, "/userlist");
-    } else if (selectedIndex == 5) {
+    } else if (selectedIndex == 4) {
       Navigator.pushNamed(context, "/facultyPage");
     }
   }

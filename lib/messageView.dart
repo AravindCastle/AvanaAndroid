@@ -522,11 +522,39 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           (!isLoading &&
                   (Utils.isDeleteAvail(threadDetails['created_time']) ||
                       userRole == 1))
-              ? IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    deleteAlert(context);
+              ? PopupMenuButton(
+                  itemBuilder: (context) {
+                    var list = List<PopupMenuEntry<Object>>();
+                    list.add(
+                      PopupMenuItem(
+                        child: FlatButton(
+                          child: Text("Edit"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        value: "1",
+                      ),
+                    );
+                    list.add(
+                      PopupMenuDivider(
+                        height: 10,
+                      ),
+                    );
+                    list.add(
+                      PopupMenuItem(
+                        child: FlatButton(
+                          child: Text("Delete"),
+                          onPressed: () {
+                            deleteAlert(context);
+                          },
+                        ),
+                        value: "2",
+                      ),
+                    );
+                    return list;
                   },
+                  icon: Icon(Icons.more_vert),
                 )
               : SizedBox()
         ],

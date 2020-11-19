@@ -285,7 +285,7 @@ class GalleryPageState extends State<GalleryPage> {
     }
   }
 
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   void _onItemTapped(int index) {
     Utils.bottomNavAction(index, context);
   }
@@ -310,10 +310,6 @@ class GalleryPageState extends State<GalleryPage> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                title: Text('Home'),
-              ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.rss_feed),
                 title: Text('Feed'),

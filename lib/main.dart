@@ -306,7 +306,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     if (!isUserLogged) {
       Navigator.pushNamed(context, "/login");
     } else {
-      Navigator.pushNamed(context, "/home");
+      Navigator.pushNamed(context, "/feed");
     }
   }
 
