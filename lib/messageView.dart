@@ -25,6 +25,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   String userId;
   int userRole;
   BuildContext commonContext = null;
+  TextEditingController editMessageController = new TextEditingController();
 
   Future<void> _addImage() async {
     File selectedFile = await FilePicker.getFile(type: FileType.image);
@@ -305,18 +306,6 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                             commentsDoc[i]["owner_name"],
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           )),
-                      SizedBox(
-                          child: new IconButton(
-                        icon: Icon(Icons.delete_forever),
-                        onPressed: (Utils.isDeleteAvail(
-                                    commentsDoc[i]['created_time']) ||
-                                userRole == 1)
-                            ? () {
-                                deleteCommentAlert(
-                                    context, commentsDoc[i].documentID);
-                              }
-                            : null,
-                      ))
                     ],
                   ),
                   commentsDoc[i]["isattachment"]
@@ -368,11 +357,42 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                               fontWeight: FontWeight.normal),
                         ),
                   Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        Utils.getTimeFrmt(commentsDoc[i]["created_time"]),
-                        style: TextStyle(fontSize: 10, color: Colors.black54),
-                      ))
+                    padding: EdgeInsets.only(top: 8),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                            height: 35,
+                            child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Text(
+                                  Utils.getTimeFrmt(
+                                      commentsDoc[i]["created_time"]),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.black54,
+                                  ),
+                                ))),
+                        Spacer(),
+                        SizedBox(
+                            height: 35,
+                            child: Visibility(
+                                visible: (Utils.isDeleteAvail(
+                                        commentsDoc[i]['created_time']) ||
+                                    userRole == 1),
+                                child: new IconButton(
+                                  icon: Image.asset(
+                                    "assets/icons/delete.png",
+                                    width: 24.0,
+                                    height: 24.0,
+                                  ),
+                                  onPressed: () {
+                                    deleteCommentAlert(
+                                        context, commentsDoc[i].documentID);
+                                  },
+                                )))
+                      ],
+                    ),
+                  )
                 ]),
             padding: EdgeInsets.all(medQry.size.width * .03),
             width: medQry.size.width * .85,
@@ -394,6 +414,73 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       cmtRow.add(CircularProgressIndicator());
     }
     return cmtRow;
+  }
+
+  Future<void> updateMessage() async {
+    Utils.showLoadingPopText(context, "Updating the messsage");
+    await Firestore.instance
+        .collection('Threads')
+        .document(threadID)
+        .updateData({
+      "content": editMessageController.text,
+    });
+    Navigator.pop(context);
+    Navigator.pop(context);
+  }
+
+  void showEditSheet() {
+    editMessageController.text = threadDetails["content"];
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+        ),
+        builder: (BuildContext bc) {
+          return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: Container(
+                  padding: EdgeInsets.all(20),
+                  child: new Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          "Edit Message",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextField(
+                          autofocus: true,
+                          maxLines: 5,
+                          decoration:
+                              InputDecoration(border: OutlineInputBorder()),
+                          controller: editMessageController,
+                        ),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Row(children: [
+                          RaisedButton(
+                            onPressed: updateMessage,
+                            child: Text("Edit"),
+                          ),
+                          Spacer(),
+                          RaisedButton(
+                            onPressed: () => {Navigator.pop(context)},
+                            child: Text("Cancel"),
+                          )
+                        ])
+                      ])));
+        });
   }
 
   Widget buildCommentSection(BuildContext context) {
@@ -523,16 +610,14 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                   (Utils.isDeleteAvail(threadDetails['created_time']) ||
                       userRole == 1))
               ? PopupMenuButton(
+                  initialValue: 1,
+                  onSelected: (val) =>
+                      {val == "1" ? showEditSheet() : deleteAlert(context)},
                   itemBuilder: (context) {
                     var list = List<PopupMenuEntry<Object>>();
                     list.add(
                       PopupMenuItem(
-                        child: FlatButton(
-                          child: Text("Edit"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
+                        child: Text("Edit"),
                         value: "1",
                       ),
                     );
@@ -543,12 +628,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                     );
                     list.add(
                       PopupMenuItem(
-                        child: FlatButton(
-                          child: Text("Delete"),
-                          onPressed: () {
-                            deleteAlert(context);
-                          },
-                        ),
+                        child: Text("Delete"),
                         value: "2",
                       ),
                     );

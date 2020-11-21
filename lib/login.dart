@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:avana_academy/Utils.dart';
+import 'package:avana_academy/feed.dart';
 import 'package:avana_academy/home.dart';
 import 'package:avana_academy/messagescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   MediaQueryData medQry = null;
   Route _moveToHome() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+      pageBuilder: (context, animation, secondaryAnimation) => FeedPage(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(0.0, 1.0);
         var end = Offset.zero;
@@ -99,13 +100,15 @@ class _LoginPageState extends State<LoginPage> {
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            resizeToAvoidBottomPadding: true,
             body: Material(
                 child: new Container(
                     height: medQry.size.height,
                     width: medQry.size.width,
                     decoration: BoxDecoration(
                         image: DecorationImage(
-                            image: Image.asset("assets/loginbg.png").image,
+                            image: Image.asset("assets/loginbg.jpeg").image,
                             fit: BoxFit.cover)),
                     child: SingleChildScrollView(
                       child: Padding(
@@ -124,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                               Padding(
                                   padding: EdgeInsets.fromLTRB(
                                       medQry.size.width * .06, 0, 0, 0),
-                                  child: Container(
+                                  child:
+                                      /* Container(
                                     height: medQry.size.height * .25,
                                     width: medQry.size.width * .90,
                                     padding: EdgeInsets.only(
@@ -136,6 +140,10 @@ class _LoginPageState extends State<LoginPage> {
                                       'assets/avanalogo.png',
                                       fit: BoxFit.cover,
                                     ),
+                                  )*/
+                                      SizedBox(
+                                    height: medQry.size.height * .25,
+                                    width: medQry.size.width * .90,
                                   )),
                               SizedBox(height: medQry.size.height * 0.03),
                               TextField(

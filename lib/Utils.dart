@@ -1,8 +1,10 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
@@ -485,6 +487,41 @@ static void openFile(File file,String url){
         });
   }
 
+  static void showImageUploadingStatus(
+      BuildContext context, StorageUploadTask uploadTask, String text) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, popState) {
+            double loadingValue = 0;
+            uploadTask.events.listen((event) {
+              popState(() {
+                loadingValue = 100 *
+                    (uploadTask.lastSnapshot.bytesTransferred /
+                        uploadTask.lastSnapshot.totalByteCount);
+                print(loadingValue);
+              });
+            }).onError((handleError) {
+              text = "Upload failded";
+            });
+            return new Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(95)),
+                child: AlertDialog(
+                    title: Text(
+                      text + " " + loadingValue.toStringAsFixed(0) + "%",
+                      textAlign: TextAlign.center,
+                    ),
+                    content: SizedBox(
+                      child: new LinearProgressIndicator(),
+                      width: 10,
+                      height: 10,
+                    )));
+          });
+        });
+  }
+
   static void showUserPop(BuildContext context) {
     showModalBottomSheet(
         context: context,
@@ -776,16 +813,16 @@ static void openFile(File file,String url){
 
   static void bottomNavAction(int selectedIndex, BuildContext context) {
     if (selectedIndex == 0) {
-      Navigator.pushNamed(context, "/feed");
+      Navigator.pushReplacementNamed(context, "/feed");
     } else if (selectedIndex == 1) {
-      Navigator.pushNamed(context, "/messagePage");
+      Navigator.pushReplacementNamed(context, "/messagePage");
     } else if (selectedIndex == 2) {
-      Navigator.pushNamed(context, "/gallery",
+      Navigator.pushReplacementNamed(context, "/gallery",
           arguments: {"superLevel": 0, "parentid": "0", "title": "Resources"});
     } else if (selectedIndex == 3) {
-      Navigator.pushNamed(context, "/userlist");
+      Navigator.pushReplacementNamed(context, "/userlist");
     } else if (selectedIndex == 4) {
-      Navigator.pushNamed(context, "/facultyPage");
+      Navigator.pushReplacementNamed(context, "/facultyPage");
     }
   }
 
@@ -802,7 +839,7 @@ static void openFile(File file,String url){
   }
 
   static Widget attachmentPreviewSlider(
-      BuildContext context, DocumentSnapshot doc) {
+      BuildContext context, DocumentSnapshot doc, String subject) {
     List<Widget> attach = new List();
     if (doc != null) {
       List<dynamic> attachmentList = doc["attachments"];
@@ -850,7 +887,9 @@ static void openFile(File file,String url){
         child: OutlineButton(
           child: Material(
             child: Image.asset(
-              "assets/Transforaminal.png",
+              subject != null
+                  ? getDefaultImageForMessage(subject)
+                  : "assets/imagethumbnail.png",
               width: 100,
               height: 100,
               fit: BoxFit.cover,
@@ -879,5 +918,75 @@ static void openFile(File file,String url){
   static bool isSuperAdmin() {
     return (Utils.userEmail == "admin@avana.com" ||
         Utils.userEmail == "admin@admin.com");
+  }
+
+  static String getDefaultImageForMessage(String subject) {
+    List<String> topics = new List<String>();
+    topics.add("interlaminar");
+    topics.add("transforaminal");
+    topics.add("cervical");
+    topics.add("stenosis");
+    topics.add("foraminotomy");
+
+    int lastSmallInd;
+    String lastDefaultImg = "interlaminar";
+    for (int i = 0; i < topics.length; i++) {
+      if (subject.toLowerCase().contains(topics[i])) {
+        int valIndex = subject.toLowerCase().indexOf(topics[i]);
+        lastSmallInd = lastSmallInd == null ? valIndex + 1 : lastSmallInd;
+        if (valIndex != -1 && (i == 0 || valIndex < lastSmallInd)) {
+          lastSmallInd = valIndex;
+          lastDefaultImg = topics[i];
+        }
+      }
+    }
+
+    return "assets/" + lastDefaultImg + ".png";
+  }
+
+  static List<BottomNavigationBarItem> bottomNavItem() {
+    List<BottomNavigationBarItem> list = new List();
+    list.add(BottomNavigationBarItem(
+      icon: Image.asset(
+        "assets/icons/feed.png",
+        width: 24.0,
+        height: 24.0,
+      ),
+      label: 'Feed',
+    ));
+    list.add(BottomNavigationBarItem(
+      icon: Image.asset(
+        "assets/icons/message.png",
+        width: 24.0,
+        height: 24.0,
+      ),
+      label: 'Message',
+    ));
+    list.add(BottomNavigationBarItem(
+      icon: Image.asset(
+        "assets/icons/resource.png",
+        width: 24.0,
+        height: 24.0,
+      ),
+      label: 'Resources',
+    ));
+    list.add(BottomNavigationBarItem(
+      icon: Image.asset(
+        "assets/icons/users.png",
+        width: 24.0,
+        height: 24.0,
+      ),
+      label: 'Users',
+    ));
+    list.add(BottomNavigationBarItem(
+      icon: Image.asset(
+        "assets/icons/faculty.png",
+        width: 24.0,
+        height: 24.0,
+      ),
+      label: 'Faculties',
+    ));
+
+    return list;
   }
 }

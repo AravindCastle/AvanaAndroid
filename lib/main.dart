@@ -43,13 +43,13 @@ class AvanaHome extends StatelessWidget {
             settings:
                 settings); //MaterialPageRoute(builder: (_) => LoginPage());
         break;
-      case '/home':
+      /* case '/home':
         return PageTransition(
             child: HomePage(),
             type: PageTransitionType.fade,
             settings:
                 settings); //MaterialPageRoute(builder: (_) => LoginPage());
-        break;
+        break;*/
       case '/messagePage':
         return PageTransition(
             child: MessagePage(),
@@ -141,17 +141,17 @@ class AvanaHome extends StatelessWidget {
       theme: ThemeData(
           textTheme: GoogleFonts.robotoTextTheme(),
           primaryIconTheme: IconThemeData(color: Colors.white),
-          primarySwatch: MaterialColor(Color.fromRGBO(173, 19, 87, 1).value, {
-            50: Color.fromRGBO(173, 19, 87, 0),
-            100: Color.fromRGBO(173, 19, 87, .1),
-            200: Color.fromRGBO(173, 19, 87, .2),
-            300: Color.fromRGBO(173, 19, 87, .3),
-            400: Color.fromRGBO(173, 19, 87, .4),
-            500: Color.fromRGBO(173, 19, 87, .5),
-            600: Color.fromRGBO(173, 19, 87, .6),
-            700: Color.fromRGBO(173, 19, 87, .7),
-            800: Color.fromRGBO(173, 19, 87, .8),
-            900: Color.fromRGBO(173, 19, 87, .9)
+          primarySwatch: MaterialColor(Color.fromRGBO(0, 0, 0, 1).value, {
+            50: Color.fromRGBO(0, 0, 0, 0),
+            100: Color.fromRGBO(0, 0, 0, .1),
+            200: Color.fromRGBO(0, 0, 0, .2),
+            300: Color.fromRGBO(0, 0, 0, .3),
+            400: Color.fromRGBO(0, 0, 0, .4),
+            500: Color.fromRGBO(0, 0, 0, .5),
+            600: Color.fromRGBO(0, 0, 0, .6),
+            700: Color.fromRGBO(0, 0, 0, .7),
+            800: Color.fromRGBO(0, 0, 0, .8),
+            900: Color.fromRGBO(0, 0, 0, .9)
           }),
           secondaryHeaderColor: Colors.white
 

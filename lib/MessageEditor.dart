@@ -46,13 +46,14 @@ class _MessageEditorState extends State<MessageEditor> {
           isSaving = true;
         });
       try {
-        Utils.showLoadingPop(context);
         String content = messageContr.text;
         String sub = dropDownValue.text;
         if (content.isNotEmpty && sub.isNotEmpty) {
           List<Map> fileUrls = new List();
           final SharedPreferences localStore =
               await SharedPreferences.getInstance();
+          int totalFiles = uploaderImgs.length;
+
           for (int i = 0; i < uploaderImgs.length; i++) {
             String fileName = uploaderImgs[i].path.split("/").last;
             StorageReference storageReference = FirebaseStorage.instance
@@ -60,7 +61,10 @@ class _MessageEditorState extends State<MessageEditor> {
                 .child('AvanaFiles/' + folderId + '/' + fileName);
             StorageUploadTask uploadTask =
                 storageReference.putFile(uploaderImgs[i]);
+            int fileNumber = i + 1;
+            String loaderInfo = "$fileNumber/$totalFiles file is uploading  ";
             await uploadTask.onComplete;
+
             fileUrls.add({
               "url": await storageReference.getDownloadURL(),
               "name": fileName,
@@ -180,6 +184,7 @@ class _MessageEditorState extends State<MessageEditor> {
                       child: new Container(
                           width: medQry.size.height,
                           child: TextField(
+                            autofocus: true,
                             decoration: InputDecoration(
                                 hintText: "Subject",
                                 border: OutlineInputBorder()),
@@ -197,7 +202,6 @@ class _MessageEditorState extends State<MessageEditor> {
                   Padding(
                       padding: const EdgeInsets.all(5),
                       child: new TextField(
-                          autofocus: true,
                           controller: messageContr,
                           maxLines: 15,
                           decoration: InputDecoration(

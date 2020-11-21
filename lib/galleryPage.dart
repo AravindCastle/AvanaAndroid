@@ -309,32 +309,8 @@ class GalleryPageState extends State<GalleryPage> {
             child: buildGallery(context),
           ),
           bottomNavigationBar: BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.rss_feed),
-                title: Text('Feed'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.message),
-                title: Text('Message'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.image),
-                title: Text('Resources'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.supervisor_account),
-                title: Text(
-                  'Users',
-                ),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.verified_user),
-                title: Text(
-                  'Faculties',
-                ),
-              )
-            ],
+            items: Utils.bottomNavItem(),
+
             currentIndex: _selectedIndex,
             // backgroundColor: Colors.white,
             selectedItemColor: Theme.of(context).primaryColor,

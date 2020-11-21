@@ -18,6 +18,7 @@ class _MessagePageState extends State<MessagePage> {
   bool showSearchBar = false;
   TextEditingController searchBarController = new TextEditingController();
   String searchText = null;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -128,7 +129,8 @@ class _MessagePageState extends State<MessagePage> {
                             context,
                             messageDoc["attachments"].length > 0
                                 ? messageDoc
-                                : null),
+                                : null,
+                            messageDoc["subject"]),
                         height: 100,
                         width: medQry.size.width * .9,
                       ),
@@ -141,6 +143,11 @@ class _MessagePageState extends State<MessagePage> {
                     ])),
               )),
           onTap: () {
+            setState(() {
+              searchBarController.clear();
+              searchText = null;
+              showSearchBar = false;
+            });
             Navigator.pushNamed(context, "/messageview",
                 arguments: messageDoc.documentID);
           });
@@ -168,6 +175,7 @@ class _MessagePageState extends State<MessagePage> {
                   onPressed: () => {
                         setState(() {
                           showSearchBar = true;
+                          _scrollController.jumpTo(0);
                         })
                       })
             ],
@@ -235,6 +243,7 @@ class _MessagePageState extends State<MessagePage> {
                     return SizedBox(
                         child: new LinearProgressIndicator(), height: 5);
                   return new ListView(
+                    controller: _scrollController,
                     children: snapshot.data.documents.map((document) {
                       return messageItem(document, context);
                     }).toList(),
@@ -244,32 +253,8 @@ class _MessagePageState extends State<MessagePage> {
             ],
           ),
           bottomNavigationBar: BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.rss_feed),
-                title: Text('Feed'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.message),
-                title: Text('Message'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.image),
-                title: Text('Resources'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.supervisor_account),
-                title: Text(
-                  'Users',
-                ),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.verified_user),
-                title: Text(
-                  'Faculties',
-                ),
-              )
-            ],
+            items: Utils.bottomNavItem(),
+
             currentIndex: _selectedIndex,
             // backgroundColor: Colors.white,
             selectedItemColor: Theme.of(context).primaryColor,
@@ -277,77 +262,6 @@ class _MessagePageState extends State<MessagePage> {
             //unselectedLabelStyle: TextStyle(color: Colors.grey),
             onTap: _onItemTapped,
           ),
-          /*drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(25, 118, 210, 1),
-                    ),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: medQry.size.width * .15,
-                            width: medQry.size.width * .15,
-                            child: CircleAvatar(
-                              child: Icon(Icons.account_circle,
-                                  size: medQry.size.width * .15),
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(userName,
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white))
-                        ])),
-                ListTile(
-                  leading: Icon(Icons.message),
-                  title: Text('Messages'),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/messagePage");
-                  },
-                ),
-                (userRole == 1)
-                    ? ListTile(
-                        leading: Icon(Icons.account_circle),
-                        title: Text('Users'),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/userlist");
-                        },
-                      )
-                    : SizedBox(height: 0),
-                ListTile(
-                  leading: Icon(Icons.supervisor_account),
-                  title: Text('Faculties'),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/facultyPage");
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.image),
-                  title: Text('Resources'),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/gallery", arguments: {
-                      "superLevel": 0,
-                      "parentid": "0",
-                      "title": "Gallery"
-                    });
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.exit_to_app),
-                  title: Text('Log out'),
-                  onTap: () async {
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.clear();
-                    Navigator.pushNamed(context, "/login");
-                  },
-                ),
-              ],
-            ),
-          ),*/
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               Navigator.pushNamed(context, "/messageeditor");

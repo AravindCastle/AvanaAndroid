@@ -67,7 +67,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon" 
   ios: true
-  image_path: "assets/avanaIconLaunch.png"
+  image_path: "assets/avanaIconLaunch.jpeg"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -80,14 +80,25 @@ flutter:
   uses-material-design: true
   assets:
      - assets/avanalogo.png
-     - assets/avanaIconLaunch.png
-     - assets/loginbg.png
+     - assets/avanaIconLaunch.jpeg
+     - assets/loginbg.jpeg
      - assets/splashScreen.flr
      - assets/videothumbnail.png
      - assets/pdfthumbnail.png    
      - assets/youtubethumbnail.png   
      - assets/imagethumbnail.png 
-     - assets/Transforaminal.png
+     - assets/cervical.png
+     - assets/foraminotomy.png
+     - assets/interlaminar.png
+     - assets/stenosis.png
+     - assets/transforaminal.png
+     - assets/icons/feed.png
+     - assets/icons/faculty.png
+     - assets/icons/message.png
+     - assets/icons/resource.png
+     - assets/icons/users.png
+     - assets/icons/delete.png
+
   # To add assets to your application, add an assets section, like this:
   
   #  - images/a_dot_ham.jpeg
