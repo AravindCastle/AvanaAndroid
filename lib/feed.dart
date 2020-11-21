@@ -20,6 +20,7 @@ class _FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     super.initState();
+    Utils.isNewResourceAdded();
   }
 
   Widget build(BuildContext context) {

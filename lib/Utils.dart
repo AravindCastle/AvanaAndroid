@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -217,8 +218,7 @@ class Utils {
             clipBehavior: Clip.hardEdge,
           ),
           onPressed: () {
-            Navigator.pushNamed(context, "/videoview",
-                arguments: {"url": url, "name": name});
+            openFile(url, name, context);
           },
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
@@ -244,8 +244,7 @@ class Utils {
             clipBehavior: Clip.hardEdge,
           ),
           onPressed: () {
-            Navigator.pushNamed(context, "/videoview",
-                arguments: {"url": url, "name": name});
+            openFile(url, name, context);
           },
           padding: EdgeInsets.all(0),
         ),
@@ -988,5 +987,63 @@ static void openFile(File file,String url){
     ));
 
     return list;
+  }
+
+  static Future<void> newResourceNotify() async {
+    double currTime = new DateTime.now().millisecondsSinceEpoch.toDouble();
+    QuerySnapshot resource_notify = await Firestore.instance
+        .collection('resource_time_audit')
+        .getDocuments();
+    List<DocumentSnapshot> resourceTimeList = await resource_notify.documents;
+    if (resourceTimeList != null && resourceTimeList.length == 1) {
+      Firestore.instance
+          .collection("resource_time_audit")
+          .document(resourceTimeList.first.documentID)
+          .updateData({
+        "last_created_time": currTime,
+        "user": Utils.userId,
+      });
+    } else {
+      Iterator<DocumentSnapshot> listItr = resourceTimeList.iterator;
+      while (listItr.moveNext()) {
+        await listItr.current.reference.delete();
+      }
+
+      Firestore.instance.collection("resource_time_audit").add({
+        "last_created_time": currTime,
+        "user": Utils.userId,
+      });
+    }
+  }
+
+  static Future<void> isNewResourceAdded() async {
+    final SharedPreferences localStore = await SharedPreferences.getInstance();
+    QuerySnapshot resource_notify = await Firestore.instance
+        .collection('resource_time_audit')
+        .getDocuments();
+    List<DocumentSnapshot> resourceTimeList = await resource_notify.documents;
+    if (resourceTimeList != null && resourceTimeList.length > 0) {
+      double resourceAddedTime = resourceTimeList.first["last_created_time"];
+
+      if (Utils.userId != resourceTimeList.first["user"]) {
+        double currTime = new DateTime.now().millisecondsSinceEpoch.toDouble();
+        if (!localStore.containsKey("lastresourcecheck")) {
+          localStore.setDouble("lastresourcecheck", currTime);
+        }
+        double lastTime = localStore.getDouble("lastresourcecheck");
+
+        if (lastTime < resourceAddedTime) {
+          localStore.setDouble("lastresourcecheck", currTime);
+          Fluttertoast.showToast(
+              msg: "New resources added please checkout",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+      }
+    }
   }
 }

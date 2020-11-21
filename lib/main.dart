@@ -139,6 +139,7 @@ class AvanaHome extends StatelessWidget {
       title: 'Avana Academy',
       onGenerateRoute: generateRoute,
       theme: ThemeData(
+          backgroundColor: Colors.white54,
           textTheme: GoogleFonts.robotoTextTheme(),
           primaryIconTheme: IconThemeData(color: Colors.white),
           primarySwatch: MaterialColor(Color.fromRGBO(0, 0, 0, 1).value, {

@@ -439,7 +439,6 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
           .ref()
           .child('AvanaFiles/' + threadDetails["folderid"] + "/");
       storageReference.delete();
-      storageReference.delete();
     } catch (e) {}
     for (int i = 0; i < commentsDoc.length; i++) {
       Firestore.instance
