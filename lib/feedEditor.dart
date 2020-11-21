@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,6 +36,8 @@ class _FeedEditorState extends State<FeedEditor> {
   }
 
   Future<void> addNewFeed(BuildContext context) async {
+    final ProgressDialog uploadingPop = ProgressDialog(context,
+        type: ProgressDialogType.Download, isDismissible: false);
     var uuid = new Uuid();
     String folderId = uuid.v4();
     if (!isSaving) {
@@ -43,12 +46,16 @@ class _FeedEditorState extends State<FeedEditor> {
           isSaving = true;
         });
       try {
-        Utils.showLoadingPop(context);
         String content = messageContr.text;
         if (content.isNotEmpty) {
           List<Map> fileUrls = new List();
           final SharedPreferences localStore =
               await SharedPreferences.getInstance();
+          await uploadingPop.show();
+          uploadingPop.style(
+              message: "Uploading files", maxProgress: 100, progress: 0);
+          int totalFiles = uploaderImgs.length;
+
           for (int i = 0; i < uploaderImgs.length; i++) {
             String fileName = uploaderImgs[i].path.split("/").last;
             StorageReference storageReference = FirebaseStorage.instance
@@ -56,6 +63,21 @@ class _FeedEditorState extends State<FeedEditor> {
                 .child('AvanaFiles/' + folderId + '/' + fileName);
             StorageUploadTask uploadTask =
                 storageReference.putFile(uploaderImgs[i]);
+
+            int fileNumber = i + 1;
+            String loaderInfo = "$fileNumber/$totalFiles file is uploading  ";
+
+            uploadingPop.style(
+                message: loaderInfo, maxProgress: 100, progress: 0);
+            double loadingValue = 0;
+            uploadTask.events.listen((event) {
+              loadingValue = 100 *
+                  (uploadTask.lastSnapshot.bytesTransferred /
+                      uploadTask.lastSnapshot.totalByteCount);
+              uploadingPop.update(
+                  message: loaderInfo, progress: loadingValue.roundToDouble());
+            });
+
             await uploadTask.onComplete;
             fileUrls.add({
               "url": await storageReference.getDownloadURL(),
@@ -63,7 +85,7 @@ class _FeedEditorState extends State<FeedEditor> {
               "type": fileName.split(".").last,
             });
           }
-          Navigator.pop(context);
+          await uploadingPop.hide();
 
           Utils.showLoadingPopText(context, "Saving");
 

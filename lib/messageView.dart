@@ -548,7 +548,6 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           .ref()
           .child('AvanaFiles/' + threadDetails["folderid"] + "/");
       storageReference.delete();
-      storageReference.delete();
     } catch (e) {}
     for (int i = 0; i < commentsDoc.length; i++) {
       Firestore.instance

@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -38,6 +39,9 @@ class _MessageEditorState extends State<MessageEditor> {
   }
 
   Future<void> saveThread(BuildContext context) async {
+    final ProgressDialog uploadingPop = ProgressDialog(context,
+        type: ProgressDialogType.Download, isDismissible: false);
+
     var uuid = new Uuid();
     String folderId = uuid.v4();
     if (!isSaving) {
@@ -45,6 +49,9 @@ class _MessageEditorState extends State<MessageEditor> {
         setState(() {
           isSaving = true;
         });
+      await uploadingPop.show();
+      uploadingPop.style(
+          message: "Uploading files", maxProgress: 100, progress: 0);
       try {
         String content = messageContr.text;
         String sub = dropDownValue.text;
@@ -63,15 +70,27 @@ class _MessageEditorState extends State<MessageEditor> {
                 storageReference.putFile(uploaderImgs[i]);
             int fileNumber = i + 1;
             String loaderInfo = "$fileNumber/$totalFiles file is uploading  ";
-            await uploadTask.onComplete;
 
+            uploadingPop.style(
+                message: loaderInfo, maxProgress: 100, progress: 0);
+            double loadingValue = 0;
+            uploadTask.events.listen((event) {
+              loadingValue = 100 *
+                  (uploadTask.lastSnapshot.bytesTransferred /
+                      uploadTask.lastSnapshot.totalByteCount);
+              uploadingPop.update(
+                  message: loaderInfo, progress: loadingValue.roundToDouble());
+            });
+
+            await uploadTask.onComplete;
             fileUrls.add({
               "url": await storageReference.getDownloadURL(),
               "name": fileName,
               "type": fileName.split(".").last
             });
           }
-          Navigator.pop(context);
+          await uploadingPop.hide();
+
           Utils.showLoadingPopText(context, "Saving");
           DocumentReference newThread =
               await Firestore.instance.collection("Threads").add({
@@ -84,7 +103,6 @@ class _MessageEditorState extends State<MessageEditor> {
             "folderid": folderId,
             "subject": dropDownValue.text
           });
-
           String notfyStr = messageContr.text;
           Utils.sendPushNotification(
               "New Message", notfyStr, "messageview", newThread.documentID);
