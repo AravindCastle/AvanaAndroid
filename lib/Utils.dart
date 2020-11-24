@@ -568,7 +568,8 @@ static void openFile(File file,String url){
                                 final SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
                                 prefs.clear();
-                                Navigator.pushNamed(context, "/login");
+                                Navigator.pushReplacementNamed(
+                                    context, "/login");
                               },
                               child: Text(
                                 "Logout",

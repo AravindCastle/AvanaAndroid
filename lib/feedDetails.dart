@@ -286,7 +286,9 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                           ? Icon(
                               Icons.check_circle,
                               size: 16,
-                              color: Colors.blueAccent,
+                              color: commentsDoc[i]["ownerrole"] == 1
+                                  ? Colors.redAccent
+                                  : Colors.blueAccent,
                             )
                           : SizedBox(),
                       SizedBox(

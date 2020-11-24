@@ -305,9 +305,9 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
       }
     }
     if (!isUserLogged) {
-      Navigator.pushNamed(context, "/login");
+      Navigator.pushReplacementNamed(context, "/login");
     } else {
-      Navigator.pushNamed(context, "/feed");
+      Navigator.pushReplacementNamed(context, "/feed");
     }
   }
 

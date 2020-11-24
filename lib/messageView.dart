@@ -297,7 +297,9 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                           ? Icon(
                               Icons.check_circle,
                               size: 16,
-                              color: Colors.blueAccent,
+                              color: commentsDoc[i]["ownerrole"] == 1
+                                  ? Colors.redAccent
+                                  : Colors.blueAccent,
                             )
                           : SizedBox(),
                       SizedBox(
@@ -307,6 +309,9 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           )),
                     ],
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   commentsDoc[i]["isattachment"]
                       ? Container(
@@ -319,9 +324,10 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                                 height: medQry.size.width * .29,
                                 fit: BoxFit.contain,
                                 progressIndicatorBuilder:
-                                    (context, url, progress) =>
-                                        CircularProgressIndicator(
-                                  value: progress.progress,
+                                    (context, url, progress) => Image.asset(
+                                  "assets/imagethumbnail.png",
+                                  width: 100,
+                                  height: 100,
                                 ),
                                 imageUrl: commentsDoc[i]["attachment"][0]
                                     ["url"],
@@ -350,7 +356,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                               top: medQry.size.width * .03),
                         )
                       : Text(
-                          commentsDoc[i]["comment"],
+                          "\t\t\t" + commentsDoc[i]["comment"],
                           style: TextStyle(
                               color: Colors.black87,
                               fontSize: 15,

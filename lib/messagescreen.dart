@@ -81,7 +81,9 @@ class _MessagePageState extends State<MessagePage> {
                           child: Icon(
                             Icons.check_circle,
                             size: 16,
-                            color: Colors.blueAccent,
+                            color: messageDoc["ownerrole"] == 1
+                                ? Colors.redAccent
+                                : Colors.blueAccent,
                           ),
                         ),
                         SizedBox(

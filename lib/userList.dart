@@ -71,7 +71,9 @@ class _userListPageState extends State<userListPage> {
                                     child: Icon(
                                       Icons.check_circle,
                                       size: 16,
-                                      color: Colors.blueAccent,
+                                      color: document['userrole'] == 1
+                                          ? Colors.redAccent
+                                          : Colors.blueAccent,
                                     ))
                                 : SizedBox(),
                             new Text(document['username'],
