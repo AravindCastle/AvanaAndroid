@@ -1,5 +1,6 @@
 import 'package:avana_academy/Utils.dart';
 import 'package:avana_academy/userDetailsPage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,17 +42,22 @@ class _facultyListPageState extends State<facultyListPage> {
               return new ListTile(
                 trailing: Icon(Icons.keyboard_arrow_right),
                 leading: CircleAvatar(
-                    backgroundColor: Utils.getColor(document['username']
-                        .toString()
-                        .substring(0, 1)
-                        .toUpperCase()),
-                    child: Text(
-                      document['username']
-                          .toString()
-                          .substring(0, 1)
-                          .toUpperCase(),
-                      style: TextStyle(color: Colors.white),
-                    )),
+                    radius: 20,
+                    backgroundColor: Colors.white60,
+                    child: (document["profile_pic_url"] == null ||
+                            document["profile_pic_url"] == "")
+                        ? Icon(
+                            Icons.account_circle_rounded,
+                            size: 40,
+                            color: Colors.grey[350],
+                          )
+                        : ClipOval(
+                            child: CachedNetworkImage(
+                            imageUrl: document["profile_pic_url"],
+                            height: 38,
+                            width: 38,
+                            fit: BoxFit.fill,
+                          ))),
                 title: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,

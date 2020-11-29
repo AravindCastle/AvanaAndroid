@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
   String docmtId;
   String userName;
   String description;
+  String profile_pic_url = null;
 
   String role;
   int userRole;
@@ -34,6 +36,7 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
       description = userDetails["description"];
       userRole = userDetails["userrole"];
       role = Utils.getRoleString(userRole.toString());
+      profile_pic_url = userDetails["profile_pic_url"];
     }
     if (this.mounted) {
       setState(() {
@@ -51,14 +54,21 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
           //  mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
-              width: medQry.size.width * .35,
-              height: medQry.size.width * .35,
-              child: Icon(
-                Icons.account_circle,
-                size: medQry.size.width * .35,
-                color: Theme.of(context).primaryColor,
-              ),
+            CircleAvatar(
+              radius: 80,
+              child: ClipOval(
+                  child: profile_pic_url != null
+                      ? CachedNetworkImage(
+                          imageUrl: profile_pic_url,
+                          height: 160,
+                          width: 160,
+                          fit: BoxFit.fill,
+                        )
+                      : Icon(
+                          Icons.account_circle,
+                          size: medQry.size.width * .35,
+                          color: Theme.of(context).primaryColor,
+                        )),
             ),
             SizedBox(height: 10, width: 10),
             Row(

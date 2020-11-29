@@ -52,18 +52,13 @@ class _AddUserPageState extends State<AddUserPage> {
     if (selectedFile != null && this.mounted) {
       setState(() {
         profilePic = selectedFile;
-        setProfilePic();
       });
     }
   }
 
-  void setProfilePic() {
-    // profilePicUrl
-  }
-
   void addnewUser(BuildContext context) async {
     final ProgressDialog uploadingPop = ProgressDialog(context,
-        type: ProgressDialogType.Download, isDismissible: false);
+        type: ProgressDialogType.Normal, isDismissible: false);
     try {
       if (userName.text.isNotEmpty &&
           password.text.isNotEmpty &&
@@ -92,7 +87,7 @@ class _AddUserPageState extends State<AddUserPage> {
           "isactive": isActive,
           "userrole": int.parse(userRole),
           "membershipdate": new DateTime.now().millisecondsSinceEpoch,
-          "description": new DateTime.now().millisecondsSinceEpoch,
+          "description": description.text,
           "hospital": hospital.text,
           "city": city.text,
           "region": region,
@@ -128,13 +123,14 @@ class _AddUserPageState extends State<AddUserPage> {
               child: Icon(Icons.edit),
             )
           : CircleAvatar(
+              child: ClipOval(
               child: Image.file(
                 profilePic,
                 width: 90,
                 height: 90,
                 fit: BoxFit.fill,
               ),
-            ),
+            )),
       decoration:
           BoxDecoration(shape: BoxShape.circle, color: Colors.grey[350]),
     );
