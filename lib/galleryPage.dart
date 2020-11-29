@@ -95,22 +95,35 @@ class GalleryPageState extends State<GalleryPage> {
     deletingPop.show();
     deletingPop.style(message: "Deleting on progress");
 
-    if (!isFolder) {
-      await Firestore.instance.collection("gallery").document(docId).delete();
-
-      try {
-        StorageReference storageReference =
-            await FirebaseStorage.instance.getReferenceFromUrl(url);
-        storageReference.delete();
-      } catch (Exception) {}
-    } else {
-      try {} catch (Exception) {}
-    }
+    await deleteOnLoop(docId);
 
     deletingPop.hide();
   }
 
-  // bool deleteOnLoop(String docId) async {}
+  Future<bool> deleteOnLoop(String docId) async {
+    DocumentSnapshot currDoc =
+        await Firestore.instance.collection('gallery').document(docId).get();
+    if (currDoc["type"] == "folder") {
+      List<DocumentSnapshot> childElements = new List();
+      final QuerySnapshot userDetails = await Firestore.instance
+          .collection('gallery')
+          .where("parentid", isEqualTo: docId)
+          .getDocuments();
+      childElements = userDetails.documents;
+
+      for (int i = 0; i < childElements.length; i++) {
+        deleteOnLoop(childElements[i].documentID);
+      }
+    } else {
+      try {
+        StorageReference storageReference =
+            await FirebaseStorage.instance.getReferenceFromUrl(currDoc["url"]);
+        storageReference.delete();
+      } catch (Exception) {}
+    }
+    await Firestore.instance.collection('gallery').document(docId).delete();
+    return true;
+  }
 
   void deleteAlert(
       BuildContext context, bool isFolder, String docId, String url) {
