@@ -88,6 +88,63 @@ class GalleryPageState extends State<GalleryPage> {
     }
   }
 
+  Future<void> deleteFolderOrFile(
+      String docId, bool isFolder, String url) async {
+    final ProgressDialog deletingPop = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false);
+    deletingPop.show();
+    deletingPop.style(message: "Deleting on progress");
+
+    if (!isFolder) {
+      await Firestore.instance.collection("gallery").document(docId).delete();
+
+      try {
+        StorageReference storageReference =
+            await FirebaseStorage.instance.getReferenceFromUrl(url);
+        storageReference.delete();
+      } catch (Exception) {}
+    } else {
+      try {} catch (Exception) {}
+    }
+
+    deletingPop.hide();
+  }
+
+  // bool deleteOnLoop(String docId) async {}
+
+  void deleteAlert(
+      BuildContext context, bool isFolder, String docId, String url) {
+    showDialog(
+        context: context,
+        builder: (BuildContext bCont) {
+          return new Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
+              child: AlertDialog(
+                title: Text(
+                  "Do you want to delete this message",
+                  textAlign: TextAlign.center,
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('Delete'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+
+                      deleteFolderOrFile(docId, isFolder, url);
+                    },
+                  ),
+                ],
+              ));
+        });
+  }
+
   Future<void> uploadFile(BuildContext context) async {
     try {
       File selectedFile = await FilePicker.getFile(type: FileType.any);
@@ -105,7 +162,7 @@ class GalleryPageState extends State<GalleryPage> {
 
           StorageReference storageReference = FirebaseStorage.instance
               .ref()
-              .child('AvanaFiles/' +
+              .child('AvanaFiles/Gallery/' +
                   fileName +
                   DateTime.now().millisecondsSinceEpoch.toString());
           StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
@@ -251,7 +308,7 @@ class GalleryPageState extends State<GalleryPage> {
               itemBuilder: (_, int index) {
                 final DocumentSnapshot document =
                     snapshot.data.documents[index];
-                return buildAttachment(document);
+                return buildAttachment(document, context);
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
@@ -264,9 +321,14 @@ class GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget buildAttachment(DocumentSnapshot galleryItem) {
+  Widget buildAttachment(DocumentSnapshot galleryItem, BuildContext context) {
     if (galleryItem["type"] == "folder") {
       return GestureDetector(
+          onLongPress: Utils.isSuperAdmin()
+              ? () {
+                  deleteAlert(context, true, galleryItem.documentID, null);
+                }
+              : null,
           onTap: () {
             Navigator.pushNamed(context, "/gallery", arguments: {
               "superLevel": galleryItem["level"] + 1,
@@ -296,8 +358,15 @@ class GalleryPageState extends State<GalleryPage> {
               ])));
     } else if (galleryItem["type"] == "file" ||
         galleryItem["type"] == "youtube") {
-      return Utils.buildGalleryFileItem(context, galleryItem["url"],
-          galleryItem["name"], galleryItem["filetype"]);
+      return GestureDetector(
+          onLongPress: Utils.isSuperAdmin()
+              ? () {
+                  deleteAlert(context, false, galleryItem.documentID,
+                      galleryItem["url"]);
+                }
+              : null,
+          child: Utils.buildGalleryFileItem(context, galleryItem["url"],
+              galleryItem["name"], galleryItem["filetype"]));
     } else {
       return SizedBox();
     }

@@ -498,9 +498,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       appBar: AppBar(
         title: isLoading ? Text("") : buildMessageInfo(),
         actions: <Widget>[
-          (!isLoading &&
-                  (Utils.isDeleteAvail(threadDetails['created_time']) ||
-                      userRole == 1))
+          (!isLoading && (userId == threadDetails['owner'] || userRole == 1))
               ? IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {

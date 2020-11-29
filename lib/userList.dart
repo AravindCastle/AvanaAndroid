@@ -47,19 +47,15 @@ class _userListPageState extends State<userListPage> {
                         Utils.userRole == 2 ||
                         (Utils.userRole == 3 && document['userrole'] == 3)),
                     child: new ListTile(
-                      trailing: Icon(Icons.keyboard_arrow_right),
+                      trailing: Utils.isSuperAdmin()
+                          ? Icon(Icons.keyboard_arrow_right)
+                          : SizedBox(),
                       leading: CircleAvatar(
-                          backgroundColor: Utils.getColor(document['username']
-                              .toString()
-                              .substring(0, 1)
-                              .toUpperCase()),
-                          child: Text(
-                            document['username']
-                                .toString()
-                                .substring(0, 1)
-                                .toUpperCase(),
-                            style: TextStyle(color: Colors.white),
-                          )),
+                          backgroundColor: Colors.grey[300],
+                          child: (document["profile_pic_url"] == null ||
+                                  document["profile_pic_url"] == "")
+                              ? Icon(Icons.account_circle_rounded)
+                              : Image.network(document["profile_pic_url"])),
                       title: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
