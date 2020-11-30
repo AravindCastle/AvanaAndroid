@@ -23,7 +23,7 @@ class _facultyListPageState extends State<facultyListPage> {
       appBar: AppBar(
         title: Text("Faculties"),
         leading: IconButton(
-          icon: Icon(Icons.account_circle),
+          icon: Utils.userProfilePic(Utils.userId, 14),
           onPressed: () {
             Utils.showUserPop(context);
           },

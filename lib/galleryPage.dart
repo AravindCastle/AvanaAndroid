@@ -395,7 +395,7 @@ class GalleryPageState extends State<GalleryPage> {
       return Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.account_circle),
+              icon: Utils.userProfilePic(Utils.userId, 14),
               onPressed: () {
                 Utils.showUserPop(context);
               },

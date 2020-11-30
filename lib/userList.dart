@@ -22,7 +22,7 @@ class _userListPageState extends State<userListPage> {
         // appBar: AppBar(title: Text("Users")),
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.account_circle),
+            icon: Utils.userProfilePic(Utils.userId, 14),
             onPressed: () {
               Utils.showUserPop(context);
             },

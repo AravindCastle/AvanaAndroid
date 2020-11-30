@@ -29,7 +29,7 @@ class _FeedPageState extends State<FeedPage> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.account_circle),
+              icon: Utils.userProfilePic(Utils.userId, 14),
               onPressed: () {
                 Utils.showUserPop(context);
               },

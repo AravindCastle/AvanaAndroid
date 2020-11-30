@@ -196,7 +196,7 @@ class _MessagePageState extends State<MessagePage> {
                       })
             ],
             leading: IconButton(
-              icon: Icon(Icons.account_circle),
+              icon: Utils.userProfilePic(Utils.userId, 14),
               onPressed: () {
                 Utils.showUserPop(context);
               },
