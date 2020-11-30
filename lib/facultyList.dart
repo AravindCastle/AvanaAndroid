@@ -39,25 +39,9 @@ class _facultyListPageState extends State<facultyListPage> {
           if (!snapshot.hasData) return new Text('Loading...');
           return new ListView(
             children: snapshot.data.documents.map((document) {
-              return new ListTile(
+              return ListTile(
                 trailing: Icon(Icons.keyboard_arrow_right),
-                leading: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.white60,
-                    child: (document["profile_pic_url"] == null ||
-                            document["profile_pic_url"] == "")
-                        ? Icon(
-                            Icons.account_circle_rounded,
-                            size: 40,
-                            color: Colors.grey[350],
-                          )
-                        : ClipOval(
-                            child: CachedNetworkImage(
-                            imageUrl: document["profile_pic_url"],
-                            height: 38,
-                            width: 38,
-                            fit: BoxFit.fill,
-                          ))),
+                leading: Utils.userProfilePic(document.documentID, 20),
                 title: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -72,10 +56,11 @@ class _facultyListPageState extends State<facultyListPage> {
                       new Text(document['username'],
                           style: TextStyle(fontWeight: FontWeight.bold))
                     ]),
-                subtitle: new Text(document['email']),
+                //  subtitle: new Text(document['email']),
                 onTap: () {
-                  Navigator.pushNamed(context, "/facultyDetail",
-                      arguments: document.documentID);
+                  Navigator.pushNamed(context, "/facultyDetail", arguments: {
+                    "userid": document.documentID,
+                  });
                 },
               );
             }).toList(),

@@ -125,16 +125,30 @@ class _MessagePageState extends State<MessagePage> {
                           ),
                         ],
                       ),
-                      new Container(
-                        padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
-                        child: Utils.attachmentPreviewSlider(
-                            context,
-                            messageDoc["attachments"].length > 0
-                                ? messageDoc
-                                : null,
-                            messageDoc["subject"]),
-                        height: 100,
-                        width: medQry.size.width * .9,
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
+                            child: Utils.attachmentPreviewSlider(
+                                context,
+                                messageDoc["attachments"].length > 0
+                                    ? messageDoc
+                                    : null,
+                                messageDoc["subject"]),
+                            height: 100,
+                            width: 110,
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Container(
+                              width: 200,
+                              height: 70,
+                              child: Text(
+                                messageDoc["content"],
+                                maxLines: 3,
+                              ))
+                        ],
                       ),
                       Spacer(),
                       Row(

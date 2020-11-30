@@ -29,6 +29,10 @@ class Utils {
     900: Color.fromRGBO(25, 118, 210, 1),
   };
   static Map<String, int> threadCount = new Map();
+
+  static Map<String, int> feedCommentCount = new Map();
+
+  static Map<String, String> userProfilePictures = new Map();
   static const String notifyTopic = "test4";
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
@@ -811,6 +815,39 @@ static void openFile(File file,String url){
     }
   }
 
+  static void getAllFeedComments() async {
+    feedCommentCount = new Map();
+    List<DocumentSnapshot> commentsDoc = null;
+    final QuerySnapshot userDetails =
+        await Firestore.instance.collection('feedcomments').getDocuments();
+    commentsDoc = userDetails.documents;
+
+    if (commentsDoc != null && commentsDoc.length > 0) {
+      for (int i = 0; i < commentsDoc.length; i++) {
+        String feedId = commentsDoc[i]["feed_id"];
+        if (feedCommentCount != null && feedCommentCount.containsKey(feedId)) {
+          var cnt = feedCommentCount[feedId];
+          feedCommentCount[feedId] = cnt + 1;
+        } else {
+          feedCommentCount[feedId] = 1;
+        }
+      }
+    }
+  }
+
+  static void updateFeedCommentCount(String feedId, bool increase) {
+    if (feedCommentCount != null && feedCommentCount.containsKey(feedId)) {
+      var cnt = feedCommentCount[feedId];
+      if (increase) {
+        feedCommentCount[feedId] = cnt + 1;
+      } else {
+        feedCommentCount[feedId] = cnt - 1;
+      }
+    } else {
+      feedCommentCount[feedId] = 1;
+    }
+  }
+
   static void bottomNavAction(int selectedIndex, BuildContext context) {
     if (selectedIndex == 0) {
       Navigator.pushReplacementNamed(context, "/feed");
@@ -1045,6 +1082,41 @@ static void openFile(File file,String url){
               fontSize: 16.0);
         }
       }
+    }
+  }
+
+  static Widget userProfilePic(String ownerId, double radius) {
+    double circleRadius = radius == null ? 20 : radius;
+    String picUrl = userProfilePictures.containsKey(ownerId)
+        ? userProfilePictures[ownerId]
+        : null;
+    return CircleAvatar(
+        radius: circleRadius,
+        backgroundColor: Colors.white60,
+        child: (picUrl == null || picUrl == "")
+            ? Icon(
+                Icons.account_circle_rounded,
+                size: circleRadius * 2,
+                color: Colors.grey[350],
+              )
+            : ClipOval(
+                child: CachedNetworkImage(
+                imageUrl: picUrl,
+                height: circleRadius * 2,
+                width: circleRadius * 2,
+                fit: BoxFit.fill,
+              )));
+  }
+
+  static Future<void> getAllUsersProfilePics() async {
+    List<DocumentSnapshot> userDataRow = null;
+    final QuerySnapshot allUsers =
+        await Firestore.instance.collection('userdata').getDocuments();
+    userDataRow = allUsers.documents;
+
+    for (int i = 0; i < userDataRow.length; i++) {
+      userProfilePictures[userDataRow[i].documentID] =
+          userDataRow[i]["profile_pic_url"];
     }
   }
 }

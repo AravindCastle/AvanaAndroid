@@ -1,10 +1,8 @@
 import 'package:avana_academy/Utils.dart';
-import 'package:avana_academy/userDetailsPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class userListPage extends StatefulWidget {
   _userListPageState createState() => _userListPageState();
@@ -48,26 +46,11 @@ class _userListPageState extends State<userListPage> {
                         Utils.userRole == 2 ||
                         (Utils.userRole == 3 && document['userrole'] == 3)),
                     child: new ListTile(
+                      dense: false,
                       trailing: Utils.isSuperAdmin()
                           ? Icon(Icons.keyboard_arrow_right)
                           : SizedBox(),
-                      leading: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.white60,
-                          child: (document["profile_pic_url"] == null ||
-                                  document["profile_pic_url"] == "")
-                              ? Icon(
-                                  Icons.account_circle_rounded,
-                                  size: 40,
-                                  color: Colors.grey[350],
-                                )
-                              : ClipOval(
-                                  child: CachedNetworkImage(
-                                  imageUrl: document["profile_pic_url"],
-                                  height: 38,
-                                  width: 38,
-                                  fit: BoxFit.fill,
-                                ))),
+                      leading: Utils.userProfilePic(document.documentID, 20),
                       title: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -87,12 +70,14 @@ class _userListPageState extends State<userListPage> {
                             new Text(document['username'],
                                 style: TextStyle(fontWeight: FontWeight.bold))
                           ]),
-                      subtitle: new Text(document['email']),
+                      //subtitle: new Text(document['email']),
                       onTap: Utils.isSuperAdmin()
                           ? () {
                               Navigator.pushNamed(context, "/userdetailpage",
-                                  arguments: UserDetailsArguement(
-                                      document.documentID));
+                                  arguments: {
+                                    "userid": document.documentID,
+                                    "username": document["username"]
+                                  });
                             }
                           : null,
                     ));

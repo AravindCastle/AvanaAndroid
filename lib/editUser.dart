@@ -1,23 +1,32 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
-bool isActive = true;
-String userRole = "3";
-bool loading = false;
+class EditUser extends StatefulWidget {
+  String currentUserId;
+  String currentUserName;
 
-class AddUserPage extends StatefulWidget {
-  _AddUserPageState createState() => _AddUserPageState();
+  EditUser({this.currentUserId, this.currentUserName});
+
+  _EditUserState createState() =>
+      _EditUserState(this.currentUserId, this.currentUserName);
 }
 
-class _AddUserPageState extends State<AddUserPage> {
-  TextEditingController userName = new TextEditingController();
-  TextEditingController emailId = new TextEditingController();
+class _EditUserState extends State<EditUser> {
+  String currentUserId;
+  String currentUserName;
+  _EditUserState(this.currentUserId, this.currentUserName);
+
+  bool isPageLoading = true;
+  bool isActiveUser = true;
+
+  int userRole = 3;
+  String currentUserEmail = "";
   TextEditingController password = new TextEditingController();
   TextEditingController description = new TextEditingController();
 
@@ -26,25 +35,10 @@ class _AddUserPageState extends State<AddUserPage> {
   TextEditingController city = new TextEditingController();
   String region = "north";
   File profilePic = null;
-  void initState() => loading = false;
+  String profilePickUrl = null;
 
-  Widget buttonOrLoading() {
-    if (loading)
-      return new LinearProgressIndicator();
-    else {
-      return ConstrainedBox(
-          constraints:
-              const BoxConstraints(minWidth: double.infinity, minHeight: 40),
-          child: RaisedButton(
-            child: Text(
-              "Add new user",
-              style: TextStyle(fontSize: 20),
-            ),
-            onPressed: () {
-              addnewUser(context);
-            },
-          ));
-    }
+  void initState() {
+    fetchUserDetails();
   }
 
   Future<void> _pickImage() async {
@@ -56,123 +50,131 @@ class _AddUserPageState extends State<AddUserPage> {
     }
   }
 
-  void addnewUser(BuildContext context) async {
-    final ProgressDialog uploadingPop = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false);
-    try {
-      if (userName.text.isNotEmpty &&
-          password.text.isNotEmpty &&
-          emailId.text.isNotEmpty) {
-        if (this.mounted) {
-          setState(() {
-            loading = true;
-          });
-        }
-
-        uploadingPop.style(message: "Adding new user ...");
-        uploadingPop.show();
-        String profile_pic_url = null;
-        if (profilePic != null) {
-          StorageReference storageReference = FirebaseStorage.instance
-              .ref()
-              .child(
-                  'AvanaFiles/profilepics/' + profilePic.path.split("/").last);
-          StorageUploadTask uploadTask = storageReference.putFile(profilePic);
-          await uploadTask.onComplete;
-          profile_pic_url = await storageReference.getDownloadURL();
-        }
-        await Firestore.instance.collection("userdata").add({
-          "username": userName.text,
-          "email": emailId.text,
-          "password": password.text,
-          "isactive": isActive,
-          "userrole": int.parse(userRole),
-          "membershipdate": new DateTime.now().millisecondsSinceEpoch,
-          "description": description.text,
-          "hospital": hospital.text,
-          "city": city.text,
-          "region": region,
-          "profile_pic_url": profile_pic_url,
-        });
-
-        userName.clear();
-        emailId.clear();
-        password.clear();
-        description.clear();
-        if (this.mounted) {
-          setState(() {
-            loading = false;
-          });
-        }
-        uploadingPop.hide();
-        Navigator.pop(context);
-      }
-    } catch (Exception) {
-      setState(() {
-        loading = false;
-      });
-      uploadingPop.hide();
-    }
-  }
-
   Widget profilePicture() {
     return Container(
-      height: 90,
-      width: 90,
-      child: profilePic == null
+      height: 130,
+      width: 130,
+      child: (profilePickUrl == null && profilePic == null)
           ? Center(
               child: Icon(Icons.edit),
             )
           : CircleAvatar(
               child: ClipOval(
-              child: Image.file(
-                profilePic,
-                width: 90,
-                height: 90,
-                fit: BoxFit.fill,
-              ),
+              child: profilePic != null
+                  ? Image.file(
+                      profilePic,
+                      width: 130,
+                      height: 130,
+                      fit: BoxFit.fill,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: profilePickUrl,
+                      width: 130,
+                      height: 130,
+                      fit: BoxFit.fill,
+                    ),
             )),
       decoration:
           BoxDecoration(shape: BoxShape.circle, color: Colors.grey[350]),
     );
   }
 
+  Future<void> updateUserDetails() async {
+    final ProgressDialog updateUser = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false);
+
+    updateUser.style(message: "Updating user details ...");
+    updateUser.show();
+
+    if (profilePic != null) {
+      try {
+        StorageReference storageReference = FirebaseStorage.instance
+            .ref()
+            .child('AvanaFiles/profilepics/' + profilePic.path.split("/").last);
+        StorageUploadTask uploadTask = storageReference.putFile(profilePic);
+        await uploadTask.onComplete;
+        profilePickUrl = await storageReference.getDownloadURL();
+      } catch (Exception) {}
+    }
+
+    await Firestore.instance
+        .collection("userdata")
+        .document(currentUserId)
+        .updateData({
+      "password": password.text,
+      "isactive": isActiveUser,
+      "userrole": userRole,
+      "description": description.text,
+      "hospital": hospital.text,
+      "city": city.text,
+      "region": region,
+      "profile_pic_url": profilePickUrl,
+    });
+
+    updateUser.hide();
+    Navigator.pop(context);
+  }
+
+  Future<void> fetchUserDetails() async {
+    DocumentSnapshot currentUserDetails = await Firestore.instance
+        .collection('userdata')
+        .document(currentUserId)
+        .get();
+
+    currentUserEmail = currentUserDetails["email"];
+    isActiveUser = currentUserDetails["isactive"];
+    password.text = currentUserDetails["password"];
+    hospital.text = currentUserDetails["hospital"];
+    city.text = currentUserDetails["city"];
+    region = currentUserDetails["region"];
+    description.text = currentUserDetails["description"];
+    userRole = currentUserDetails["userrole"];
+    profilePickUrl = currentUserDetails["profile_pic_url"];
+
+    setState(() {
+      isPageLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add user"),
+        title: Text(currentUserName),
+        actions: [
+          IconButton(icon: Icon(Icons.delete_forever), onPressed: () => {})
+        ],
       ),
       body: SingleChildScrollView(
-          child: Container(
-              padding: const EdgeInsets.all(1.0),
-              //alignment: Alignment.t,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 40, 20, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: isPageLoading
+              ? Center(
+                  child: SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: CircularProgressIndicator()),
+                )
+              : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+                  children: [
                     GestureDetector(
                       child: profilePicture(),
                       onTap: _pickImage,
                     ),
                     SizedBox(height: 20),
-                    TextField(
-                        controller: userName,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding:
-                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Username")),
+                    Text(
+                      currentUserName,
+                      style:
+                          TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                    ),
                     SizedBox(height: 10),
-                    TextField(
-                        controller: emailId,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding:
-                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Email Id")),
-                    SizedBox(height: 10),
+                    Text(
+                      currentUserEmail,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    ),
+                    SizedBox(height: 20),
                     TextField(
                         controller: password,
                         decoration: InputDecoration(
@@ -244,10 +246,10 @@ class _AddUserPageState extends State<AddUserPage> {
                         'Activate User',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      value: isActive,
+                      value: isActiveUser,
                       onChanged: (bool value) {
                         setState(() {
-                          isActive = value;
+                          isActiveUser = value;
                         });
                       },
                     ),
@@ -261,9 +263,9 @@ class _AddUserPageState extends State<AddUserPage> {
                     ListTile(
                       title: new Text('Admin'),
                       leading: Radio(
-                        value: "1",
+                        value: 1,
                         groupValue: userRole,
-                        onChanged: (String value) {
+                        onChanged: (int value) {
                           setState(() {
                             userRole = value;
                           });
@@ -273,9 +275,9 @@ class _AddUserPageState extends State<AddUserPage> {
                     ListTile(
                       title: new Text('Faculty'),
                       leading: Radio(
-                        value: "2",
+                        value: 2,
                         groupValue: userRole,
-                        onChanged: (String value) {
+                        onChanged: (int value) {
                           setState(() {
                             userRole = value;
                           });
@@ -285,9 +287,9 @@ class _AddUserPageState extends State<AddUserPage> {
                     ListTile(
                       title: new Text('Member'),
                       leading: Radio(
-                        value: "3",
+                        value: 3,
                         groupValue: userRole,
-                        onChanged: (String value) {
+                        onChanged: (int value) {
                           setState(() {
                             userRole = value;
                           });
@@ -295,11 +297,21 @@ class _AddUserPageState extends State<AddUserPage> {
                       ),
                     ),
                     SizedBox(height: 30),
-                    buttonOrLoading(),
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(
+                            minWidth: double.infinity, minHeight: 40),
+                        child: RaisedButton(
+                          child: Text(
+                            "Edit user",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          onPressed: updateUserDetails,
+                        )),
                     SizedBox(height: 30),
                   ],
                 ),
-              ))),
+        ),
+      ),
     );
   }
 }

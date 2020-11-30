@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:avana_academy/MessageEditor.dart';
+import 'package:avana_academy/editUser.dart';
 import 'package:avana_academy/facultyDetails.dart';
 import 'package:avana_academy/facultyList.dart';
 import 'package:avana_academy/feed.dart';
@@ -69,8 +70,13 @@ class AvanaHome extends StatelessWidget {
             settings: settings);
         break;
       case '/userdetailpage':
+        Map<dynamic, dynamic> arguments = settings.arguments;
+
         return PageTransition(
-            child: UserDetailsPage(),
+            child: EditUser(
+              currentUserId: arguments["userid"],
+              currentUserName: arguments["username"],
+            ),
             type: PageTransitionType.leftToRightWithFade,
             settings: settings);
         break;
@@ -104,8 +110,13 @@ class AvanaHome extends StatelessWidget {
             type: PageTransitionType.fade,
             settings: settings);
       case '/facultyDetail':
+        Map<dynamic, dynamic> arguments = settings.arguments;
+
+        String userID = arguments["userid"];
         return PageTransition(
-            child: FacultyDetailsPage(),
+            child: FacultyDetailsPage(
+              currentUserId: userID,
+            ),
             type: PageTransitionType.fade,
             settings: settings);
       case '/feed':
@@ -292,6 +303,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
           .document(userId)
           .get();
       if (userDetails.data.length > 0) {
+        Utils.getAllUsersProfilePics();
         bool activeState = userDetails.data["isactive"];
         int membershipDate = userDetails.data["membershipdate"];
         int currDate = new DateTime.now().millisecondsSinceEpoch;

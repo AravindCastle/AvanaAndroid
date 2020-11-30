@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'Utils.dart';
 
 class FeedPage extends StatefulWidget {
@@ -21,6 +19,7 @@ class _FeedPageState extends State<FeedPage> {
   void initState() {
     super.initState();
     Utils.isNewResourceAdded();
+    Utils.getAllFeedComments();
   }
 
   Widget build(BuildContext context) {
@@ -92,15 +91,34 @@ class _FeedPageState extends State<FeedPage> {
                                             Padding(
                                                 padding: EdgeInsets.fromLTRB(
                                                     5, 0, 0, 0),
-                                                child: Text(
-                                                    document["ownername"],
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black,
-                                                        fontSize: 18))),
+                                                child: Row(children: [
+                                                  Utils.userProfilePic(
+                                                      document["owner"], 12),
+                                                  SizedBox(
+                                                    width: 7,
+                                                  ),
+                                                  Text(document["ownername"],
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.black,
+                                                          fontSize: 18))
+                                                ])),
                                             SizedBox(
                                               height: 5,
+                                            ),
+                                            Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    5, 0, 0, 0),
+                                                child: Text(
+                                                    Utils.getMessageTimerFrmt(
+                                                        document[
+                                                            "created_time"]),
+                                                    style: TextStyle(
+                                                        color: Colors.black45,
+                                                        fontSize: 12))),
+                                            SizedBox(
+                                              height: 10,
                                             ),
                                             Padding(
                                                 padding: EdgeInsets.fromLTRB(
@@ -131,11 +149,29 @@ class _FeedPageState extends State<FeedPage> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Text(
-                                    Utils.getMessageTimerFrmt(
-                                        document["created_time"]),
-                                    style: TextStyle(
-                                        color: Colors.black45, fontSize: 12))
+                                Row(children: [
+                                  document["attachments"].length > 0
+                                      ? Text(
+                                          document["attachments"]
+                                                  .length
+                                                  .toString() +
+                                              " Attachment",
+                                          style: TextStyle(fontSize: 14),
+                                        )
+                                      : SizedBox(),
+                                  Spacer(),
+                                  Utils.feedCommentCount
+                                          .containsKey(document.documentID)
+                                      ? Text(
+                                          Utils.feedCommentCount[
+                                                      document.documentID]
+                                                  .toString() +
+                                              " "
+                                                  "Comment",
+                                          style: TextStyle(fontSize: 14),
+                                        )
+                                      : SizedBox(),
+                                ]),
                               ],
                             )),
                       ));

@@ -5,19 +5,20 @@ import 'package:flutter/material.dart';
 
 import 'Utils.dart';
 
-class UserDetailsArguement {
-  final String userId;
-
-  UserDetailsArguement(this.userId);
-}
-
 class FacultyDetailsPage extends StatefulWidget {
-  _FacultyDetailsPageState createState() => _FacultyDetailsPageState();
+  String currentUserId;
+  FacultyDetailsPage({this.currentUserId});
+
+  _FacultyDetailsPageState createState() =>
+      _FacultyDetailsPageState(this.currentUserId);
 }
 
 class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
+  String currentUserId;
+
+  _FacultyDetailsPageState(this.currentUserId);
+
   bool isPageLoading = true;
-  String docmtId;
   String userName;
   String description;
   String profile_pic_url = null;
@@ -56,6 +57,7 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
           children: <Widget>[
             CircleAvatar(
               radius: 80,
+              backgroundColor: Colors.transparent,
               child: ClipOval(
                   child: profile_pic_url != null
                       ? CachedNetworkImage(
@@ -66,8 +68,8 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
                         )
                       : Icon(
                           Icons.account_circle,
-                          size: medQry.size.width * .35,
-                          color: Theme.of(context).primaryColor,
+                          size: 160,
+                          color: Colors.grey[350],
                         )),
             ),
             SizedBox(height: 10, width: 10),
@@ -105,8 +107,7 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
 
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
-    docmtId = ModalRoute.of(context).settings.arguments;
-    getUserDetails(docmtId);
+    getUserDetails(currentUserId);
     return new Scaffold(
         appBar: AppBar(title: Text("Faculty Detail")),
         body: SingleChildScrollView(

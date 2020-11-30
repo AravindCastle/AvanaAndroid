@@ -83,7 +83,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       Utils.sendPushNotification(
           "New Comment", notfyStr, "messageview", threadID);
       //Utils.pushFeed(" has added new comment.", 1);
-      Utils.updateCommentCount(threadID, true);
+      Utils.updateFeedCommentCount(threadID, true);
       isCommentSaved = true;
       Navigator.pop(context);
       focusNode.unfocus();
@@ -256,7 +256,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
   void deleteComment(String commentId) {
     Firestore.instance.collection('feedcomments').document(commentId).delete();
     setState(() {
-      Utils.updateCommentCount(threadDetails.documentID, false);
+      Utils.updateFeedCommentCount(threadDetails.documentID, false);
     });
 
     Navigator.of(context).pop();
