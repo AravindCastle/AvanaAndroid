@@ -80,8 +80,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       focusNode.unfocus();
       String notfyStr = localStore.getString("name") + ":" + commentEditor.text;
       commentEditor.clear();
-      Utils.sendPushNotification(
-          "New Comment", notfyStr, "messageview", threadID);
+      Utils.sendPushNotification("New Comment", notfyStr, "feed", threadID);
       //Utils.pushFeed(" has added new comment.", 1);
       Utils.updateFeedCommentCount(threadID, true);
       isCommentSaved = true;
@@ -106,6 +105,67 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
   }
 
   Widget buildInput() {
+    return Container(
+        padding: EdgeInsets.only(top: 10, bottom: 10),
+        // decoration:
+        //    BoxDecoration(border: Border(top: BorderSide(color: Colors.grey))),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            /*  GestureDetector(
+                onTap: _addImage,
+                child: Padding(
+                    padding: EdgeInsets.only(left: 5, bottom: 0),
+                    child: Container(
+                      child: Icon(
+                        Icons.image_outlined,
+                      ),
+                      height: 30,
+                      width: 30,
+                    ))),*/
+            SizedBox(
+              width: 10,
+            ),
+            Container(
+                padding: EdgeInsets.only(left: 7, right: 4),
+                decoration: new BoxDecoration(
+                    border: Border.all(color: Colors.transparent),
+                    // You can use like this way or like the below line
+                    borderRadius: new BorderRadius.circular(10.0),
+                    color: Colors.grey[200]),
+                child: SizedBox(
+                  width: medQry.size.width * .80,
+                  child: TextField(
+                      maxLines: null,
+                      controller: commentEditor,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Add Comment ..")),
+                )),
+            Spacer(),
+            Padding(
+                padding: EdgeInsets.only(left: 5, right: 5, bottom: 0),
+                child: GestureDetector(
+                    onTap: addComment,
+                    child: Container(
+                      child: Icon(
+                        CupertinoIcons.up_arrow,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      decoration: new BoxDecoration(
+                        shape: BoxShape
+                            .circle, // You can use like this way or like the below line
+                        //borderRadius: new BorderRadius.circular(30.0),
+                        color: Colors.black,
+                      ),
+                      height: 25,
+                      width: 25,
+                    )))
+          ],
+        ));
+    /*
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.black87,
@@ -170,7 +230,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       ),
       width: double.infinity,
       height: 50.0,
-    );
+    );*/
   }
 
   Widget buildMessageInfo() {

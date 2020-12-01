@@ -19,7 +19,11 @@ class _FeedPageState extends State<FeedPage> {
   void initState() {
     super.initState();
     Utils.isNewResourceAdded();
-    Utils.getAllFeedComments();
+    Utils.getAllFeedComments(setSt);
+  }
+
+  void setSt() {
+    setState(() {});
   }
 
   Widget build(BuildContext context) {
@@ -29,7 +33,7 @@ class _FeedPageState extends State<FeedPage> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Utils.userProfilePic(Utils.userId, 14),
+              icon: Utils.userProfilePic(Utils.userId, 15),
               onPressed: () {
                 Utils.showUserPop(context);
               },

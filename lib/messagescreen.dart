@@ -77,7 +77,7 @@ class _MessagePageState extends State<MessagePage> {
                       Row(children: [
                         Utils.isNewMessage(messageDoc.documentID, prefs),
                         SizedBox(
-                          width: 22,
+                          width: 30,
                           child: Icon(
                             Icons.check_circle,
                             size: 16,
@@ -87,7 +87,7 @@ class _MessagePageState extends State<MessagePage> {
                           ),
                         ),
                         SizedBox(
-                          width: medQry.size.width * .64,
+                          width: medQry.size.width * .62,
                           child: Text(messageDoc["ownername"],
                               overflow: TextOverflow.fade,
                               softWrap: false,
@@ -128,7 +128,7 @@ class _MessagePageState extends State<MessagePage> {
                       Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
+                            padding: EdgeInsets.fromLTRB(6, 8, 0, 5),
                             child: Utils.attachmentPreviewSlider(
                                 context,
                                 messageDoc["attachments"].length > 0

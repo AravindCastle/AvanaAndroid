@@ -275,7 +275,7 @@ static void openFile(File file,String url){
           width: 10,
           child: ClipOval(
             child: Material(
-              color: Colors.red, // button color
+              color: Colors.black, // button color
               child: InkWell(
                 splashColor: Colors.red, // inkwell color
                 child: SizedBox(width: 10, height: 10),
@@ -815,7 +815,7 @@ static void openFile(File file,String url){
     }
   }
 
-  static void getAllFeedComments() async {
+  static void getAllFeedComments(Function callback) async {
     feedCommentCount = new Map();
     List<DocumentSnapshot> commentsDoc = null;
     final QuerySnapshot userDetails =
@@ -833,6 +833,8 @@ static void openFile(File file,String url){
         }
       }
     }
+
+    callback();
   }
 
   static void updateFeedCommentCount(String feedId, bool increase) {
@@ -1092,12 +1094,12 @@ static void openFile(File file,String url){
         : null;
     return CircleAvatar(
         radius: circleRadius,
-        backgroundColor: Colors.white60,
+        backgroundColor: Colors.grey[350],
         child: (picUrl == null || picUrl == "")
             ? Icon(
                 Icons.account_circle_rounded,
                 size: circleRadius * 2,
-                color: Colors.grey[350],
+                color: Colors.white,
               )
             : ClipOval(
                 child: CachedNetworkImage(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:avana_academy/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -110,6 +111,10 @@ class _EditUserState extends State<EditUser> {
       "region": region,
       "profile_pic_url": profilePickUrl,
     });
+
+    if (Utils.userProfilePictures != null) {
+      Utils.userProfilePictures[currentUserId] = profilePickUrl;
+    }
 
     updateUser.hide();
     Navigator.pop(context);
