@@ -190,26 +190,32 @@ class _MessageEditorState extends State<MessageEditor> {
                       padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
                       child: SizedBox(
                           child: Text(
-                        "Subject",
+                        "Subject ..",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ))),
-                  SizedBox(
-                    height: medQry.size.height * .01,
-                  ),
                   Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: new Container(
-                          width: medQry.size.height,
-                          child: TextField(
-                            autofocus: true,
-                            decoration: InputDecoration(
-                                hintText: "Subject",
-                                border: OutlineInputBorder()),
-                            controller: dropDownValue,
-                          ))),
+                      padding: EdgeInsets.all(15),
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: new BoxDecoration(
+                              border: Border.all(color: Colors.transparent),
+                              // You can use like this way or like the below line
+                              borderRadius: new BorderRadius.circular(10.0),
+                              color: Colors.grey[200]),
+                          child: new Container(
+                              width: medQry.size.height,
+                              child: TextField(
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                    hintText: "Subject",
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.fromLTRB(
+                                        20.0, 15.0, 20.0, 15.0)),
+                                controller: dropDownValue,
+                              )))),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
+                    padding: const EdgeInsets.fromLTRB(15, 10, 0, 3),
                     child: SizedBox(
                         child: Text(
                       "Content",
@@ -218,17 +224,22 @@ class _MessageEditorState extends State<MessageEditor> {
                     )),
                   ),
                   Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: new TextField(
-                          controller: messageContr,
-                          maxLines: 15,
-                          decoration: InputDecoration(
-                              border: new OutlineInputBorder(
-                                  borderSide: new BorderSide(
-                                      color: Theme.of(context).primaryColor)),
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                              hintText: "Type ..."))),
+                      padding: const EdgeInsets.all(15),
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: new BoxDecoration(
+                              border: Border.all(color: Colors.transparent),
+                              // You can use like this way or like the below line
+                              borderRadius: new BorderRadius.circular(10.0),
+                              color: Colors.grey[200]),
+                          child: new TextField(
+                              controller: messageContr,
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.fromLTRB(
+                                      20.0, 15.0, 20.0, 15.0),
+                                  hintText: "Type ...")))),
                   buildAttachmentSection(context)
                 ]),
           ),

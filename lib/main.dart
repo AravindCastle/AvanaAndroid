@@ -170,7 +170,7 @@ class AvanaHome extends StatelessWidget {
           /* MaterialColor(Color.fromRGBO(117, 117, 117, 1).value, {
           50: Color.fromRGBO(117, 117, 117, 0),
           100: Color.fromRGBO(117, 117, 117, .1),
-          200: Color.fromRGBO(117, 117, 117, .2),
+          200: Color.fromRGBO(117, 117, 117, .2), 
           300: Color.fromRGBO(117, 117, 117, .3),
           400: Color.fromRGBO(117, 117, 117, .4),
           500: Color.fromRGBO(117, 117, 117, .5),

@@ -64,7 +64,6 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-     - assets/avanalogo.png
      - assets/avanaIconLaunch.jpg
      - assets/loginbg.jpg
      - assets/splashScreen.flr

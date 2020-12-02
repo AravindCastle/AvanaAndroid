@@ -136,10 +136,10 @@ class _MessagePageState extends State<MessagePage> {
                                     : null,
                                 messageDoc["subject"]),
                             height: 100,
-                            width: 110,
+                            width: 120,
                           ),
                           SizedBox(
-                            width: 20,
+                            width: 10,
                           ),
                           Container(
                               width: 200,
