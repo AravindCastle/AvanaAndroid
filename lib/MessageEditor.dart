@@ -190,7 +190,7 @@ class _MessageEditorState extends State<MessageEditor> {
                       padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
                       child: SizedBox(
                           child: Text(
-                        "Subject ..",
+                        "Subject",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ))),
@@ -208,7 +208,7 @@ class _MessageEditorState extends State<MessageEditor> {
                               child: TextField(
                                 autofocus: true,
                                 decoration: InputDecoration(
-                                    hintText: "Subject",
+                                    hintText: "Subject...",
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.fromLTRB(
                                         20.0, 15.0, 20.0, 15.0)),
