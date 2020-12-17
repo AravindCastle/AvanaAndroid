@@ -23,10 +23,11 @@ class _LoginPageState extends State<LoginPage> {
     final ProgressDialog loadingPop = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
 
-    await loadingPop.show();
     await loadingPop.style(
       message: "Logging in ...",
     );
+    await loadingPop.show();
+
     if (!Utils.validateLogin(emailField.text, passwordField.text)) {
       loadingPop.hide();
 
@@ -80,76 +81,77 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
 
-    return Scaffold(
-        key: scaffoldKey,
-        resizeToAvoidBottomPadding: false,
-        body: Container(
-          padding: EdgeInsets.fromLTRB(20, 145, 20, 0),
-          constraints: BoxConstraints.expand(),
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: Image.asset("assets/loginbg.jpg").image,
-                  fit: BoxFit.fill)),
-          child: Column(
-            children: [
-              TextField(
-                obscureText: false,
-                controller: emailField,
-                onEditingComplete: () {
-                  setState(() {
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    currentFocus.unfocus();
-                  });
-                },
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    focusColor: Colors.blue,
-                    border: OutlineInputBorder(),
-                    // icon: Icon(Icons.perm_identity),
-                    labelStyle: TextStyle(color: Colors.black),
-                    labelText: "Email"),
+    return SafeArea(
+        child: Scaffold(
+            key: scaffoldKey,
+            resizeToAvoidBottomPadding: false,
+            body: Container(
+              padding: EdgeInsets.fromLTRB(20, 145, 20, 0),
+              constraints: BoxConstraints.expand(),
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: Image.asset("assets/loginbg.jpg").image,
+                      fit: BoxFit.fill)),
+              child: Column(
+                children: [
+                  TextField(
+                    obscureText: false,
+                    controller: emailField,
+                    onEditingComplete: () {
+                      setState(() {
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+                        currentFocus.unfocus();
+                      });
+                    },
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusColor: Colors.blue,
+                        border: OutlineInputBorder(),
+                        // icon: Icon(Icons.perm_identity),
+                        labelStyle: TextStyle(color: Colors.black),
+                        labelText: "Email"),
+                  ),
+                  SizedBox(height: medQry.size.height * 0.03),
+                  TextField(
+                    obscureText: true,
+                    controller: passwordField,
+                    onEditingComplete: () {
+                      setState(() {
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+                        currentFocus.unfocus();
+                      });
+                    },
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusColor: Colors.blue,
+                        border: OutlineInputBorder(),
+                        //  icon: Icon(Icons.vpn_key),
+                        labelStyle: TextStyle(color: Colors.black),
+                        labelText: "Password"),
+                  ),
+                  SizedBox(height: medQry.size.height * 0.03),
+                  SizedBox(
+                      width: 200,
+                      height: 40,
+                      child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(10),
+                          ),
+                          color: Color.fromRGBO(128, 0, 0, 1),
+                          textColor: Colors.white,
+                          onPressed: () => handleSignIn(context),
+                          child: Text("Log in"))),
+                ],
               ),
-              SizedBox(height: medQry.size.height * 0.03),
-              TextField(
-                obscureText: true,
-                controller: passwordField,
-                onEditingComplete: () {
-                  setState(() {
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    currentFocus.unfocus();
-                  });
-                },
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    focusColor: Colors.blue,
-                    border: OutlineInputBorder(),
-                    //  icon: Icon(Icons.vpn_key),
-                    labelStyle: TextStyle(color: Colors.black),
-                    labelText: "Password"),
-              ),
-              SizedBox(height: medQry.size.height * 0.03),
-              SizedBox(
-                  width: 200,
-                  height: 40,
-                  child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(10),
-                      ),
-                      color: Color.fromRGBO(128, 0, 0, 1),
-                      textColor: Colors.white,
-                      onPressed: () => handleSignIn(context),
-                      child: Text("Log in"))),
-            ],
-          ),
-        ));
+            )));
   }
 /*
   Widget build(BuildContext context) {

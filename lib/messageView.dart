@@ -669,7 +669,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     threadID = ModalRoute.of(context).settings.arguments;
     getThreadDetails();
     commonContext = context;
-    return new Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: isLoading ? Text("") : buildMessageInfo(),
         actions: <Widget>[
@@ -741,6 +742,6 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
               // Loading
               // buildLoading()
             ),
-    );
+    ));
   }
 }

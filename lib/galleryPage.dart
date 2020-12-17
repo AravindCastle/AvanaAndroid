@@ -64,7 +64,7 @@ class GalleryPageState extends State<GalleryPage> {
         "parentid": argMap["parentid"],
         "ordertype": 3,
         "url": url,
-        "filetype": "youttube",
+        "filetype": "youtube",
         "created_time": new DateTime.now().millisecondsSinceEpoch,
       });
       Navigator.pop(context);
@@ -92,8 +92,8 @@ class GalleryPageState extends State<GalleryPage> {
       String docId, bool isFolder, String url) async {
     final ProgressDialog deletingPop = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
-    deletingPop.show();
     deletingPop.style(message: "Deleting on progress");
+    deletingPop.show();
 
     await deleteOnLoop(docId);
 
@@ -114,7 +114,7 @@ class GalleryPageState extends State<GalleryPage> {
       for (int i = 0; i < childElements.length; i++) {
         deleteOnLoop(childElements[i].documentID);
       }
-    } else if (currDoc["type"] == "file") {
+    } else if (currDoc["type"] == "file" || currDoc["type"] == "youtube") {
       try {
         StorageReference storageReference =
             await FirebaseStorage.instance.getReferenceFromUrl(currDoc["url"]);
@@ -169,9 +169,9 @@ class GalleryPageState extends State<GalleryPage> {
         if (fileType == "pdf" ||
             Utils.getImageFormats(fileType) ||
             Utils.getVideoFormats(fileType)) {
-          await uploadingPop.show();
           uploadingPop.style(
               message: "Uploading files", maxProgress: 100, progress: 0);
+          await uploadingPop.show();
 
           StorageReference storageReference = FirebaseStorage.instance
               .ref()
@@ -466,7 +466,7 @@ class GalleryPageState extends State<GalleryPage> {
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
     argMap = ModalRoute.of(context).settings.arguments;
-    return buildPage(context);
+    return SafeArea(child: buildPage(context));
   }
 
   @override

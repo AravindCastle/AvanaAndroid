@@ -1,6 +1,4 @@
-import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -14,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
+import 'package:youtube_parser/youtube_parser.dart';
 
 class Utils {
   static Map<int, Color> primColor = {
@@ -715,12 +714,12 @@ static void openFile(File file,String url){
           child: Column(
             children: [
               Material(
-                child: Image.asset(
-                  "assets/youtubethumbnail.png",
-                  width: 120,
-                  height: 86,
-                  fit: BoxFit.fill,
-                ),
+                child: CachedNetworkImage(
+                    width: 100,
+                    height: 86,
+                    fit: BoxFit.fill,
+                    errorWidget: (context, url, error) => new Icon(Icons.error),
+                    imageUrl: getyoutubeid(url)),
                 borderRadius: BorderRadius.all(
                   Radius.circular(8.0),
                 ),
@@ -1120,5 +1119,12 @@ static void openFile(File file,String url){
       userProfilePictures[userDataRow[i].documentID] =
           userDataRow[i]["profile_pic_url"];
     }
+  }
+
+  static String getyoutubeid(String url) {
+    String id = getIdFromUrl(url);
+    return id != null
+        ? "https://img.youtube.com/vi/" + id + "/sddefault.jpg"
+        : "https://i.stack.imgur.com/WFy1e.jpg";
   }
 }

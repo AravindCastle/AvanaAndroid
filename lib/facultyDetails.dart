@@ -108,15 +108,16 @@ class _FacultyDetailsPageState extends State<FacultyDetailsPage> {
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
     getUserDetails(currentUserId);
-    return new Scaffold(
-        appBar: AppBar(title: Text("Faculty Detail")),
-        body: SingleChildScrollView(
-            child: new Container(
-          padding: const EdgeInsets.all(1.0),
-          alignment: Alignment.center,
-          child: (isPageLoading
-              ? CircularProgressIndicator()
-              : buildUserCard(context)),
-        )));
+    return SafeArea(
+        child: new Scaffold(
+            appBar: AppBar(title: Text("Faculty Detail")),
+            body: SingleChildScrollView(
+                child: new Container(
+              padding: const EdgeInsets.all(1.0),
+              alignment: Alignment.center,
+              child: (isPageLoading
+                  ? CircularProgressIndicator()
+                  : buildUserCard(context)),
+            ))));
   }
 }

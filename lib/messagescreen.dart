@@ -182,7 +182,8 @@ class _MessagePageState extends State<MessagePage> {
     medQry = MediaQuery.of(context);
     return WillPopScope(
         onWillPop: () async => false,
-        child: Scaffold(
+        child: SafeArea(
+            child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             actions: [
@@ -285,6 +286,6 @@ class _MessagePageState extends State<MessagePage> {
             child: Icon(Icons.add, color: Theme.of(context).primaryColor),
             backgroundColor: Theme.of(context).secondaryHeaderColor,
           ),
-        ));
+        )));
   }
 }

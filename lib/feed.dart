@@ -30,7 +30,8 @@ class _FeedPageState extends State<FeedPage> {
     medQry = MediaQuery.of(context);
     return WillPopScope(
         onWillPop: () async => false,
-        child: Scaffold(
+        child: SafeArea(
+            child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
               icon: Utils.userProfilePic(Utils.userId, 15),
@@ -201,6 +202,6 @@ class _FeedPageState extends State<FeedPage> {
                 child: Icon(Icons.add, color: Theme.of(context).primaryColor),
                 backgroundColor: Theme.of(context).secondaryHeaderColor,
               )),
-        ));
+        )));
   }
 }

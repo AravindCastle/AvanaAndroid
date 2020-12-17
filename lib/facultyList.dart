@@ -19,7 +19,8 @@ class _facultyListPageState extends State<facultyListPage> {
 
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: Text("Faculties"),
         leading: IconButton(
@@ -141,6 +142,6 @@ class _facultyListPageState extends State<facultyListPage> {
             ),
           )*/
       ,
-    );
+    ));
   }
 }

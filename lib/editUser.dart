@@ -143,7 +143,8 @@ class _EditUserState extends State<EditUser> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: Text(currentUserName),
         actions: [
@@ -345,6 +346,6 @@ class _EditUserState extends State<EditUser> {
                 ),
         ),
       ),
-    );
+    ));
   }
 }

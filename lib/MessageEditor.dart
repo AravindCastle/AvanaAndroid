@@ -49,9 +49,10 @@ class _MessageEditorState extends State<MessageEditor> {
         setState(() {
           isSaving = true;
         });
-      await uploadingPop.show();
       uploadingPop.style(
           message: "Uploading files", maxProgress: 100, progress: 0);
+      await uploadingPop.show();
+
       try {
         String content = messageContr.text;
         String sub = dropDownValue.text;
@@ -158,91 +159,93 @@ class _MessageEditorState extends State<MessageEditor> {
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
 
-    return new Scaffold(
-        appBar: AppBar(
-          title: Text("Compose Message"),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.attach_file), onPressed: _pickImage),
-            IconButton(
-                icon: Icon(Icons.send),
-                onPressed: () {
-                  saveThread(context);
-                })
-          ],
-        ),
-        body: new SingleChildScrollView(
-          child: new Container(
-            padding: const EdgeInsets.all(1.0),
-            alignment: Alignment.center,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  isSaving
-                      ? SizedBox(
-                          height: medQry.size.height * .01,
-                          //child: LinearProgressIndicator(),
-                        )
-                      : SizedBox(
-                          height: medQry.size.height * .01,
-                        ),
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
-                      child: SizedBox(
-                          child: Text(
-                        "Subject",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ))),
-                  Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: new BoxDecoration(
-                              border: Border.all(color: Colors.transparent),
-                              // You can use like this way or like the below line
-                              borderRadius: new BorderRadius.circular(10.0),
-                              color: Colors.grey[200]),
-                          child: new Container(
-                              width: medQry.size.height,
-                              child: TextField(
-                                autofocus: true,
-                                decoration: InputDecoration(
-                                    hintText: "Subject...",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.fromLTRB(
-                                        20.0, 15.0, 20.0, 15.0)),
-                                controller: dropDownValue,
-                              )))),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 10, 0, 3),
-                    child: SizedBox(
-                        child: Text(
-                      "Content",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: new BoxDecoration(
-                              border: Border.all(color: Colors.transparent),
-                              // You can use like this way or like the below line
-                              borderRadius: new BorderRadius.circular(10.0),
-                              color: Colors.grey[200]),
-                          child: new TextField(
-                              controller: messageContr,
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.fromLTRB(
-                                      20.0, 15.0, 20.0, 15.0),
-                                  hintText: "Type ...")))),
-                  buildAttachmentSection(context)
-                ]),
-          ),
-        ));
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text("Compose Message"),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.attach_file), onPressed: _pickImage),
+                IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {
+                      saveThread(context);
+                    })
+              ],
+            ),
+            body: new SingleChildScrollView(
+              child: new Container(
+                padding: const EdgeInsets.all(1.0),
+                alignment: Alignment.center,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      isSaving
+                          ? SizedBox(
+                              height: medQry.size.height * .01,
+                              //child: LinearProgressIndicator(),
+                            )
+                          : SizedBox(
+                              height: medQry.size.height * .01,
+                            ),
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
+                          child: SizedBox(
+                              child: Text(
+                            "Subject",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ))),
+                      Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: new BoxDecoration(
+                                  border: Border.all(color: Colors.transparent),
+                                  // You can use like this way or like the below line
+                                  borderRadius: new BorderRadius.circular(10.0),
+                                  color: Colors.grey[200]),
+                              child: new Container(
+                                  width: medQry.size.height,
+                                  child: TextField(
+                                    autofocus: true,
+                                    decoration: InputDecoration(
+                                        hintText: "Subject...",
+                                        border: InputBorder.none,
+                                        contentPadding: EdgeInsets.fromLTRB(
+                                            20.0, 15.0, 20.0, 15.0)),
+                                    controller: dropDownValue,
+                                  )))),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 10, 0, 3),
+                        child: SizedBox(
+                            child: Text(
+                          "Content",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: new BoxDecoration(
+                                  border: Border.all(color: Colors.transparent),
+                                  // You can use like this way or like the below line
+                                  borderRadius: new BorderRadius.circular(10.0),
+                                  color: Colors.grey[200]),
+                              child: new TextField(
+                                  controller: messageContr,
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.fromLTRB(
+                                          20.0, 15.0, 20.0, 15.0),
+                                      hintText: "Type ...")))),
+                      buildAttachmentSection(context)
+                    ]),
+              ),
+            )));
   }
 }

@@ -554,7 +554,8 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
     threadID = ModalRoute.of(context).settings.arguments;
     getThreadDetails();
     commonContext = context;
-    return new Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: isLoading ? Text("") : buildMessageInfo(),
         actions: <Widget>[
@@ -603,6 +604,6 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
               // Loading
               // buildLoading()
             ),
-    );
+    ));
   }
 }

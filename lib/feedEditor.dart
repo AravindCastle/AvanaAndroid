@@ -51,9 +51,10 @@ class _FeedEditorState extends State<FeedEditor> {
           List<Map> fileUrls = new List();
           final SharedPreferences localStore =
               await SharedPreferences.getInstance();
-          await uploadingPop.show();
           uploadingPop.style(
               message: "Uploading files", maxProgress: 100, progress: 0);
+          await uploadingPop.show();
+
           int totalFiles = uploaderImgs.length;
 
           for (int i = 0; i < uploaderImgs.length; i++) {
@@ -159,56 +160,58 @@ class _FeedEditorState extends State<FeedEditor> {
   Widget build(BuildContext context) {
     medQry = MediaQuery.of(context);
 
-    return new Scaffold(
-        appBar: AppBar(
-          title: Text("New  Feed"),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.attach_file), onPressed: _pickImage),
-            IconButton(
-                icon: Icon(Icons.send),
-                onPressed: () {
-                  addNewFeed(context);
-                })
-          ],
-        ),
-        body: new SingleChildScrollView(
-          child: new Container(
-            padding: const EdgeInsets.all(1.0),
-            alignment: Alignment.center,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
-                    child: SizedBox(
-                        child: Text(
-                      "Feed Content",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: new BoxDecoration(
-                              border: Border.all(color: Colors.transparent),
-                              // You can use like this way or like the below line
-                              borderRadius: new BorderRadius.circular(10.0),
-                              color: Colors.grey[200]),
-                          child: new TextField(
-                              autofocus: true,
-                              controller: messageContr,
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.fromLTRB(
-                                      20.0, 15.0, 20.0, 15.0),
-                                  hintText: "Type ...")))),
-                  buildAttachmentSection(context)
-                ]),
-          ),
-        ));
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text("New  Feed"),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.attach_file), onPressed: _pickImage),
+                IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {
+                      addNewFeed(context);
+                    })
+              ],
+            ),
+            body: new SingleChildScrollView(
+              child: new Container(
+                padding: const EdgeInsets.all(1.0),
+                alignment: Alignment.center,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 0, 3),
+                        child: SizedBox(
+                            child: Text(
+                          "Feed Content",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: new BoxDecoration(
+                                  border: Border.all(color: Colors.transparent),
+                                  // You can use like this way or like the below line
+                                  borderRadius: new BorderRadius.circular(10.0),
+                                  color: Colors.grey[200]),
+                              child: new TextField(
+                                  autofocus: true,
+                                  controller: messageContr,
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.fromLTRB(
+                                          20.0, 15.0, 20.0, 15.0),
+                                      hintText: "Type ...")))),
+                      buildAttachmentSection(context)
+                    ]),
+              ),
+            )));
   }
 }

@@ -52,11 +52,13 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           ]);
     }
   }
-Future<void> updateUserActive(bool state,String docId) async {
-await Firestore.instance.collection('userdata').document(docId).updateData({
-"isactive":state,"membershipdate":DateTime.now().millisecondsSinceEpoch
-});
-}
+
+  Future<void> updateUserActive(bool state, String docId) async {
+    await Firestore.instance.collection('userdata').document(docId).updateData({
+      "isactive": state,
+      "membershipdate": DateTime.now().millisecondsSinceEpoch
+    });
+  }
 
   Future<void> getUserDetails(String docId) async {
     final DocumentSnapshot userDetails =
@@ -64,18 +66,17 @@ await Firestore.instance.collection('userdata').document(docId).updateData({
     if (userDetails.data.length > 0) {
       userName = userDetails["username"];
       password = userDetails["password"];
-      userRole=userDetails["userrole"];
+      userRole = userDetails["userrole"];
       role = Utils.getRoleString(userRole.toString());
 
       isActive = userDetails["isactive"];
       membershipDate = userDetails["membershipdate"];
       email = userDetails["email"];
     }
-    if (this.mounted){
-
-    setState(() {
-      isPageLoading = false;
-    });
+    if (this.mounted) {
+      setState(() {
+        isPageLoading = false;
+      });
     }
   }
 
@@ -93,85 +94,93 @@ await Firestore.instance.collection('userdata').document(docId).updateData({
               SizedBox(
                 width: medQry.size.width * .35,
                 height: medQry.size.width * .35,
-                child:
-                    Icon(Icons.account_circle, size: medQry.size.width * .35,color: Color.fromRGBO(44,44,44, 1),),
+                child: Icon(
+                  Icons.account_circle,
+                  size: medQry.size.width * .35,
+                  color: Color.fromRGBO(44, 44, 44, 1),
+                ),
               ),
               SizedBox(height: 10, width: 10),
-             Row( mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,children: <Widget>[
-            //  Utils.getUserBadge(userRole,17),
-              Text(userName,
-                  style: TextStyle(
-                    fontSize: 26,
-                  ),
-                  textAlign: TextAlign.center),
-],),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  //  Utils.getUserBadge(userRole,17),
+                  Text(userName,
+                      style: TextStyle(
+                        fontSize: 26,
+                      ),
+                      textAlign: TextAlign.center),
+                ],
+              ),
               SizedBox(height: medQry.size.height * .03),
-              Padding(padding: EdgeInsets.all(medQry.size.width*.04), child:  Row(                
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: medQry.size.width * .27,
-                    child: Text("Email ",style: TextStyle(fontSize:16)),
-                  ),
-                  SizedBox(
-                    width: medQry.size.width * .60,
-                    child: Text(":  "+email,style: TextStyle(fontSize:15)),
-                  ),
-                ],
-              )),
-              Padding(padding: EdgeInsets.all(medQry.size.width*.04), child:Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: medQry.size.width * .27,
-                    child: Text("Password ",style: TextStyle(fontSize:16)),
-                  ),
-                  SizedBox(
-                    width: medQry.size.width * .60,
-                    child: Text(":  "+password,style: TextStyle(fontSize:15)),
-                  ),
-                ],
-              )),
-              Padding(padding: EdgeInsets.all(medQry.size.width*.04), child:Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: medQry.size.width * .27,
-                    child: Text("Role ",style: TextStyle(fontSize:16)),
-                  ),
-                  SizedBox(
-                    width: medQry.size.width * .60,
-                    child: Text(": "+role.toString(),style: TextStyle(fontSize:15)),
-                  ),
-                ],
-              )),
-         
-                  Align(
-                    alignment: Alignment.topLeft,
-                      child: SizedBox( 
-                    
-                    width: medQry.size.width*.80,               
-                child:
-              SwitchListTile(
-                title: Text("User Status"),
-                value: isActive,
-                onChanged: (bool value) {
-                  setState(() {
-                    isActive = value;
-                    updateUserActive(isActive,docmtId);
-                  });
-                },
-              )),
-                  )
-                  
-
-              
-              
-              
+              Padding(
+                  padding: EdgeInsets.all(medQry.size.width * .04),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        width: medQry.size.width * .27,
+                        child: Text("Email ", style: TextStyle(fontSize: 16)),
+                      ),
+                      SizedBox(
+                        width: medQry.size.width * .60,
+                        child:
+                            Text(":  " + email, style: TextStyle(fontSize: 15)),
+                      ),
+                    ],
+                  )),
+              Padding(
+                  padding: EdgeInsets.all(medQry.size.width * .04),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        width: medQry.size.width * .27,
+                        child:
+                            Text("Password ", style: TextStyle(fontSize: 16)),
+                      ),
+                      SizedBox(
+                        width: medQry.size.width * .60,
+                        child: Text(":  " + password,
+                            style: TextStyle(fontSize: 15)),
+                      ),
+                    ],
+                  )),
+              Padding(
+                  padding: EdgeInsets.all(medQry.size.width * .04),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        width: medQry.size.width * .27,
+                        child: Text("Role ", style: TextStyle(fontSize: 16)),
+                      ),
+                      SizedBox(
+                        width: medQry.size.width * .60,
+                        child: Text(": " + role.toString(),
+                            style: TextStyle(fontSize: 15)),
+                      ),
+                    ],
+                  )),
+              Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                    width: medQry.size.width * .80,
+                    child: SwitchListTile(
+                      title: Text("User Status"),
+                      value: isActive,
+                      onChanged: (bool value) {
+                        setState(() {
+                          isActive = value;
+                          updateUserActive(isActive, docmtId);
+                        });
+                      },
+                    )),
+              )
             ],
           )),
     );
@@ -181,16 +190,17 @@ await Firestore.instance.collection('userdata').document(docId).updateData({
     medQry = MediaQuery.of(context);
     final UserDetailsArguement userDet =
         ModalRoute.of(context).settings.arguments;
-        docmtId=userDet.userId;
+    docmtId = userDet.userId;
     getUserDetails(docmtId);
-    return new Scaffold(
-        appBar: AppBar(title: Text("User Details")),
-        body: new Container(
-          padding: const EdgeInsets.all(1.0),
-          alignment: Alignment.center,
-          child: (isPageLoading
-              ? CircularProgressIndicator()
-              : buildUserCard(context)),
-        ));
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(title: Text("User Details")),
+            body: new Container(
+              padding: const EdgeInsets.all(1.0),
+              alignment: Alignment.center,
+              child: (isPageLoading
+                  ? CircularProgressIndicator()
+                  : buildUserCard(context)),
+            )));
   }
 }

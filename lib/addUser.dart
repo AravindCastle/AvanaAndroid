@@ -138,7 +138,8 @@ class _AddUserPageState extends State<AddUserPage> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: Text("Add user"),
       ),
@@ -300,6 +301,6 @@ class _AddUserPageState extends State<AddUserPage> {
                   ],
                 ),
               ))),
-    );
+    ));
   }
 }
