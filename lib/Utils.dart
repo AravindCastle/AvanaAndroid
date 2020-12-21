@@ -32,7 +32,7 @@ class Utils {
   static Map<String, int> feedCommentCount = new Map();
 
   static Map<String, String> userProfilePictures = new Map();
-  static const String notifyTopic = "test4";
+  static const String notifyTopic = "beta";
   static bool getImageFormats(String isSupported) {
     List<String> imgFrmt = new List();
     imgFrmt.add("jpeg");
@@ -954,8 +954,7 @@ static void openFile(File file,String url){
   }
 
   static bool isSuperAdmin() {
-    return (Utils.userEmail == "admin@avana.com" ||
-        Utils.userEmail == "admin@admin.com");
+    return (Utils.userEmail == "admin@avanasurgical.com");
   }
 
   static String getDefaultImageForMessage(String subject) {

@@ -147,37 +147,39 @@ class _EditUserState extends State<EditUser> {
         child: Scaffold(
       appBar: AppBar(
         title: Text(currentUserName),
-        actions: [
-          IconButton(
-              icon: Icon(Icons.delete_forever),
-              onPressed: () => {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext bCont) {
-                          return AlertDialog(
-                            title: Text(
-                                "Do you want to remove this user permanently ?"),
-                            actions: [
-                              FlatButton(
-                                onPressed: () => {
-                                  Firestore.instance
-                                      .collection('userdata')
-                                      .document(currentUserId)
-                                      .delete(),
-                                  Navigator.pop(context),
-                                  Navigator.pop(context),
-                                },
-                                child: Text("Ok"),
-                              ),
-                              FlatButton(
-                                onPressed: () => {Navigator.pop(context)},
-                                child: Text("Cancel"),
-                              )
-                            ],
-                          );
+        actions: "admin@avanasurgical.com" == currentUserEmail.trim()
+            ? []
+            : [
+                IconButton(
+                    icon: Icon(Icons.delete_forever),
+                    onPressed: () => {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext bCont) {
+                                return AlertDialog(
+                                  title: Text(
+                                      "Do you want to remove this user permanently ?"),
+                                  actions: [
+                                    FlatButton(
+                                      onPressed: () => {
+                                        Firestore.instance
+                                            .collection('userdata')
+                                            .document(currentUserId)
+                                            .delete(),
+                                        Navigator.pop(context),
+                                        Navigator.pop(context),
+                                      },
+                                      child: Text("Ok"),
+                                    ),
+                                    FlatButton(
+                                      onPressed: () => {Navigator.pop(context)},
+                                      child: Text("Cancel"),
+                                    )
+                                  ],
+                                );
+                              })
                         })
-                  })
-        ],
+              ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -336,7 +338,7 @@ class _EditUserState extends State<EditUser> {
                             minWidth: double.infinity, minHeight: 40),
                         child: RaisedButton(
                           child: Text(
-                            "Edit user",
+                            "Update",
                             style: TextStyle(fontSize: 20),
                           ),
                           onPressed: updateUserDetails,

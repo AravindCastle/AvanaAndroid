@@ -216,6 +216,7 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   void showAddFolderPop(BuildContext context) {
+    folderName.clear();
     showDialog(
         context: context,
         builder: (BuildContext bCont) {
@@ -254,6 +255,7 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   void showAddYoutubePop(BuildContext context) {
+    folderName.clear();
     showDialog(
         context: context,
         builder: (BuildContext bCont) {

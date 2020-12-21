@@ -34,7 +34,7 @@ class _FeedPageState extends State<FeedPage> {
             child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Utils.userProfilePic(Utils.userId, 15),
+              icon: Utils.userProfilePic(Utils.userId, 14),
               onPressed: () {
                 Utils.showUserPop(context);
               },

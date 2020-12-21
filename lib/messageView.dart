@@ -610,21 +610,38 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     }
   }
 
-  void deleteThread(String threadId) {
-    try {
-      StorageReference storageReference = FirebaseStorage.instance
-          .ref()
-          .child('AvanaFiles/' + threadDetails["folderid"] + "/");
-      storageReference.delete();
-    } catch (e) {}
+  void deleteThread(String threadId) async {
+    setState(() {
+      isLoading = true;
+    });
+    List<dynamic> attachmentList = threadDetails["attachments"];
+    for (int i = 0; i < attachmentList.length; i++) {
+      try {
+        StorageReference storageReference = await FirebaseStorage.instance
+            .getReferenceFromUrl(attachmentList[i]["url"]);
+        storageReference.delete();
+      } catch (e) {}
+    }
+
     for (int i = 0; i < commentsDoc.length; i++) {
+      if (commentsDoc[i]["isattachment"] &&
+          commentsDoc[i]["attachment"] != null) {
+        List<dynamic> commnetattachmentList = commentsDoc[i]["attachment"];
+        for (int i = 0; i < commnetattachmentList.length; i++) {
+          try {
+            StorageReference storageReference = await FirebaseStorage.instance
+                .getReferenceFromUrl(commnetattachmentList[i]["url"]);
+            storageReference.delete();
+          } catch (e) {}
+        }
+      }
+
       Firestore.instance
           .collection('comments')
           .document(commentsDoc[i].documentID)
           .delete();
     }
     Firestore.instance.collection('Threads').document(threadId).delete();
-    Navigator.of(context).pop();
     Navigator.of(context).pop();
   }
 
@@ -669,79 +686,83 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     threadID = ModalRoute.of(context).settings.arguments;
     getThreadDetails();
     commonContext = context;
-    return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: isLoading ? Text("") : buildMessageInfo(),
-        actions: <Widget>[
-          (!isLoading &&
-                  (Utils.isDeleteAvail(threadDetails['created_time']) ||
-                      userRole == 1))
-              ? PopupMenuButton(
-                  initialValue: 1,
-                  onSelected: (val) =>
-                      {val == "1" ? showEditSheet() : deleteAlert(context)},
-                  itemBuilder: (context) {
-                    var list = List<PopupMenuEntry<Object>>();
-                    list.add(
-                      PopupMenuItem(
-                        child: Text("Edit"),
-                        value: "1",
+    if (threadDetails != null) {
+      return SafeArea(
+          child: Scaffold(
+        appBar: AppBar(
+          title: isLoading ? Text("") : buildMessageInfo(),
+          actions: <Widget>[
+            (!isLoading &&
+                    (Utils.isDeleteAvail(threadDetails['created_time']) ||
+                        userRole == 1))
+                ? PopupMenuButton(
+                    initialValue: 1,
+                    onSelected: (val) =>
+                        {val == "1" ? showEditSheet() : deleteAlert(context)},
+                    itemBuilder: (context) {
+                      var list = List<PopupMenuEntry<Object>>();
+                      list.add(
+                        PopupMenuItem(
+                          child: Text("Edit"),
+                          value: "1",
+                        ),
+                      );
+                      list.add(
+                        PopupMenuDivider(
+                          height: 10,
+                        ),
+                      );
+                      list.add(
+                        PopupMenuItem(
+                          child: Text("Delete"),
+                          value: "2",
+                        ),
+                      );
+                      return list;
+                    },
+                    icon: Icon(Icons.more_vert),
+                  )
+                : SizedBox()
+          ],
+        ),
+        body: isLoading
+            ? new Container(
+                height: medQry.size.height,
+                width: medQry.size.width,
+                child: Center(child: new CircularProgressIndicator()))
+            : Stack(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Flexible(
+                        child: ListView(
+                          children: <Widget>[
+                            //  buildMessageInfo(),
+                            buildMessageContent(),
+                            SizedBox(height: 10),
+                            buildAttachmentSection(context),
+                            //Divider(color: Colors.black),
+                            buildCommentSection(context)
+                            // Display your list,
+                          ],
+                          reverse: false,
+                        ),
                       ),
-                    );
-                    list.add(
-                      PopupMenuDivider(
-                        height: 10,
-                      ),
-                    );
-                    list.add(
-                      PopupMenuItem(
-                        child: Text("Delete"),
-                        value: "2",
-                      ),
-                    );
-                    return list;
-                  },
-                  icon: Icon(Icons.more_vert),
-                )
-              : SizedBox()
-        ],
-      ),
-      body: isLoading
-          ? new Container(
-              height: medQry.size.height,
-              width: medQry.size.width,
-              child: Center(child: new CircularProgressIndicator()))
-          : Stack(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Flexible(
-                      child: ListView(
-                        children: <Widget>[
-                          //  buildMessageInfo(),
-                          buildMessageContent(),
-                          SizedBox(height: 10),
-                          buildAttachmentSection(context),
-                          //Divider(color: Colors.black),
-                          buildCommentSection(context)
-                          // Display your list,
-                        ],
-                        reverse: false,
-                      ),
-                    ),
-                    (userRole == 1 ||
-                            userRole == 2 ||
-                            userId == threadDetails["owner"])
-                        ? buildInput()
-                        : SizedBox(height: 10),
-                  ],
-                ),
-              ],
+                      (userRole == 1 ||
+                              userRole == 2 ||
+                              userId == threadDetails["owner"])
+                          ? buildInput()
+                          : SizedBox(height: 10),
+                    ],
+                  ),
+                ],
 
-              // Loading
-              // buildLoading()
-            ),
-    ));
+                // Loading
+                // buildLoading()
+              ),
+      ));
+    } else {
+      return Scaffold();
+    }
   }
 }

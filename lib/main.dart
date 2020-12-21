@@ -204,6 +204,28 @@ class AvanaHome extends StatelessWidget {
   }
 }
 
+class BackgroundNotify {
+  static Future<dynamic> myBackgroundMessageHandler(
+      Map<String, dynamic> message) {
+    if (message["data"]["screen"] == "resource" &&
+        Utils.userId != message["data"]["ownerId"]) {
+      Fluttertoast.showToast(
+          msg: "New resources added please checkout",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 3,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    } else if ("messageview" == message["data"]["screen"]) {
+      Utils.addNotificationId(
+          message["data"]["docid"], message["data"]["ownerId"]);
+    }
+
+    // Or do other work.
+  }
+}
+
 class AvanaHomePage extends StatefulWidget {
   AvanaHomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -231,7 +253,6 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
       _fcm.requestNotificationPermissions(IosNotificationSettings());
     }
     _fcm.configure(
-      onBackgroundMessage:(message) => myBackgroundMessageHandler(message),
       onMessage: (Map<String, dynamic> message) async {
         if (this.mounted) {
           setState(() {
@@ -252,6 +273,8 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
           });
         }
       },
+      onBackgroundMessage: (message) =>
+          BackgroundNotify.myBackgroundMessageHandler(message),
       onLaunch: (Map<String, dynamic> message) async {
         if (this.mounted) {
           setState(() {
@@ -293,27 +316,6 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
         }
       },
     );
-  }
-
-  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
-    setState(() {
-      if (message["data"]["screen"] == "resource" &&
-          Utils.userId != message["data"]["ownerId"]) {
-        Fluttertoast.showToast(
-            msg: "New resources added please checkout",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 3,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      } else if ("messageview" == message["data"]["screen"]) {
-        Utils.addNotificationId(
-            message["data"]["docid"], message["data"]["ownerId"]);
-      }
-    });
-
-    // Or do other work.
   }
 
   void checkUserLogged() async {

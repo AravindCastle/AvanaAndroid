@@ -495,13 +495,15 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
     }
   }
 
-  void deleteThread(String threadId) {
-    try {
-      StorageReference storageReference = FirebaseStorage.instance
-          .ref()
-          .child('AvanaFiles/' + threadDetails["folderid"] + "/");
-      storageReference.delete();
-    } catch (e) {}
+  void deleteThread(String threadId) async {
+    List<dynamic> attachmentList = threadDetails["attachments"];
+    for (int i = 0; i < attachmentList.length; i++) {
+      try {
+        StorageReference storageReference = await FirebaseStorage.instance
+            .getReferenceFromUrl(attachmentList[i]["url"]);
+        storageReference.delete();
+      } catch (e) {}
+    }
     for (int i = 0; i < commentsDoc.length; i++) {
       Firestore.instance
           .collection('feedcomments')
