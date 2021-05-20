@@ -641,6 +641,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           .document(commentsDoc[i].documentID)
           .delete();
     }
+ Navigator.of(context).pop();
     Firestore.instance.collection('Threads').document(threadId).delete();
     Navigator.of(context).pop();
   }

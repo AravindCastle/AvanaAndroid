@@ -49,14 +49,15 @@ class _MessageEditorState extends State<MessageEditor> {
         setState(() {
           isSaving = true;
         });
-      uploadingPop.style(
-          message: "Uploading files", maxProgress: 100, progress: 0);
-      await uploadingPop.show();
+      
 
       try {
         String content = messageContr.text;
         String sub = dropDownValue.text;
         if (content.isNotEmpty && sub.isNotEmpty) {
+uploadingPop.style(
+          message: "Uploading files", maxProgress: 100, progress: 0);
+      await uploadingPop.show();
           List<Map> fileUrls = new List();
           final SharedPreferences localStore =
               await SharedPreferences.getInstance();

@@ -114,7 +114,7 @@ class GalleryPageState extends State<GalleryPage> {
       for (int i = 0; i < childElements.length; i++) {
         deleteOnLoop(childElements[i].documentID);
       }
-    } else if (currDoc["type"] == "file" || currDoc["type"] == "youtube") {
+    } else if (currDoc["type"] == "file" ) {
       try {
         StorageReference storageReference =
             await FirebaseStorage.instance.getReferenceFromUrl(currDoc["url"]);

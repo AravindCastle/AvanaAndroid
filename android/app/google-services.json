@@ -7,6 +7,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:310479409195:android:45e00354223a5ddf4a5a6e",
+        "android_client_info": {
+          "package_name": "com.avana.learningapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310479409195-verflgd0l7uds07bd572fun2i8n2bvfc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDp0XshgL2n09iiuvRIc4QyDHK-vAhavnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310479409195-verflgd0l7uds07bd572fun2i8n2bvfc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "310479409195-i697ft382voeho2eqdeusit8a0dap3ff.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.avanaAcademy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:310479409195:android:03b68c880c15e35e4a5a6e",
         "android_client_info": {
           "package_name": "com.example.avana_academy"
@@ -29,6 +65,13 @@
             {
               "client_id": "310479409195-verflgd0l7uds07bd572fun2i8n2bvfc.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "310479409195-i697ft382voeho2eqdeusit8a0dap3ff.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.avanaAcademy"
+              }
             }
           ]
         }

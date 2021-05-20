@@ -95,7 +95,7 @@ class Utils {
 
   static String getTimeFrmt(int time) {
     var monthMap = new Map();
-    monthMap["01"] = "Jan";
+    monthMap["1"] = "Jan";
     monthMap["2"] = "Feb";
     monthMap["3"] = "Mar";
     monthMap["4"] = "Apr";

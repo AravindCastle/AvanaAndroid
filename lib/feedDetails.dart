@@ -510,6 +510,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
           .document(commentsDoc[i].documentID)
           .delete();
     }
+ Navigator.of(context).pop();
     Firestore.instance.collection('feed').document(threadId).delete();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
