@@ -28,11 +28,11 @@ class _MessageEditorState extends State<MessageEditor> {
 //videoFrmts.addAll({'.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'});
   Future<void> _pickImage() async {
     if (uploaderImgs.length < 10) {
-      File selectedFile = await FilePicker.getFile(type: FileType.any);
+    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
       //await ImagePicker.pickImage(source: source);
-      if (selectedFile != null && this.mounted) {
+      if (selectedFile.files.length>0 && this.mounted) {
         setState(() {
-          uploaderImgs.add(selectedFile);
+          uploaderImgs.add(File(selectedFile.files.first.path));
         });
       }
     }
@@ -65,28 +65,30 @@ uploadingPop.style(
 
           for (int i = 0; i < uploaderImgs.length; i++) {
             String fileName = uploaderImgs[i].path.split("/").last;
-            StorageReference storageReference = FirebaseStorage.instance
-                .ref()
-                .child('AvanaFiles/' + folderId + '/' + fileName);
-            StorageUploadTask uploadTask =
-                storageReference.putFile(uploaderImgs[i]);
+            
+            FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child('AvanaFiles/' + folderId + '/' + fileName);
+    UploadTask uploadTask = ref.putFile(uploaderImgs[i]);    
+            
+            
             int fileNumber = i + 1;
             String loaderInfo = "$fileNumber/$totalFiles file is uploading  ";
 
             uploadingPop.style(
                 message: loaderInfo, maxProgress: 100, progress: 0);
             double loadingValue = 0;
-            uploadTask.events.listen((event) {
+            uploadTask.snapshotEvents.listen((event) {
               loadingValue = 100 *
-                  (uploadTask.lastSnapshot.bytesTransferred /
-                      uploadTask.lastSnapshot.totalByteCount);
+                  (uploadTask.snapshot.bytesTransferred /
+                      uploadTask.snapshot.totalBytes);
               uploadingPop.update(
                   message: loaderInfo, progress: loadingValue.roundToDouble());
             });
 
-            await uploadTask.onComplete;
+            TaskSnapshot taskres=await uploadTask.whenComplete(() => null);
+          String url = await taskres.ref.getDownloadURL();
             fileUrls.add({
-              "url": await storageReference.getDownloadURL(),
+              "url":  url,
               "name": fileName,
               "type": fileName.split(".").last
             });
@@ -95,7 +97,7 @@ uploadingPop.style(
 
           Utils.showLoadingPopText(context, "Saving");
           DocumentReference newThread =
-              await Firestore.instance.collection("Threads").add({
+              await FirebaseFirestore.instance.collection("Threads").add({
             "content": messageContr.text,
             "owner": localStore.getString("userId"),
             "ownername": localStore.getString("name"),
@@ -107,7 +109,7 @@ uploadingPop.style(
           });
           String notfyStr = messageContr.text;
           Utils.sendPushNotification(
-              "New Message", notfyStr, "messageview", newThread.documentID);
+              "New Message", notfyStr, "messageview", newThread.id);
           Navigator.pushNamed(context, "/messagePage");
         }
       } catch (Exception) {

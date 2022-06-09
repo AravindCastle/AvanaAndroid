@@ -25,11 +25,11 @@ class _FeedEditorState extends State<FeedEditor> {
 
   Future<void> _pickImage() async {
     if (uploaderImgs.length < 10) {
-      File selectedFile = await FilePicker.getFile(type: FileType.any);
+      FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.any);
       //await ImagePicker.pickImage(source: source);
       if (selectedFile != null && this.mounted) {
         setState(() {
-          uploaderImgs.add(selectedFile);
+          uploaderImgs.add(File(selectedFile.files.first.path));
         });
       }
     }
@@ -59,29 +59,28 @@ class _FeedEditorState extends State<FeedEditor> {
 
           for (int i = 0; i < uploaderImgs.length; i++) {
             String fileName = uploaderImgs[i].path.split("/").last;
-            StorageReference storageReference = FirebaseStorage.instance
-                .ref()
-                .child('AvanaFiles/' + folderId + '/' + fileName);
-            StorageUploadTask uploadTask =
-                storageReference.putFile(uploaderImgs[i]);
-
+           
+           FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child('AvanaFiles/' + folderId + '/' + fileName);
+    UploadTask uploadTask = ref.putFile(uploaderImgs[i]);              
+    
             int fileNumber = i + 1;
             String loaderInfo = "$fileNumber/$totalFiles file is uploading  ";
 
             uploadingPop.style(
                 message: loaderInfo, maxProgress: 100, progress: 0);
             double loadingValue = 0;
-            uploadTask.events.listen((event) {
+            uploadTask.snapshotEvents.listen((event) {
               loadingValue = 100 *
-                  (uploadTask.lastSnapshot.bytesTransferred /
-                      uploadTask.lastSnapshot.totalByteCount);
+                  (uploadTask.snapshot.bytesTransferred /
+                      uploadTask.snapshot.totalBytes);
               uploadingPop.update(
                   message: loaderInfo, progress: loadingValue.roundToDouble());
             });
 
-            await uploadTask.onComplete;
+            TaskSnapshot taskres=await uploadTask.whenComplete(() => null);
             fileUrls.add({
-              "url": await storageReference.getDownloadURL(),
+              "url": await taskres.ref.getDownloadURL(),
               "name": fileName,
               "type": fileName.split(".").last,
             });
@@ -92,7 +91,7 @@ class _FeedEditorState extends State<FeedEditor> {
 
           final SharedPreferences store = await SharedPreferences.getInstance();
           DocumentReference newFeed =
-              await Firestore.instance.collection("feed").add({
+              await FirebaseFirestore.instance.collection("feed").add({
             "content": content,
             "owner": localStore.getString("userId"),
             "ownername": localStore.getString("name"),
@@ -106,7 +105,7 @@ class _FeedEditorState extends State<FeedEditor> {
               localStore.getString("name") + " has added a new post ";
 
           Utils.sendPushNotification(
-              "New feed ", notfyStr, "feed", newFeed.documentID);
+              "New feed ", notfyStr, "feed", newFeed.id);
 
           Navigator.pushNamed(context, "/feed");
         }
@@ -122,10 +121,10 @@ class _FeedEditorState extends State<FeedEditor> {
   }
 
   Widget buildAttachmentSection(BuildContext context) {
-    List<Widget> row1 = new List();
-    List<Widget> row2 = new List();
-    List<Widget> row3 = new List();
-    List<Widget> row4 = new List();
+    List<Widget> row1 = List<Widget>.empty();
+    List<Widget> row2 =List<Widget>.empty();
+    List<Widget> row3 = List<Widget>.empty();
+    List<Widget> row4 = List<Widget>.empty();
     for (int i = 0; i < uploaderImgs.length; i++) {
       File prevFile = uploaderImgs[i];
       String fileName = prevFile.path.split("/").last;

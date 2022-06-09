@@ -31,7 +31,7 @@ class _userListPageState extends State<userListPage> {
             ),
             backgroundColor: Colors.white,
             body: new StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('userdata')
                   .orderBy("userrole", descending: true)
                   .orderBy("username")
@@ -40,7 +40,7 @@ class _userListPageState extends State<userListPage> {
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) return new Text('Loading...');
                 return new ListView(
-                  children: snapshot.data.documents.map((document) {
+                  children: snapshot.data.docs.map((document) {
                     return new Visibility(
                         visible: (Utils.userRole == 1 ||
                             (Utils.userRole == 2 && document['userrole'] > 1) ||
@@ -51,7 +51,7 @@ class _userListPageState extends State<userListPage> {
                               ? Icon(Icons.keyboard_arrow_right)
                               : SizedBox(),
                           leading:
-                              Utils.userProfilePic(document.documentID, 20),
+                              Utils.userProfilePic(document.id, 20),
                           title: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -78,7 +78,7 @@ class _userListPageState extends State<userListPage> {
                               ? () {
                                   Navigator.pushNamed(
                                       context, "/userdetailpage", arguments: {
-                                    "userid": document.documentID,
+                                    "userid": document.id,
                                     "username": document["username"]
                                   });
                                 }

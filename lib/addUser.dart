@@ -73,41 +73,8 @@ class _AddUserPageState extends State<AddUserPage> {
         uploadingPop.show();
         String profile_pic_url = null;
         if (profilePic != null) {
-              FirebaseStorage storage = FirebaseStorage.instance;
-              Reference ref = storage.ref().child(
-                  'AvanaFiles/profilepics/' + profilePic.path.split("/").last);
-              UploadTask uploadTask = ref.putFile(profilePic);
-              uploadTask.then((res) {
-                  res.ref.getDownloadURL().then((value) async {
-                    profile_pic_url=value;
-                    await FirebaseFirestore.instance.collection("userdata").add({
-          "username": userName.text,
-          "email": emailId.text,
-          "password": password.text,
-          "isactive": isActive,
-          "userrole": int.parse(userRole),
-          "membershipdate": new DateTime.now().millisecondsSinceEpoch,
-          "description": description.text,
-          "hospital": hospital.text,
-          "city": city.text,
-          "region": region,
-          "profile_pic_url": profile_pic_url,
-        });
-
-        userName.clear();
-        emailId.clear();
-        password.clear();
-        description.clear();
-        if (this.mounted) {
-          setState(() {
-            loading = false;
-          });
+          profile_pic_url=await Utils.uploadImageGetUrl('AvanaFiles/profilepics/' + profilePic.path.split("/").last,profilePic);                  
         }
-        uploadingPop.hide();
-        Navigator.pop(context);
-                  } );
-              });
-        }else{
 await FirebaseFirestore.instance.collection("userdata").add({
           "username": userName.text,
           "email": emailId.text,
@@ -133,7 +100,7 @@ await FirebaseFirestore.instance.collection("userdata").add({
         }
         uploadingPop.hide();
         Navigator.pop(context);
-        }
+        
 
         
       }

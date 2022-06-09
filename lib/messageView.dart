@@ -28,26 +28,25 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   TextEditingController editMessageController = new TextEditingController();
 
   Future<void> _addImage() async {
-    File selectedFile = await FilePicker.getFile(type: FileType.image);
+    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {
       Utils.showLoadingPop(commonContext);
       final SharedPreferences localStore =
           await SharedPreferences.getInstance();
       List<Map> fileUrls = new List();
       String folderId = threadDetails["folderid"];
-      String fileName = selectedFile.path.split("/").last;
-      StorageReference storageReference = FirebaseStorage.instance
-          .ref()
-          .child('AvanaFiles/' + folderId + '/' + fileName);
-      StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
-      await uploadTask.onComplete;
+      String fileName = selectedFile.files.first.path.split("/").last;
+     
+
+    String url=await Utils.uploadImageGetUrl('AvanaFiles/' + folderId + '/' + fileName,File(selectedFile.files.first.path));                  
+
       fileUrls.add({
-        "url": await storageReference.getDownloadURL(),
+        "url": url,
         "name": fileName,
         "type": fileName.split(".").last
       });
 
-      await Firestore.instance.collection("comments").add({
+      await FirebaseFirestore.instance.collection("comments").add({
         "comment": "",
         "created_time": new DateTime.now().millisecondsSinceEpoch,
         "owner": localStore.getString("userId"),
@@ -68,7 +67,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       isCommentSaved = false;
       final SharedPreferences localStore =
           await SharedPreferences.getInstance();
-      await Firestore.instance.collection("comments").add({
+      await FirebaseFirestore.instance.collection("comments").add({
         "comment": commentEditor.text,
         "created_time": new DateTime.now().millisecondsSinceEpoch,
         "owner": localStore.getString("userId"),
@@ -92,13 +91,13 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   }
 
   Future<void> getComments() async {
-    final QuerySnapshot userDetails = await Firestore.instance
+    final QuerySnapshot userDetails = await FirebaseFirestore.instance
         .collection('comments')
         //  .orderBy("comments")
         .where("thread_id", isEqualTo: threadID)
         .orderBy("created_time", descending: true)
-        .getDocuments();
-    commentsDoc = userDetails.documents;
+        .get();
+    commentsDoc = userDetails.docs;
     if (this.mounted) {
       setState(() {
         isCmntLoading = false;
@@ -327,9 +326,9 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   }
 
   void deleteComment(String commentId) {
-    Firestore.instance.collection('comments').document(commentId).delete();
+    FirebaseFirestore.instance.collection('comments').doc(commentId).delete();
     setState(() {
-      Utils.updateCommentCount(threadDetails.documentID, false);
+      Utils.updateCommentCount(threadDetails.id, false);
     });
 
     Navigator.of(context).pop();
@@ -457,7 +456,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                                   ),
                                   onPressed: () {
                                     deleteCommentAlert(
-                                        context, commentsDoc[i].documentID);
+                                        context, commentsDoc[i].id);
                                   },
                                 )))
                       ],
@@ -488,10 +487,10 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
 
   Future<void> updateMessage() async {
     Utils.showLoadingPopText(context, "Updating the messsage");
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('Threads')
-        .document(threadID)
-        .updateData({
+        .doc(threadID)
+        .update({
       "content": editMessageController.text,
     });
     Navigator.pop(context);
@@ -604,7 +603,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     Utils.removeNotifyItem(threadID);
     getComments();
     threadDetails =
-        await Firestore.instance.collection('Threads').document(threadID).get();
+        await FirebaseFirestore.instance.collection('Threads').doc(threadID).get();
     if (this.mounted) {
       setState(() {
         isLoading = false;
@@ -619,8 +618,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     List<dynamic> attachmentList = threadDetails["attachments"];
     for (int i = 0; i < attachmentList.length; i++) {
       try {
-        StorageReference storageReference = await FirebaseStorage.instance
-            .getReferenceFromUrl(attachmentList[i]["url"]);
+        Reference storageReference = await FirebaseStorage.instance
+            .refFromURL(attachmentList[i]["url"]);
         storageReference.delete();
       } catch (e) {}
     }
@@ -631,20 +630,20 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
         List<dynamic> commnetattachmentList = commentsDoc[i]["attachment"];
         for (int i = 0; i < commnetattachmentList.length; i++) {
           try {
-            StorageReference storageReference = await FirebaseStorage.instance
-                .getReferenceFromUrl(commnetattachmentList[i]["url"]);
+            Reference storageReference = await FirebaseStorage.instance
+                .refFromURL(commnetattachmentList[i]["url"]);
             storageReference.delete();
           } catch (e) {}
         }
       }
 
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('comments')
-          .document(commentsDoc[i].documentID)
+          .doc(commentsDoc[i].id)
           .delete();
     }
  Navigator.of(context).pop();
-    Firestore.instance.collection('Threads').document(threadId).delete();
+    FirebaseFirestore.instance.collection('Threads').doc(threadId).delete();
     Navigator.of(context).pop();
   }
 

@@ -392,8 +392,8 @@ static void openFile(File file,String url){
     String ownerId = localStore.getString("userId");
     String serverToken =
         "AAAA7_Sx8pg:APA91bE1afmUpIcNCCe9leKNrNOHut5JajyvKmUBRKxdfELopzap3XJaHw4Ih_Cj6EzebCGi8QeSA_m6kXIvRq4WiGiqDYj7c-G8YklDX9feOm1eusmN0eIPa914m4APgLVC5Iqx96Nw";
-    await http.post(
-      'https://fcm.googleapis.com/fcm/send',
+    await http.post(Uri(host: 'https://fcm.googleapis.com/fcm/send')
+      ,
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'key=$serverToken',
@@ -498,18 +498,18 @@ static void openFile(File file,String url){
   }
 
   static void showImageUploadingStatus(
-      BuildContext context, StorageUploadTask uploadTask, String text) {
+      BuildContext context, UploadTask uploadTask, String text) {
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) {
           return StatefulBuilder(builder: (context, popState) {
             double loadingValue = 0;
-            uploadTask.events.listen((event) {
+            uploadTask.snapshotEvents.listen((event) {
               popState(() {
                 loadingValue = 100 *
-                    (uploadTask.lastSnapshot.bytesTransferred /
-                        uploadTask.lastSnapshot.totalByteCount);
+                    (uploadTask.snapshot.bytesTransferred /
+                        uploadTask.snapshot.totalBytes);
                 print(loadingValue);
               });
             }).onError((handleError) {
@@ -793,8 +793,8 @@ static void openFile(File file,String url){
     threadCount = new Map();
     List<DocumentSnapshot> commentsDoc = null;
     final QuerySnapshot userDetails =
-        await Firestore.instance.collection('comments').getDocuments();
-    commentsDoc = userDetails.documents;
+        await FirebaseFirestore.instance.collection('comments').get();
+    commentsDoc = userDetails.docs;
 
     if (commentsDoc != null && commentsDoc.length > 0) {
       for (int i = 0; i < commentsDoc.length; i++) {
@@ -826,8 +826,8 @@ static void openFile(File file,String url){
     feedCommentCount = new Map();
     List<DocumentSnapshot> commentsDoc = null;
     final QuerySnapshot userDetails =
-        await Firestore.instance.collection('feedcomments').getDocuments();
-    commentsDoc = userDetails.documents;
+        await FirebaseFirestore.instance.collection('feedcomments').get();
+    commentsDoc = userDetails.docs;
 
     if (commentsDoc != null && commentsDoc.length > 0) {
       for (int i = 0; i < commentsDoc.length; i++) {
@@ -875,7 +875,7 @@ static void openFile(File file,String url){
 
   static pushFeed(String content, int feedType) async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
-    Firestore.instance.collection("feed").add({
+    FirebaseFirestore.instance.collection("feed").add({
       "content": content,
       "owner": localStore.getString("userId"),
       "ownername": localStore.getString("name"),
@@ -1043,15 +1043,15 @@ static void openFile(File file,String url){
 
   static Future<void> newResourceNotify() async {
     double currTime = new DateTime.now().millisecondsSinceEpoch.toDouble();
-    QuerySnapshot resource_notify = await Firestore.instance
+    QuerySnapshot resource_notify = await FirebaseFirestore.instance
         .collection('resource_time_audit')
-        .getDocuments();
-    List<DocumentSnapshot> resourceTimeList = await resource_notify.documents;
+        .get();
+    List<DocumentSnapshot> resourceTimeList = await resource_notify.docs;
     if (resourceTimeList != null && resourceTimeList.length == 1) {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection("resource_time_audit")
-          .document(resourceTimeList.first.documentID)
-          .updateData({
+          .doc(resourceTimeList.first.id)
+          .update({
         "last_created_time": currTime,
         "user": Utils.userId,
       });
@@ -1061,7 +1061,7 @@ static void openFile(File file,String url){
         await listItr.current.reference.delete();
       }
 
-      Firestore.instance.collection("resource_time_audit").add({
+      FirebaseFirestore.instance.collection("resource_time_audit").add({
         "last_created_time": currTime,
         "user": Utils.userId,
       });
@@ -1070,10 +1070,10 @@ static void openFile(File file,String url){
 
   static Future<void> isNewResourceAdded() async {
     final SharedPreferences localStore = await SharedPreferences.getInstance();
-    QuerySnapshot resource_notify = await Firestore.instance
+    QuerySnapshot resource_notify = await FirebaseFirestore.instance
         .collection('resource_time_audit')
-        .getDocuments();
-    List<DocumentSnapshot> resourceTimeList = await resource_notify.documents;
+        .get();
+    List<DocumentSnapshot> resourceTimeList = await resource_notify.docs;
     if (resourceTimeList != null && resourceTimeList.length > 0) {
       double resourceAddedTime = resourceTimeList.first["last_created_time"];
 
@@ -1125,11 +1125,11 @@ static void openFile(File file,String url){
   static Future<void> getAllUsersProfilePics() async {
     List<DocumentSnapshot> userDataRow = null;
     final QuerySnapshot allUsers =
-        await Firestore.instance.collection('userdata').getDocuments();
-    userDataRow = allUsers.documents;
+        await FirebaseFirestore.instance.collection('userdata').get();
+    userDataRow = allUsers.docs;
 
     for (int i = 0; i < userDataRow.length; i++) {
-      userProfilePictures[userDataRow[i].documentID] =
+      userProfilePictures[userDataRow[i].id] =
           userDataRow[i]["profile_pic_url"];
     }
   }
@@ -1140,4 +1140,14 @@ static void openFile(File file,String url){
         ? "https://img.youtube.com/vi/" + id + "/sddefault.jpg"
         : "https://i.stack.imgur.com/WFy1e.jpg";
   }
+
+  static Future<String> uploadImageGetUrl(String path,File file){
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child(path);
+    UploadTask uploadTask = ref.putFile(file);              
+    uploadTask.then((res) async {
+        return await res.ref.getDownloadURL();
+    }) ;         
+  }
+
 }

@@ -43,10 +43,10 @@ class _EditUserState extends State<EditUser> {
   }
 
   Future<void> _pickImage() async {
-    File selectedFile = await FilePicker.getFile(type: FileType.image);
+    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {
       setState(() {
-        profilePic = selectedFile;
+        profilePic =File(selectedFile.files.first.path);
       });
     }
   }
@@ -89,19 +89,14 @@ class _EditUserState extends State<EditUser> {
 
     if (profilePic != null) {
       try {
-        StorageReference storageReference = FirebaseStorage.instance
-            .ref()
-            .child('AvanaFiles/profilepics/' + profilePic.path.split("/").last);
-        StorageUploadTask uploadTask = storageReference.putFile(profilePic);
-        await uploadTask.onComplete;
-        profilePickUrl = await storageReference.getDownloadURL();
+          profilePickUrl=await Utils.uploadImageGetUrl('AvanaFiles/profilepics/' + profilePic.path.split("/").last,profilePic);
       } catch (Exception) {}
     }
 
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection("userdata")
-        .document(currentUserId)
-        .updateData({
+        .doc(currentUserId)
+        .update({
       "password": password.text,
       "isactive": isActiveUser,
       "userrole": userRole,
@@ -121,9 +116,9 @@ class _EditUserState extends State<EditUser> {
   }
 
   Future<void> fetchUserDetails() async {
-    DocumentSnapshot currentUserDetails = await Firestore.instance
+    DocumentSnapshot currentUserDetails = await FirebaseFirestore.instance
         .collection('userdata')
-        .document(currentUserId)
+        .doc(currentUserId)
         .get();
 
     currentUserEmail = currentUserDetails["email"];
@@ -162,9 +157,9 @@ class _EditUserState extends State<EditUser> {
                                   actions: [
                                     FlatButton(
                                       onPressed: () => {
-                                        Firestore.instance
+                                        FirebaseFirestore.instance
                                             .collection('userdata')
-                                            .document(currentUserId)
+                                            .doc(currentUserId)
                                             .delete(),
                                         Navigator.pop(context),
                                         Navigator.pop(context),

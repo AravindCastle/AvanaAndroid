@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget feedCard(BuildContext context) {
     return new StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('feed')
           .where("feedtype", isEqualTo: 0)
           .orderBy("created_time", descending: true)
@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         if (!snapshot.hasData) return SizedBox();
         return new ListView(
           scrollDirection: Axis.horizontal,
-          children: snapshot.data.documents.map((document) {
+          children: snapshot.data.docs.map((document) {
             return Card(
               elevation: 2,
               child: new Container(
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget messageCard(BuildContext context) {
     return new StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('Threads')
           .orderBy("created_time", descending: true)
           .limit(10)
@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
           return SizedBox(child: new LinearProgressIndicator(), height: 5);
         return new ListView(
           scrollDirection: Axis.horizontal,
-          children: snapshot.data.documents.map((document) {
+          children: snapshot.data.docs.map((document) {
             return Card(
               elevation: 2,
               child: new Container(

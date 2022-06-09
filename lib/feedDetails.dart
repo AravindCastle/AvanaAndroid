@@ -27,21 +27,20 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
   BuildContext commonContext = null;
 
   Future<void> _addImage() async {
-    File selectedFile = await FilePicker.getFile(type: FileType.image);
+    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {
       Utils.showLoadingPop(commonContext);
       final SharedPreferences localStore =
           await SharedPreferences.getInstance();
       List<Map> fileUrls = new List();
       String folderId = threadDetails["folderid"];
-      String fileName = selectedFile.path.split("/").last;
-      StorageReference storageReference = FirebaseStorage.instance
-          .ref()
-          .child('AvanaFiles/' + folderId + '/' + fileName);
-      StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
-      await uploadTask.onComplete;
+      String fileName = selectedFile.files.first.path.split("/").last;
+      
+      String fileUrl=await Utils.uploadImageGetUrl('AvanaFiles/' + folderId + '/' + fileName,File(selectedFile.files.first.path));                  
+
+      
       fileUrls.add({
-        "url": await storageReference.getDownloadURL(),
+        "url": fileUrl,
         "name": fileName,
         "type": fileName.split(".").last
       });
@@ -94,8 +93,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
         .collection('feedcomments')
         //  .orderBy("comments")
         .where("feed_id", isEqualTo: threadID)
-        .orderBy("created_time", descending: true)
-        .getDocuments();
+        .orderBy("created_time", descending: true).get();
     commentsDoc = userDetails.docs;
     if (this.mounted) {
       setState(() {
@@ -488,7 +486,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
     Utils.removeNotifyItem(threadID);
     getComments();
     threadDetails =
-        await FirebaseFirestore.instance.collection('feed').document(threadID).get();
+        await FirebaseFirestore.instance.collection('feed').doc(threadID).get();
     if (this.mounted) {
       setState(() {
         isLoading = false;
@@ -500,19 +498,18 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
     List<dynamic> attachmentList = threadDetails["attachments"];
     for (int i = 0; i < attachmentList.length; i++) {
       try {
-        StorageReference storageReference = await FirebaseStorage.instance
-            .getReferenceFromUrl(attachmentList[i]["url"]);
+        Reference storageReference = await FirebaseStorage.instance.refFromURL((attachmentList[i]["url"]));
         storageReference.delete();
       } catch (e) {}
     }
     for (int i = 0; i < commentsDoc.length; i++) {
       FirebaseFirestore.instance
           .collection('feedcomments')
-          .document(commentsDoc[i].documentID)
+          .doc(commentsDoc[i].id)          
           .delete();
     }
  Navigator.of(context).pop();
-    FirebaseFirestore.instance.collection('feed').document(threadId).delete();
+    FirebaseFirestore.instance.collection('feed').doc(threadId).delete();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
   }

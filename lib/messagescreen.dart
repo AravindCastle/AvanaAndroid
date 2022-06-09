@@ -56,9 +56,9 @@ class _MessagePageState extends State<MessagePage> {
               )
             : SizedBox(),
         Spacer(),
-        Utils.threadCount.containsKey(messageDoc.documentID)
+        Utils.threadCount.containsKey(messageDoc.id)
             ? Text(
-                Utils.threadCount[messageDoc.documentID].toString() +
+                Utils.threadCount[messageDoc.id].toString() +
                     " "
                         "Comment",
                 style: TextStyle(fontSize: 14),
@@ -75,7 +75,7 @@ class _MessagePageState extends State<MessagePage> {
                         EdgeInsets.only(top: 10, bottom: 10, left: 8, right: 8),
                     child: new Column(children: [
                       Row(children: [
-                        Utils.isNewMessage(messageDoc.documentID, prefs),
+                        Utils.isNewMessage(messageDoc.id, prefs),
                         SizedBox(
                           width: 30,
                           child: Icon(
@@ -165,7 +165,7 @@ class _MessagePageState extends State<MessagePage> {
               showSearchBar = false;
             });
             Navigator.pushNamed(context, "/messageview",
-                arguments: messageDoc.documentID);
+                arguments: messageDoc.id);
           });
     } else {
       return SizedBox();
@@ -249,7 +249,7 @@ class _MessagePageState extends State<MessagePage> {
                   )),
               Expanded(
                   child: new StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance
+                stream: FirebaseFirestore.instance
                     .collection('Threads')
                     .orderBy("created_time", descending: true)
                     .limit(showSearchBar ? 1000 : 200)
@@ -261,7 +261,7 @@ class _MessagePageState extends State<MessagePage> {
                         child: new LinearProgressIndicator(), height: 5);
                   return new ListView(
                     controller: _scrollController,
-                    children: snapshot.data.documents.map((document) {
+                    children: snapshot.data.docs.map((document) {
                       return messageItem(document, context);
                     }).toList(),
                   );

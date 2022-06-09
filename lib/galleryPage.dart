@@ -57,7 +57,7 @@ class GalleryPageState extends State<GalleryPage> {
     String name = folderName.text;
     String url = urlContrl.text;
     if (name.isNotEmpty) {
-      Firestore.instance.collection("gallery").add({
+      FirebaseFirestore.instance.collection("gallery").add({
         "name": name,
         "type": "youtube",
         "level": argMap["superLevel"],
@@ -76,7 +76,7 @@ class GalleryPageState extends State<GalleryPage> {
   Future<void> createFolder() async {
     String name = folderName.text;
     if (name.isNotEmpty) {
-      Firestore.instance.collection("gallery").add({
+      FirebaseFirestore.instance.collection("gallery").add({
         "name": name,
         "type": "folder",
         "level": argMap["superLevel"],
@@ -102,26 +102,25 @@ class GalleryPageState extends State<GalleryPage> {
 
   Future<bool> deleteOnLoop(String docId) async {
     DocumentSnapshot currDoc =
-        await Firestore.instance.collection('gallery').document(docId).get();
+        await FirebaseFirestore.instance.collection('gallery').doc(docId).get();
     if (currDoc["type"] == "folder") {
       List<DocumentSnapshot> childElements = new List();
-      final QuerySnapshot userDetails = await Firestore.instance
+      final QuerySnapshot userDetails = await FirebaseFirestore.instance
           .collection('gallery')
-          .where("parentid", isEqualTo: docId)
-          .getDocuments();
-      childElements = userDetails.documents;
+          .where("parentid", isEqualTo: docId).get();
+      childElements = userDetails.docs;
 
       for (int i = 0; i < childElements.length; i++) {
-        deleteOnLoop(childElements[i].documentID);
+        deleteOnLoop(childElements[i].id);
       }
     } else if (currDoc["type"] == "file" ) {
       try {
-        StorageReference storageReference =
-            await FirebaseStorage.instance.getReferenceFromUrl(currDoc["url"]);
+        Reference storageReference =
+            await FirebaseStorage.instance.refFromURL(currDoc["url"]);
         storageReference.delete();
       } catch (Exception) {}
     }
-    await Firestore.instance.collection('gallery').document(docId).delete();
+    await FirebaseFirestore.instance.collection('gallery').doc(docId).delete();
     return true;
   }
 
@@ -160,11 +159,11 @@ class GalleryPageState extends State<GalleryPage> {
 
   Future<void> uploadFile(BuildContext context) async {
     try {
-      File selectedFile = await FilePicker.getFile(type: FileType.any);
+          FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.any);
       final ProgressDialog uploadingPop = ProgressDialog(context,
           type: ProgressDialogType.Download, isDismissible: false);
-      if (selectedFile != null) {
-        String fileName = selectedFile.path.split("/").last;
+      if (selectedFile.count >0) {
+        String fileName = selectedFile.files.first.path.split("/").last;
         String fileType = fileName.split(".").last;
         if (fileType == "pdf" ||
             Utils.getImageFormats(fileType) ||
@@ -173,28 +172,28 @@ class GalleryPageState extends State<GalleryPage> {
               message: "Uploading files", maxProgress: 100, progress: 0);
           await uploadingPop.show();
 
-          StorageReference storageReference = FirebaseStorage.instance
-              .ref()
-              .child('AvanaFiles/Gallery/' +
+          FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child('AvanaFiles/Gallery/' +
                   fileName +
                   DateTime.now().millisecondsSinceEpoch.toString());
-          StorageUploadTask uploadTask = storageReference.putFile(selectedFile);
+    UploadTask uploadTask = ref.putFile(File(selectedFile.files.first.path));              
+    
           uploadingPop.style(
               message: "Uploading " + fileName, maxProgress: 100, progress: 0);
           double loadingValue = 0;
-          uploadTask.events.listen((event) {
+          uploadTask.snapshotEvents.listen((event) {
             loadingValue = 100 *
-                (uploadTask.lastSnapshot.bytesTransferred /
-                    uploadTask.lastSnapshot.totalByteCount);
+                (uploadTask.snapshot.bytesTransferred /
+                    uploadTask.snapshot.totalBytes);
             uploadingPop.update(
                 message: "Uploading " + fileName,
                 progress: loadingValue.roundToDouble());
           });
 
-          await uploadTask.onComplete;
-          String url = await storageReference.getDownloadURL();
+          TaskSnapshot taskres=await uploadTask.whenComplete(() => null);
+          String url = await taskres.ref.getDownloadURL();
 
-          await Firestore.instance.collection("gallery").add({
+          await FirebaseFirestore.instance.collection("gallery").add({
             "name": fileName,
             "type": "file",
             "level": argMap["superLevel"],
@@ -308,21 +307,21 @@ class GalleryPageState extends State<GalleryPage> {
 
   Widget buildGallery(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection("gallery")
           .where("parentid", isEqualTo: argMap["parentid"])
           .orderBy("ordertype")
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return new Container();
-        final int messageCount = snapshot.data.documents.length;
+        final int messageCount = snapshot.data.docs.length;
         return Padding(
             padding: EdgeInsets.all(1),
             child: GridView.builder(
               itemCount: messageCount,
               itemBuilder: (_, int index) {
                 final DocumentSnapshot document =
-                    snapshot.data.documents[index];
+                    snapshot.data.docs[index];
                 return buildAttachment(document, context);
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -341,13 +340,13 @@ class GalleryPageState extends State<GalleryPage> {
       return GestureDetector(
           onLongPress: Utils.isSuperAdmin()
               ? () {
-                  deleteAlert(context, true, galleryItem.documentID, null);
+                  deleteAlert(context, true, galleryItem.id, null);
                 }
               : null,
           onTap: () {
             Navigator.pushNamed(context, "/gallery", arguments: {
               "superLevel": galleryItem["level"] + 1,
-              "parentid": galleryItem.documentID,
+              "parentid": galleryItem.id,
               "title": galleryItem["name"]
             });
           },
@@ -376,7 +375,7 @@ class GalleryPageState extends State<GalleryPage> {
       return GestureDetector(
           onLongPress: Utils.isSuperAdmin()
               ? () {
-                  deleteAlert(context, false, galleryItem.documentID,
+                  deleteAlert(context, false, galleryItem.id,
                       galleryItem["url"]);
                 }
               : null,

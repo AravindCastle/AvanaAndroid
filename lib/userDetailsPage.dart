@@ -52,7 +52,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   }
 
   Future<void> updateUserActive(bool state, String docId) async {
-    await Firestore.instance.collection('userdata').document(docId).updateData({
+    await FirebaseFirestore.instance.collection('userdata').doc(docId).update({
       "isactive": state,
       "membershipdate": DateTime.now().millisecondsSinceEpoch
     });
@@ -60,8 +60,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
   Future<void> getUserDetails(String docId) async {
     final DocumentSnapshot userDetails =
-        await Firestore.instance.collection('userdata').document(docId).get();
-    if (userDetails.data.length > 0) {
+        await FirebaseFirestore.instance.collection('userdata').doc(docId).get();
+    if (userDetails.data()!=null) {
       userName = userDetails["username"];
       password = userDetails["password"];
       userRole = userDetails["userrole"];

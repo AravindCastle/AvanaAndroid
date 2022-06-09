@@ -38,18 +38,18 @@ class _LoginPageState extends State<LoginPage> {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
         prefs.clear();
-        final QuerySnapshot userDetails = await Firestore.instance
+        final QuerySnapshot userDetails = await FirebaseFirestore.instance
             .collection('userdata')
             .where("email", isEqualTo: emailField.text)
             .where("password", isEqualTo: passwordField.text.trim())
-            .getDocuments();
-        final List<DocumentSnapshot> documents = userDetails.documents;
+            .get();
+        final List<DocumentSnapshot> documents = userDetails.docs;
         if (documents.length > 0) {
           int membershipDate = documents[0]["membershipdate"];
           Utils.userRole = documents[0]["userrole"];
           Utils.userName = documents[0]["username"];
           Utils.userEmail = documents[0]["email"];
-          Utils.userId = documents[0].documentID;
+          Utils.userId = documents[0].id;
 
           int currDate = new DateTime.now().millisecondsSinceEpoch;
           isActive = membershipDate - currDate > 31540000000
@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
           loadingPop.hide();
 
           if (isActive) {
-            prefs.setString("userId", documents[0].documentID);
+            prefs.setString("userId", documents[0].id);
             prefs.setString("name", documents[0]["username"]);
             prefs.setInt("role", documents[0]["userrole"]);
 

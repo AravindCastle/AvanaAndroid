@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:avana_academy/MessageEditor.dart';
 import 'package:avana_academy/editUser.dart';
-import 'package:avana_academy/facultyDetails.dart';
-import 'package:avana_academy/facultyList.dart';
+
 import 'package:avana_academy/feed.dart';
 import 'package:avana_academy/feedDetails.dart';
 import 'package:avana_academy/feedEditor.dart';
@@ -102,21 +101,6 @@ class AvanaHome extends StatelessWidget {
       case '/gallery':
         return PageTransition(
             child: GalleryPage(),
-            type: PageTransitionType.fade,
-            settings: settings);
-      case '/facultyPage':
-        return PageTransition(
-            child: facultyListPage(),
-            type: PageTransitionType.fade,
-            settings: settings);
-      case '/facultyDetail':
-        Map<dynamic, dynamic> arguments = settings.arguments;
-
-        String userID = arguments["userid"];
-        return PageTransition(
-            child: FacultyDetailsPage(
-              currentUserId: userID,
-            ),
             type: PageTransitionType.fade,
             settings: settings);
       case '/feed':
@@ -236,7 +220,7 @@ class AvanaHomePage extends StatefulWidget {
 
 class _AvanaHomePageState extends State<AvanaHomePage> {
   bool isUserLogged = false;
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   StreamSubscription iosSubscription;
 
   @override
@@ -245,19 +229,25 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     super.initState();
     checkUserLogged();
     _fcm.subscribeToTopic(Utils.notifyTopic);
+    
     if (Platform.isIOS) {
-      iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
-        // save the token  OR subscribe to a topic here
-      });
-
-      _fcm.requestNotificationPermissions(IosNotificationSettings());
+      NotificationSettings settings=null;
+        _fcm.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      ).then((value) => settings=value);
     }
-    _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
         if (this.mounted) {
           setState(() {
-            if (message["data"]["screen"] == "resource" &&
-                Utils.userId != message["data"]["ownerId"]) {
+            
+            if (message.data["screen"] == "resource" &&
+                Utils.userId != message.data["ownerId"]) {
               Fluttertoast.showToast(
                   msg: "New resources added please checkout",
                   toastLength: Toast.LENGTH_LONG,
@@ -266,20 +256,21 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
                   backgroundColor: Colors.red,
                   textColor: Colors.white,
                   fontSize: 16.0);
-            } else if ("messageview" == message["data"]["screen"]) {
+            } else if ("messageview" == message.data["screen"]) {
               Utils.addNotificationId(
-                  message["data"]["docid"], message["data"]["ownerId"]);
+                  message.data["docid"], message.data["ownerId"]);
             }
           });
         }
-      },
-      onBackgroundMessage: (message) =>
-          BackgroundNotify.myBackgroundMessageHandler(message),
-      onLaunch: (Map<String, dynamic> message) async {
+      });
+    
+    FirebaseMessaging.onBackgroundMessage((message) => BackgroundNotify.myBackgroundMessageHandler(message.data));
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         if (this.mounted) {
           setState(() {
-            if (message["data"]["screen"] == "resource") {
-              Utils.isNewResourcesAdded = true;
+            
+            if (message.data["screen"] == "resource" &&
+                Utils.userId != message.data["ownerId"]) {
               Fluttertoast.showToast(
                   msg: "New resources added please checkout",
                   toastLength: Toast.LENGTH_LONG,
@@ -288,52 +279,32 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
                   backgroundColor: Colors.red,
                   textColor: Colors.white,
                   fontSize: 16.0);
-            } else if ("messageview" == message["data"]["screen"]) {
+            } else if ("messageview" == message.data["screen"]) {
               Utils.addNotificationId(
-                  message["data"]["docid"], message["data"]["ownerId"]);
+                  message.data["docid"], message.data["ownerId"]);
             }
           });
         }
-      },
-      onResume: (Map<String, dynamic> message) async {
-        if (this.mounted) {
-          setState(() {
-            if (message["data"]["screen"] == "resource") {
-              Utils.isNewResourcesAdded = true;
-              Fluttertoast.showToast(
-                  msg: "New resources added please checkout",
-                  toastLength: Toast.LENGTH_LONG,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 3,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            } else if ("messageview" == message["data"]["screen"]) {
-              Utils.addNotificationId(
-                  message["data"]["docid"], message["data"]["ownerId"]);
-            }
-          });
-        }
-      },
-    );
+      });
+    
   }
 
   void checkUserLogged() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('userId')) {
       String userId = prefs.getString("userId");
-      DocumentSnapshot userDetails = await Firestore.instance
+      DocumentSnapshot userDetails = await FirebaseFirestore.instance
           .collection('userdata')
-          .document(userId)
+          .doc(userId)
           .get();
-      if (userDetails.data.length > 0) {
+      if (userDetails.data()!=null) {
         Utils.getAllUsersProfilePics();
-        bool activeState = userDetails.data["isactive"];
-        int membershipDate = userDetails.data["membershipdate"];
+        bool activeState = userDetails.get("isactive");
+        int membershipDate = userDetails.get("membershipdate");
         int currDate = new DateTime.now().millisecondsSinceEpoch;
-        Utils.userRole = userDetails.data["userrole"];
-        Utils.userName = userDetails.data["username"];
-        Utils.userEmail = userDetails.data["email"];
+        Utils.userRole = userDetails.get("userrole");
+        Utils.userName = userDetails.get("username");
+        Utils.userEmail = userDetails.get("email");
         Utils.userId = userId;
 
         isUserLogged =
