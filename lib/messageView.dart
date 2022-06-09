@@ -750,7 +750,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                         ),
                       ),
                       (userRole == 1 ||
-                              userRole == 2 ||
+                              //userRole == 2 ||
                               userId == threadDetails["owner"])
                           ? buildInput()
                           : SizedBox(height: 10),

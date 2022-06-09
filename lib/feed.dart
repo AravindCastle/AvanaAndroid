@@ -194,7 +194,7 @@ class _FeedPageState extends State<FeedPage> {
             onTap: _onItemTapped,
           ),
           floatingActionButton: new Visibility(
-              visible: true,
+              visible: Utils.userRole==1,
               child: FloatingActionButton(
                 onPressed: () {
                   Navigator.pushNamed(context, "/feededitor");

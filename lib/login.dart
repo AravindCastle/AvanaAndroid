@@ -88,12 +88,28 @@ class _LoginPageState extends State<LoginPage> {
             body: Container(
               padding: EdgeInsets.fromLTRB(20, 145, 20, 0),
               constraints: BoxConstraints.expand(),
-              decoration: BoxDecoration(
+              /*decoration: BoxDecoration(
                   image: DecorationImage(
                       image: Image.asset("assets/loginbg.jpg").image,
-                      fit: BoxFit.fill)),
+                      fit: BoxFit.fill)),*/
               child: Column(
                 children: [
+                  Text(
+                          "Avana Surgical Systems Pvt Ltd",
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: medQry.size.height * 0.03),
+                         Text(
+                          "Orthotics Learning App",
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: medQry.size.height * 0.1),
                   TextField(
                     obscureText: false,
                     controller: emailField,
@@ -249,3 +265,6 @@ class _LoginPageState extends State<LoginPage> {
         ))));
   }*/
 }
+
+
+ 

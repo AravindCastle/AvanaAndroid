@@ -272,7 +272,7 @@ class _AddUserPageState extends State<AddUserPage> {
                       ),
                     ),
                     ListTile(
-                      title: new Text('Faculty'),
+                      title: new Text(Utils.distributorName),
                       leading: Radio(
                         value: "2",
                         groupValue: userRole,

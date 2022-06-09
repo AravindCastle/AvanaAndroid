@@ -30,7 +30,7 @@ class Utils {
   static Map<String, int> threadCount = new Map();
 
   static Map<String, int> feedCommentCount = new Map();
-
+  static String distributorName="Distributor";
   static Map<String, String> userProfilePictures = new Map();
   static const String notifyTopic = "beta";
   static bool getImageFormats(String isSupported) {
@@ -414,7 +414,7 @@ static void openFile(File file,String url){
         return "Admin";
         break;
       case "2":
-        return "Faculty";
+        return "Distributor";
         break;
       case "3":
         return "Member";
@@ -859,9 +859,10 @@ static void openFile(File file,String url){
           arguments: {"superLevel": 0, "parentid": "0", "title": "Resources"});
     } else if (selectedIndex == 3) {
       Navigator.pushReplacementNamed(context, "/userlist");
-    } else if (selectedIndex == 4) {
+    } 
+    /*else if (selectedIndex == 4) {
       Navigator.pushReplacementNamed(context, "/facultyPage");
-    }
+    }*/
   }
 
   static pushFeed(String content, int feedType) async {
@@ -1007,22 +1008,25 @@ static void openFile(File file,String url){
       ),
       label: 'Resources',
     ));
-    list.add(BottomNavigationBarItem(
-      icon: Image.asset(
-        "assets/icons/users.png",
-        width: 24.0,
-        height: 24.0,
-      ),
-      label: 'Users',
-    ));
-    list.add(BottomNavigationBarItem(
+    if(Utils.userRole==1){
+        list.add(BottomNavigationBarItem(
+        icon: Image.asset(
+          "assets/icons/users.png",
+          width: 24.0,
+          height: 24.0,
+        ),
+        label: 'Users',
+        ));
+    }
+    
+    /*list.add(BottomNavigationBarItem(
       icon: Image.asset(
         "assets/icons/faculty.png",
         width: 24.0,
         height: 24.0,
       ),
       label: 'Faculties',
-    ));
+    ));*/
 
     return list;
   }

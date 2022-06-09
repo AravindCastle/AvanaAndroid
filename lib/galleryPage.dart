@@ -447,9 +447,9 @@ class GalleryPageState extends State<GalleryPage> {
             child: buildGallery(context),
           ),
           floatingActionButton: new Visibility(
-              visible: Utils.userRole == 1 || Utils.userRole == 2,
+              visible: Utils.userRole == 1,
               child: FloatingActionButton(
-                onPressed: ((Utils.userRole == 1 || Utils.userRole == 2) &&
+                onPressed: ((Utils.userRole == 1) &&
                         argMap["superLevel"] < 10)
                     ? () {
                         showAddType(context);
