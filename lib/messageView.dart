@@ -379,7 +379,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                       ? Container(
                           width: medQry.size.width * .29,
                           height: medQry.size.width * .29,
-                          child: OutlineButton(
+                          child: OutlinedButton(
                             child: Material(
                               child: CachedNetworkImage(
                                 width: medQry.size.width * .29,
@@ -408,10 +408,12 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                                         ["name"]
                                   });
                             },
+                                      style: OutlinedButton.styleFrom(
                             shape: new RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(8.0)),
-                            borderSide: BorderSide(color: Colors.grey),
+                            side: BorderSide(color: Colors.grey),
                             padding: EdgeInsets.all(0),
+                                      )
                           ),
                           margin: EdgeInsets.only(
                               left: medQry.size.width * .03,

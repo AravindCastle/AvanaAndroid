@@ -163,7 +163,7 @@ class Utils {
       return Container(
         width: medQry.size.width * .29,
         height: medQry.size.width * .29,
-        child: OutlineButton(
+        child: OutlinedButton(
           child: Material(
             child: attach == null
                 ? CachedNetworkImage(
@@ -195,10 +195,12 @@ class Utils {
                   Navigator.pushNamed(context, "/photoview",
                       arguments: {"url": url, "name": name});
                 },
+                          style: OutlinedButton.styleFrom(
+
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
-          borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),
+          side: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.all(0),)
         ),
         margin: EdgeInsets.only(
             left: medQry.size.width * .03, top: medQry.size.width * .03),
@@ -207,7 +209,7 @@ class Utils {
       return Container(
         width: medQry.size.width * .29,
         height: medQry.size.width * .29,
-        child: OutlineButton(
+        child: OutlinedButton(
           child: Material(
             child: Image.asset(
               "assets/videothumbnail.png",
@@ -223,10 +225,12 @@ class Utils {
           onPressed: () {
             openFile(url, name, context);
           },
+                    style: OutlinedButton.styleFrom(
+
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
-          borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),
+          side: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.all(0),)
         ),
         margin: EdgeInsets.only(
             left: medQry.size.width * .03, top: medQry.size.width * .03),
@@ -235,10 +239,14 @@ class Utils {
       return Container(
         height: medQry.size.width * .29,
         width: medQry.size.width * .29,
-        child: OutlineButton(
+        child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
-          borderSide: BorderSide(color: Colors.grey),
+              padding: EdgeInsets.all(0),
+          side: BorderSide(color: Colors.grey),),
+          
           child: Material(
             child: Text(type, style: TextStyle(fontSize: 15)),
             borderRadius: BorderRadius.all(
@@ -249,7 +257,7 @@ class Utils {
           onPressed: () {
             openFile(url, name, context);
           },
-          padding: EdgeInsets.all(0),
+          
         ),
         margin: EdgeInsets.only(
             left: medQry.size.width * .03, top: medQry.size.width * .03),
@@ -889,7 +897,7 @@ static void openFile(File file,String url){
           attach.add(Container(
             width: 100,
             height: 100,
-            child: OutlineButton(
+            child: OutlinedButton(
               child: Material(
                 child: CachedNetworkImage(
                   width: 100,
@@ -909,10 +917,11 @@ static void openFile(File file,String url){
                 clipBehavior: Clip.hardEdge,
               ),
               onPressed: null,
+              style: OutlinedButton.styleFrom(
               shape: new RoundedRectangleBorder(
                   borderRadius: new BorderRadius.circular(8.0)),
-              borderSide: BorderSide(color: Colors.grey),
-              padding: EdgeInsets.all(0),
+              side: BorderSide(color: Colors.grey),
+              padding: EdgeInsets.all(0),)
             ),
             margin: EdgeInsets.only(left: 8, top: 3),
           ));
@@ -923,7 +932,7 @@ static void openFile(File file,String url){
       attach.add(Container(
         width: 100,
         height: 100,
-        child: OutlineButton(
+        child: OutlinedButton(
           child: Material(
             child: Image.asset(
               subject != null
@@ -939,10 +948,11 @@ static void openFile(File file,String url){
             clipBehavior: Clip.hardEdge,
           ),
           onPressed: null,
+          style: OutlinedButton.styleFrom(
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0)),
-          borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),
+          side: BorderSide(color: Colors.grey),
+          padding: EdgeInsets.all(0),)
         ),
         margin: EdgeInsets.only(left: 8, top: 3),
       ));

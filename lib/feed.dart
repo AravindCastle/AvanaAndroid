@@ -26,38 +26,16 @@ class _FeedPageState extends State<FeedPage> {
     setState(() {});
   }
 
-  Widget build(BuildContext context) {
-    medQry = MediaQuery.of(context);
-    return WillPopScope(
-        onWillPop: () async => false,
-        child: SafeArea(
-            child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Utils.userProfilePic(Utils.userId, 14),
-              onPressed: () {
-                Utils.showUserPop(context);
-              },
-            ),
-            title: Text('Feed'),
-          ),
-          body: new StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance
-                .collection('feed')
-                .orderBy("created_time", descending: true)
-                .limit(300)
-                .snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData)
-                return SizedBox(
-                    child: new LinearProgressIndicator(), height: 5);
-              return new ListView(
-                children: snapshot.data.documents.map((document) {
-                  return GestureDetector(
+  List<Widget> getFeeds(QuerySnapshot snapshot){
+
+    List<Widget> result= List<Widget>.empty();
+    
+    snapshot.docs.forEach((document) {
+      
+                  result.add( GestureDetector(
                       onTap: () => {
                             Navigator.pushNamed(context, "/feeddetails",
-                                arguments: document.documentID)
+                                arguments: document.id)
                           },
                       child: new Card(
                         child: new Padding(
@@ -166,10 +144,10 @@ class _FeedPageState extends State<FeedPage> {
                                       : SizedBox(),
                                   Spacer(),
                                   Utils.feedCommentCount
-                                          .containsKey(document.documentID)
+                                          .containsKey(document.id)
                                       ? Text(
                                           Utils.feedCommentCount[
-                                                      document.documentID]
+                                                      document.id]
                                                   .toString() +
                                               " "
                                                   "Comment",
@@ -179,8 +157,44 @@ class _FeedPageState extends State<FeedPage> {
                                 ]),
                               ],
                             )),
-                      ));
-                }).toList(),
+                      )));
+                
+
+    });
+
+return result;
+
+  }
+
+
+  Widget build(BuildContext context) {
+    medQry = MediaQuery.of(context);
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: SafeArea(
+            child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Utils.userProfilePic(Utils.userId, 14),
+              onPressed: () {
+                Utils.showUserPop(context);
+              },
+            ),
+            title: Text('Feed'),
+          ),
+          body: new StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('feed')
+                .orderBy("created_time", descending: true)
+                .limit(300)
+                .snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData)
+                return SizedBox(
+                    child: new LinearProgressIndicator(), height: 5);
+              return new ListView(
+                children: getFeeds(snapshot.data),
               );
             },
           ),

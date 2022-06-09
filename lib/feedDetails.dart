@@ -46,7 +46,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
         "type": fileName.split(".").last
       });
 
-      await Firestore.instance.collection("feedcomments").add({
+      await FirebaseFirestore.instance.collection("feedcomments").add({
         "comment": "",
         "created_time": new DateTime.now().millisecondsSinceEpoch,
         "owner": localStore.getString("userId"),
@@ -67,7 +67,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       isCommentSaved = false;
       final SharedPreferences localStore =
           await SharedPreferences.getInstance();
-      await Firestore.instance.collection("feedcomments").add({
+      await FirebaseFirestore.instance.collection("feedcomments").add({
         "comment": commentEditor.text,
         "created_time": new DateTime.now().millisecondsSinceEpoch,
         "owner": localStore.getString("userId"),
@@ -90,13 +90,13 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
   }
 
   Future<void> getComments() async {
-    final QuerySnapshot userDetails = await Firestore.instance
+    final QuerySnapshot userDetails = await FirebaseFirestore.instance
         .collection('feedcomments')
         //  .orderBy("comments")
         .where("feed_id", isEqualTo: threadID)
         .orderBy("created_time", descending: true)
         .getDocuments();
-    commentsDoc = userDetails.documents;
+    commentsDoc = userDetails.docs;
     if (this.mounted) {
       setState(() {
         isCmntLoading = false;
@@ -314,9 +314,9 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
   }
 
   void deleteComment(String commentId) {
-    Firestore.instance.collection('feedcomments').document(commentId).delete();
+    FirebaseFirestore.instance.collection('feedcomments').doc(commentId).delete();
     setState(() {
-      Utils.updateFeedCommentCount(threadDetails.documentID, false);
+      Utils.updateFeedCommentCount(threadDetails.id, false);
     });
 
     Navigator.of(context).pop();
@@ -363,7 +363,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                       ? Container(
                           width: medQry.size.width * .29,
                           height: medQry.size.width * .29,
-                          child: OutlineButton(
+                          child: OutlinedButton(
                             child: Material(
                               child: CachedNetworkImage(
                                 width: medQry.size.width * .29,
@@ -391,10 +391,11 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                                         ["name"]
                                   });
                             },
+                             style: OutlinedButton.styleFrom(
                             shape: new RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(8.0)),
-                            borderSide: BorderSide(color: Colors.grey),
-                            padding: EdgeInsets.all(0),
+                            side: BorderSide(color: Colors.grey)),
+                            
                           ),
                           margin: EdgeInsets.only(
                               left: medQry.size.width * .03,
@@ -487,7 +488,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
     Utils.removeNotifyItem(threadID);
     getComments();
     threadDetails =
-        await Firestore.instance.collection('feed').document(threadID).get();
+        await FirebaseFirestore.instance.collection('feed').document(threadID).get();
     if (this.mounted) {
       setState(() {
         isLoading = false;
@@ -505,13 +506,13 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       } catch (e) {}
     }
     for (int i = 0; i < commentsDoc.length; i++) {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('feedcomments')
           .document(commentsDoc[i].documentID)
           .delete();
     }
  Navigator.of(context).pop();
-    Firestore.instance.collection('feed').document(threadId).delete();
+    FirebaseFirestore.instance.collection('feed').document(threadId).delete();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
   }
