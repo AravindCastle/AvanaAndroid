@@ -25,12 +25,17 @@ import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'Utils.dart';
 import 'addUser.dart';
 import 'login.dart';
 
-void main() => runApp(AvanaHome());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(AvanaHome());
+}
 
 class AvanaHome extends StatelessWidget {
   // This widget is the root of your application.
@@ -229,64 +234,65 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     super.initState();
     checkUserLogged();
     _fcm.subscribeToTopic(Utils.notifyTopic);
-    
+
     if (Platform.isIOS) {
-      NotificationSettings settings=null;
-        _fcm.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      ).then((value) => settings=value);
+      NotificationSettings settings = null;
+      _fcm
+          .requestPermission(
+            alert: true,
+            announcement: false,
+            badge: true,
+            carPlay: false,
+            criticalAlert: false,
+            provisional: false,
+            sound: true,
+          )
+          .then((value) => settings = value);
     }
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-        if (this.mounted) {
-          setState(() {
-            
-            if (message.data["screen"] == "resource" &&
-                Utils.userId != message.data["ownerId"]) {
-              Fluttertoast.showToast(
-                  msg: "New resources added please checkout",
-                  toastLength: Toast.LENGTH_LONG,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 3,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            } else if ("messageview" == message.data["screen"]) {
-              Utils.addNotificationId(
-                  message.data["docid"], message.data["ownerId"]);
-            }
-          });
-        }
-      });
-    
-    FirebaseMessaging.onBackgroundMessage((message) => BackgroundNotify.myBackgroundMessageHandler(message.data));
+      if (this.mounted) {
+        setState(() {
+          if (message.data["screen"] == "resource" &&
+              Utils.userId != message.data["ownerId"]) {
+            Fluttertoast.showToast(
+                msg: "New resources added please checkout",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          } else if ("messageview" == message.data["screen"]) {
+            Utils.addNotificationId(
+                message.data["docid"], message.data["ownerId"]);
+          }
+        });
+      }
+    });
+
+    /*FirebaseMessaging.onBackgroundMessage(
+        (message) => BackgroundNotify.myBackgroundMessageHandler(message.data));
+      */
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-        if (this.mounted) {
-          setState(() {
-            
-            if (message.data["screen"] == "resource" &&
-                Utils.userId != message.data["ownerId"]) {
-              Fluttertoast.showToast(
-                  msg: "New resources added please checkout",
-                  toastLength: Toast.LENGTH_LONG,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 3,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            } else if ("messageview" == message.data["screen"]) {
-              Utils.addNotificationId(
-                  message.data["docid"], message.data["ownerId"]);
-            }
-          });
-        }
-      });
-    
+      if (this.mounted) {
+        setState(() {
+          if (message.data["screen"] == "resource" &&
+              Utils.userId != message.data["ownerId"]) {
+            Fluttertoast.showToast(
+                msg: "New resources added please checkout",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 3,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          } else if ("messageview" == message.data["screen"]) {
+            Utils.addNotificationId(
+                message.data["docid"], message.data["ownerId"]);
+          }
+        });
+      }
+    });
   }
 
   void checkUserLogged() async {
@@ -297,7 +303,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
           .collection('userdata')
           .doc(userId)
           .get();
-      if (userDetails.data()!=null) {
+      if (userDetails.data() != null) {
         Utils.getAllUsersProfilePics();
         bool activeState = userDetails.get("isactive");
         int membershipDate = userDetails.get("membershipdate");

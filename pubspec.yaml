@@ -17,12 +17,13 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  firebase_core : ^1.17.1
   flare_splash_screen: ^4.0.0
-  shared_preferences: ^2.0.15
+  shared_preferences: any
   cloud_firestore: ^3.1.17
   file_picker: ^4.6.1
   open_file: ^3.0.1
-  flare_flutter: ^3.0.2
+  flare_flutter: any
   firebase_messaging: ^11.4.1
   http: ^0.13.0
   flutter_launcher_icons: ^0.9.3
@@ -32,12 +33,12 @@ dependencies:
   google_fonts: ^3.0.1
   uuid: ^3.0.6
   url_launcher: ^6.1.3
-  path_provider: ^2.0.11
+  path_provider: any
   fluttertoast: ^8.0.9
   progress_dialog: ^1.2.4
-  firebase_storage: ^10.2.16
+  firebase_storage: any
   youtube_parser: ^2.0.0
-  firebase_storage_web: ^3.2.15
+  firebase_storage_web: any
 
   flutter:
     sdk: flutter

@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:avana_academy/Utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
             key: scaffoldKey,
             //resizeToAvoidBottomPadding: false,
             body: Container(
-              padding: EdgeInsets.fromLTRB(20, 145, 20, 0),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               constraints: BoxConstraints.expand(),
               /*decoration: BoxDecoration(
                   image: DecorationImage(
@@ -94,22 +95,27 @@ class _LoginPageState extends State<LoginPage> {
                       fit: BoxFit.fill)),*/
               child: Column(
                 children: [
+                  Image.asset(
+                    "assets/loginbg.jpg",
+                    width: medQry.size.width * 0.7,
+                    height: medQry.size.width * 0.3,
+                  ),
                   Text(
-                          "Avana Surgical Systems Pvt Ltd",
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: medQry.size.height * 0.03),
-                         Text(
-                          "Orthotics Learning App",
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: medQry.size.height * 0.1),
+                    "Avana Surgical Systems Pvt Ltd",
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: medQry.size.height * 0.015),
+                  Text(
+                    "Orthotics Learning App",
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: medQry.size.height * 0.1),
                   TextField(
                     obscureText: false,
                     controller: emailField,
@@ -265,6 +271,3 @@ class _LoginPageState extends State<LoginPage> {
         ))));
   }*/
 }
-
-
- 
