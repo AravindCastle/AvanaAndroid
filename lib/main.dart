@@ -315,6 +315,7 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
 
         isUserLogged =
             (currDate - membershipDate) > 31540000000 ? false : activeState;
+        isUserLogged = true;
       }
     }
     if (!isUserLogged) {

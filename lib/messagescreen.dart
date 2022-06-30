@@ -258,7 +258,12 @@ class _MessagePageState extends State<MessagePage> {
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (!snapshot.hasData)
                     return SizedBox(
-                        child: new LinearProgressIndicator(), height: 5);
+                        child: Text(
+                          "Loading ....",
+                          style: TextStyle(fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                        height: 5);
                   return new ListView(
                     controller: _scrollController,
                     children: snapshot.data.docs.map((document) {

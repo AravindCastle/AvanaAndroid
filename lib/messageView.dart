@@ -28,7 +28,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
   TextEditingController editMessageController = new TextEditingController();
 
   Future<void> _addImage() async {
-    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
+    FilePickerResult selectedFile =
+        await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {
       Utils.showLoadingPop(commonContext);
       final SharedPreferences localStore =
@@ -36,15 +37,13 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       List<Map> fileUrls = new List();
       String folderId = threadDetails["folderid"];
       String fileName = selectedFile.files.first.path.split("/").last;
-     
 
-    String url=await Utils.uploadImageGetUrl('AvanaFiles/' + folderId + '/' + fileName,File(selectedFile.files.first.path));                  
+      String url = await Utils.uploadImageGetUrl(
+          'AvanaFiles/' + folderId + '/' + fileName,
+          File(selectedFile.files.first.path));
 
-      fileUrls.add({
-        "url": url,
-        "name": fileName,
-        "type": fileName.split(".").last
-      });
+      fileUrls.add(
+          {"url": url, "name": fileName, "type": fileName.split(".").last});
 
       await FirebaseFirestore.instance.collection("comments").add({
         "comment": "",
@@ -379,41 +378,41 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                           width: medQry.size.width * .29,
                           height: medQry.size.width * .29,
                           child: OutlinedButton(
-                            child: Material(
-                              child: CachedNetworkImage(
-                                width: medQry.size.width * .29,
-                                height: medQry.size.width * .29,
-                                fit: BoxFit.contain,
-                                progressIndicatorBuilder:
-                                    (context, url, progress) => Image.asset(
-                                  "assets/imagethumbnail.png",
-                                  width: 100,
-                                  height: 100,
+                              child: Material(
+                                child: CachedNetworkImage(
+                                  width: medQry.size.width * .29,
+                                  height: medQry.size.width * .29,
+                                  fit: BoxFit.contain,
+                                  progressIndicatorBuilder:
+                                      (context, url, progress) => Image.asset(
+                                    "assets/imagethumbnail.png",
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                  imageUrl: commentsDoc[i]["attachment"][0]
+                                      ["url"],
                                 ),
-                                imageUrl: commentsDoc[i]["attachment"][0]
-                                    ["url"],
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
+                                ),
+                                clipBehavior: Clip.hardEdge,
                               ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8.0),
-                              ),
-                              clipBehavior: Clip.hardEdge,
-                            ),
-                            onPressed: () {
-                              Navigator.pushNamed(context, "/photoview",
-                                  arguments: {
-                                    "url": commentsDoc[i]["attachment"][0]
-                                        ["url"],
-                                    "name": commentsDoc[i]["attachment"][0]
-                                        ["name"]
-                                  });
-                            },
-                                      style: OutlinedButton.styleFrom(
-                            shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(8.0)),
-                            side: BorderSide(color: Colors.grey),
-                            padding: EdgeInsets.all(0),
-                                      )
-                          ),
+                              onPressed: () {
+                                Navigator.pushNamed(context, "/photoview",
+                                    arguments: {
+                                      "url": commentsDoc[i]["attachment"][0]
+                                          ["url"],
+                                      "name": commentsDoc[i]["attachment"][0]
+                                          ["name"]
+                                    });
+                              },
+                              style: OutlinedButton.styleFrom(
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(8.0)),
+                                side: BorderSide(color: Colors.grey),
+                                padding: EdgeInsets.all(0),
+                              )),
                           margin: EdgeInsets.only(
                               left: medQry.size.width * .03,
                               top: medQry.size.width * .03),
@@ -602,8 +601,11 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     userRole = localStore.getInt("role");
     Utils.removeNotifyItem(threadID);
     getComments();
-    threadDetails =
-        await FirebaseFirestore.instance.collection('Threads').doc(threadID).get();
+
+    threadDetails = await FirebaseFirestore.instance
+        .collection('Threads')
+        .doc(threadID)
+        .get();
     if (this.mounted) {
       setState(() {
         isLoading = false;
@@ -618,8 +620,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
     List<dynamic> attachmentList = threadDetails["attachments"];
     for (int i = 0; i < attachmentList.length; i++) {
       try {
-        Reference storageReference = await FirebaseStorage.instance
-            .refFromURL(attachmentList[i]["url"]);
+        Reference storageReference =
+            await FirebaseStorage.instance.refFromURL(attachmentList[i]["url"]);
         storageReference.delete();
       } catch (e) {}
     }
@@ -642,7 +644,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
           .doc(commentsDoc[i].id)
           .delete();
     }
- Navigator.of(context).pop();
+    Navigator.of(context).pop();
     FirebaseFirestore.instance.collection('Threads').doc(threadId).delete();
     Navigator.of(context).pop();
   }

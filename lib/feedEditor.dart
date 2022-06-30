@@ -20,12 +20,13 @@ class FeedEditor extends StatefulWidget {
 class _FeedEditorState extends State<FeedEditor> {
   MediaQueryData medQry;
   bool isSaving = false;
-  List<File> uploaderImgs = new List();
+  List<File> uploaderImgs = new List<File>();
   TextEditingController messageContr = new TextEditingController();
 
   Future<void> _pickImage() async {
     if (uploaderImgs.length < 10) {
-      FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.any);
+      FilePickerResult selectedFile =
+          await FilePicker.platform.pickFiles(type: FileType.any);
       //await ImagePicker.pickImage(source: source);
       if (selectedFile != null && this.mounted) {
         setState(() {
@@ -59,11 +60,12 @@ class _FeedEditorState extends State<FeedEditor> {
 
           for (int i = 0; i < uploaderImgs.length; i++) {
             String fileName = uploaderImgs[i].path.split("/").last;
-           
-           FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child('AvanaFiles/' + folderId + '/' + fileName);
-    UploadTask uploadTask = ref.putFile(uploaderImgs[i]);              
-    
+
+            FirebaseStorage storage = FirebaseStorage.instance;
+            Reference ref =
+                storage.ref().child('AvanaFiles/' + folderId + '/' + fileName);
+            UploadTask uploadTask = ref.putFile(uploaderImgs[i]);
+
             int fileNumber = i + 1;
             String loaderInfo = "$fileNumber/$totalFiles file is uploading  ";
 
@@ -78,7 +80,7 @@ class _FeedEditorState extends State<FeedEditor> {
                   message: loaderInfo, progress: loadingValue.roundToDouble());
             });
 
-            TaskSnapshot taskres=await uploadTask.whenComplete(() => null);
+            TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
             fileUrls.add({
               "url": await taskres.ref.getDownloadURL(),
               "name": fileName,
@@ -104,8 +106,7 @@ class _FeedEditorState extends State<FeedEditor> {
           String notfyStr =
               localStore.getString("name") + " has added a new post ";
 
-          Utils.sendPushNotification(
-              "New feed ", notfyStr, "feed", newFeed.id);
+          Utils.sendPushNotification("New feed ", notfyStr, "feed", newFeed.id);
 
           Navigator.pushNamed(context, "/feed");
         }
@@ -121,10 +122,10 @@ class _FeedEditorState extends State<FeedEditor> {
   }
 
   Widget buildAttachmentSection(BuildContext context) {
-    List<Widget> row1 = List<Widget>.empty();
-    List<Widget> row2 =List<Widget>.empty();
-    List<Widget> row3 = List<Widget>.empty();
-    List<Widget> row4 = List<Widget>.empty();
+    List<Widget> row1 = new List<Widget>();
+    List<Widget> row2 = new List<Widget>();
+    List<Widget> row3 = new List<Widget>();
+    List<Widget> row4 = new List<Widget>();
     for (int i = 0; i < uploaderImgs.length; i++) {
       File prevFile = uploaderImgs[i];
       String fileName = prevFile.path.split("/").last;

@@ -27,7 +27,8 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
   BuildContext commonContext = null;
 
   Future<void> _addImage() async {
-    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
+    FilePickerResult selectedFile =
+        await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {
       Utils.showLoadingPop(commonContext);
       final SharedPreferences localStore =
@@ -35,15 +36,13 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       List<Map> fileUrls = new List();
       String folderId = threadDetails["folderid"];
       String fileName = selectedFile.files.first.path.split("/").last;
-      
-      String fileUrl=await Utils.uploadImageGetUrl('AvanaFiles/' + folderId + '/' + fileName,File(selectedFile.files.first.path));                  
 
-      
-      fileUrls.add({
-        "url": fileUrl,
-        "name": fileName,
-        "type": fileName.split(".").last
-      });
+      String fileUrl = await Utils.uploadImageGetUrl(
+          'AvanaFiles/' + folderId + '/' + fileName,
+          File(selectedFile.files.first.path));
+
+      fileUrls.add(
+          {"url": fileUrl, "name": fileName, "type": fileName.split(".").last});
 
       await FirebaseFirestore.instance.collection("feedcomments").add({
         "comment": "",
@@ -93,7 +92,8 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
         .collection('feedcomments')
         //  .orderBy("comments")
         .where("feed_id", isEqualTo: threadID)
-        .orderBy("created_time", descending: true).get();
+        .orderBy("created_time", descending: true)
+        .get();
     commentsDoc = userDetails.docs;
     if (this.mounted) {
       setState(() {
@@ -312,7 +312,10 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
   }
 
   void deleteComment(String commentId) {
-    FirebaseFirestore.instance.collection('feedcomments').doc(commentId).delete();
+    FirebaseFirestore.instance
+        .collection('feedcomments')
+        .doc(commentId)
+        .delete();
     setState(() {
       Utils.updateFeedCommentCount(threadDetails.id, false);
     });
@@ -389,11 +392,11 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                                         ["name"]
                                   });
                             },
-                             style: OutlinedButton.styleFrom(
-                            shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(8.0)),
-                            side: BorderSide(color: Colors.grey)),
-                            
+                            style: OutlinedButton.styleFrom(
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(8.0)),
+                                side: BorderSide(color: Colors.grey)),
                           ),
                           margin: EdgeInsets.only(
                               left: medQry.size.width * .03,
@@ -498,20 +501,20 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
     List<dynamic> attachmentList = threadDetails["attachments"];
     for (int i = 0; i < attachmentList.length; i++) {
       try {
-        Reference storageReference = await FirebaseStorage.instance.refFromURL((attachmentList[i]["url"]));
+        Reference storageReference = await FirebaseStorage.instance
+            .refFromURL((attachmentList[i]["url"]));
         storageReference.delete();
       } catch (e) {}
     }
     for (int i = 0; i < commentsDoc.length; i++) {
       FirebaseFirestore.instance
           .collection('feedcomments')
-          .doc(commentsDoc[i].id)          
+          .doc(commentsDoc[i].id)
           .delete();
     }
- Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
     FirebaseFirestore.instance.collection('feed').doc(threadId).delete();
-    Navigator.of(context).pop();
-    Navigator.of(context).pop();
   }
 
   void deleteAlert(BuildContext context) {
