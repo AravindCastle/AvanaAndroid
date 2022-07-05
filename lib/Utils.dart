@@ -30,7 +30,7 @@ class Utils {
   static Map<String, int> threadCount = new Map();
 
   static Map<String, int> feedCommentCount = new Map();
-  static String distributorName="Distributor";
+  static String distributorName = "Distributor";
   static Map<String, String> userProfilePictures = new Map();
   static const String notifyTopic = "beta";
   static bool getImageFormats(String isSupported) {
@@ -164,44 +164,43 @@ class Utils {
         width: medQry.size.width * .29,
         height: medQry.size.width * .29,
         child: OutlinedButton(
-          child: Material(
-            child: attach == null
-                ? CachedNetworkImage(
-                    width: medQry.size.width * .29,
-                    height: medQry.size.width * .29,
-                    fit: BoxFit.contain,
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Image.asset(
-                      "assets/imagethumbnail.png",
+            child: Material(
+              child: attach == null
+                  ? CachedNetworkImage(
                       width: medQry.size.width * .29,
                       height: medQry.size.width * .29,
+                      fit: BoxFit.contain,
+                      progressIndicatorBuilder: (context, url, progress) =>
+                          Image.asset(
+                        "assets/imagethumbnail.png",
+                        width: medQry.size.width * .29,
+                        height: medQry.size.width * .29,
+                      ),
+                      imageUrl: url,
+                    )
+                  : Image.file(
+                      attach,
+                      width: medQry.size.width * .29,
+                      height: medQry.size.width * .29,
+                      fit: BoxFit.cover,
                     ),
-                    imageUrl: url,
-                  )
-                : Image.file(
-                    attach,
-                    width: medQry.size.width * .29,
-                    height: medQry.size.width * .29,
-                    fit: BoxFit.cover,
-                  ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
+              borderRadius: BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              clipBehavior: Clip.hardEdge,
             ),
-            clipBehavior: Clip.hardEdge,
-          ),
-          onPressed: attach != null
-              ? null
-              : () {
-                  Navigator.pushNamed(context, "/photoview",
-                      arguments: {"url": url, "name": name});
-                },
-                          style: OutlinedButton.styleFrom(
-
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          side: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),)
-        ),
+            onPressed: attach != null
+                ? null
+                : () {
+                    Navigator.pushNamed(context, "/photoview",
+                        arguments: {"url": url, "name": name});
+                  },
+            style: OutlinedButton.styleFrom(
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(8.0)),
+              side: BorderSide(color: Colors.grey),
+              padding: EdgeInsets.all(0),
+            )),
         margin: EdgeInsets.only(
             left: medQry.size.width * .03, top: medQry.size.width * .03),
       );
@@ -210,28 +209,27 @@ class Utils {
         width: medQry.size.width * .29,
         height: medQry.size.width * .29,
         child: OutlinedButton(
-          child: Material(
-            child: Image.asset(
-              "assets/videothumbnail.png",
-              width: medQry.size.width * .29,
-              height: medQry.size.width * .29,
-              fit: BoxFit.cover,
+            child: Material(
+              child: Image.asset(
+                "assets/videothumbnail.png",
+                width: medQry.size.width * .29,
+                height: medQry.size.width * .29,
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              clipBehavior: Clip.hardEdge,
             ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
-            ),
-            clipBehavior: Clip.hardEdge,
-          ),
-          onPressed: () {
-            openFile(url, name, context);
-          },
-                    style: OutlinedButton.styleFrom(
-
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          side: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),)
-        ),
+            onPressed: () {
+              openFile(url, name, context);
+            },
+            style: OutlinedButton.styleFrom(
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(8.0)),
+              side: BorderSide(color: Colors.grey),
+              padding: EdgeInsets.all(0),
+            )),
         margin: EdgeInsets.only(
             left: medQry.size.width * .03, top: medQry.size.width * .03),
       );
@@ -240,13 +238,12 @@ class Utils {
         height: medQry.size.width * .29,
         width: medQry.size.width * .29,
         child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-              padding: EdgeInsets.all(0),
-          side: BorderSide(color: Colors.grey),),
-          
+          style: OutlinedButton.styleFrom(
+            shape: new RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(8.0)),
+            padding: EdgeInsets.all(0),
+            side: BorderSide(color: Colors.grey),
+          ),
           child: Material(
             child: Text(type, style: TextStyle(fontSize: 15)),
             borderRadius: BorderRadius.all(
@@ -257,7 +254,6 @@ class Utils {
           onPressed: () {
             openFile(url, name, context);
           },
-          
         ),
         margin: EdgeInsets.only(
             left: medQry.size.width * .03, top: medQry.size.width * .03),
@@ -392,8 +388,8 @@ static void openFile(File file,String url){
     String ownerId = localStore.getString("userId");
     String serverToken =
         "AAAA7_Sx8pg:APA91bE1afmUpIcNCCe9leKNrNOHut5JajyvKmUBRKxdfELopzap3XJaHw4Ih_Cj6EzebCGi8QeSA_m6kXIvRq4WiGiqDYj7c-G8YklDX9feOm1eusmN0eIPa914m4APgLVC5Iqx96Nw";
-    await http.post(Uri(host: 'https://fcm.googleapis.com/fcm/send')
-      ,
+    await http.post(
+      Uri(host: 'https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'key=$serverToken',
@@ -867,7 +863,7 @@ static void openFile(File file,String url){
           arguments: {"superLevel": 0, "parentid": "0", "title": "Resources"});
     } else if (selectedIndex == 3) {
       Navigator.pushReplacementNamed(context, "/userlist");
-    } 
+    }
     /*else if (selectedIndex == 4) {
       Navigator.pushReplacementNamed(context, "/facultyPage");
     }*/
@@ -898,31 +894,31 @@ static void openFile(File file,String url){
             width: 100,
             height: 100,
             child: OutlinedButton(
-              child: Material(
-                child: CachedNetworkImage(
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fill,
-                  progressIndicatorBuilder: (context, url, progress) =>
-                      Image.asset(
-                    "assets/imagethumbnail.png",
+                child: Material(
+                  child: CachedNetworkImage(
                     width: 100,
                     height: 100,
+                    fit: BoxFit.fill,
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        Image.asset(
+                      "assets/imagethumbnail.png",
+                      width: 100,
+                      height: 100,
+                    ),
+                    imageUrl: url,
                   ),
-                  imageUrl: url,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(8.0),
+                  ),
+                  clipBehavior: Clip.hardEdge,
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(8.0),
-                ),
-                clipBehavior: Clip.hardEdge,
-              ),
-              onPressed: null,
-              style: OutlinedButton.styleFrom(
-              shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(8.0)),
-              side: BorderSide(color: Colors.grey),
-              padding: EdgeInsets.all(0),)
-            ),
+                onPressed: null,
+                style: OutlinedButton.styleFrom(
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(8.0)),
+                  side: BorderSide(color: Colors.grey),
+                  padding: EdgeInsets.all(0),
+                )),
             margin: EdgeInsets.only(left: 8, top: 3),
           ));
         }
@@ -933,27 +929,25 @@ static void openFile(File file,String url){
         width: 100,
         height: 100,
         child: OutlinedButton(
-          child: Material(
-            child: Image.asset(
-              subject != null
-                  ? getDefaultImageForMessage(subject)
-                  : "assets/imagethumbnail.png",
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+            child: Material(
+              child: Image.asset(
+                "assets/imagethumbnail.png",
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              clipBehavior: Clip.hardEdge,
             ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
-            ),
-            clipBehavior: Clip.hardEdge,
-          ),
-          onPressed: null,
-          style: OutlinedButton.styleFrom(
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          side: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.all(0),)
-        ),
+            onPressed: null,
+            style: OutlinedButton.styleFrom(
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(8.0)),
+              side: BorderSide(color: Colors.grey),
+              padding: EdgeInsets.all(0),
+            )),
         margin: EdgeInsets.only(left: 8, top: 3),
       ));
     }
@@ -1018,17 +1012,17 @@ static void openFile(File file,String url){
       ),
       label: 'Resources',
     ));
-    if(Utils.userRole==1){
-        list.add(BottomNavigationBarItem(
+    if (Utils.userRole == 1) {
+      list.add(BottomNavigationBarItem(
         icon: Image.asset(
           "assets/icons/users.png",
           width: 24.0,
           height: 24.0,
         ),
         label: 'Users',
-        ));
+      ));
     }
-    
+
     /*list.add(BottomNavigationBarItem(
       icon: Image.asset(
         "assets/icons/faculty.png",
@@ -1141,13 +1135,12 @@ static void openFile(File file,String url){
         : "https://i.stack.imgur.com/WFy1e.jpg";
   }
 
-  static Future<String> uploadImageGetUrl(String path,File file){
+  static Future<String> uploadImageGetUrl(String path, File file) {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child(path);
-    UploadTask uploadTask = ref.putFile(file);              
+    UploadTask uploadTask = ref.putFile(file);
     uploadTask.then((res) async {
-        return await res.ref.getDownloadURL();
-    }) ;         
+      return await res.ref.getDownloadURL();
+    });
   }
-
 }
