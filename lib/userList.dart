@@ -43,15 +43,15 @@ class _userListPageState extends State<userListPage> {
                   children: snapshot.data.docs.map((document) {
                     return new Visibility(
                         visible: (Utils.userRole == 1 ||
-                            (Utils.userRole == 2 && document['userrole'] > 1) ||
+                            (Utils.userRole == 2 &&
+                                document['userrole'] == 2) ||
                             (Utils.userRole == 3 && document['userrole'] == 3)),
                         child: new ListTile(
                           dense: false,
                           trailing: Utils.isSuperAdmin()
                               ? Icon(Icons.keyboard_arrow_right)
                               : SizedBox(),
-                          leading:
-                              Utils.userProfilePic(document.id, 20),
+                          leading: Utils.userProfilePic(document.id, 20),
                           title: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,

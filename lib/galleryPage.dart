@@ -107,13 +107,14 @@ class GalleryPageState extends State<GalleryPage> {
       List<DocumentSnapshot> childElements = new List();
       final QuerySnapshot userDetails = await FirebaseFirestore.instance
           .collection('gallery')
-          .where("parentid", isEqualTo: docId).get();
+          .where("parentid", isEqualTo: docId)
+          .get();
       childElements = userDetails.docs;
 
       for (int i = 0; i < childElements.length; i++) {
         deleteOnLoop(childElements[i].id);
       }
-    } else if (currDoc["type"] == "file" ) {
+    } else if (currDoc["type"] == "file") {
       try {
         Reference storageReference =
             await FirebaseStorage.instance.refFromURL(currDoc["url"]);
@@ -159,10 +160,11 @@ class GalleryPageState extends State<GalleryPage> {
 
   Future<void> uploadFile(BuildContext context) async {
     try {
-          FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.any);
+      FilePickerResult selectedFile =
+          await FilePicker.platform.pickFiles(type: FileType.any);
       final ProgressDialog uploadingPop = ProgressDialog(context,
           type: ProgressDialogType.Download, isDismissible: false);
-      if (selectedFile.count >0) {
+      if (selectedFile.count > 0) {
         String fileName = selectedFile.files.first.path.split("/").last;
         String fileType = fileName.split(".").last;
         if (fileType == "pdf" ||
@@ -173,11 +175,12 @@ class GalleryPageState extends State<GalleryPage> {
           await uploadingPop.show();
 
           FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child('AvanaFiles/Gallery/' +
-                  fileName +
-                  DateTime.now().millisecondsSinceEpoch.toString());
-    UploadTask uploadTask = ref.putFile(File(selectedFile.files.first.path));              
-    
+          Reference ref = storage.ref().child('AvanaFiles/Gallery/' +
+              fileName +
+              DateTime.now().millisecondsSinceEpoch.toString());
+          UploadTask uploadTask =
+              ref.putFile(File(selectedFile.files.first.path));
+
           uploadingPop.style(
               message: "Uploading " + fileName, maxProgress: 100, progress: 0);
           double loadingValue = 0;
@@ -190,7 +193,7 @@ class GalleryPageState extends State<GalleryPage> {
                 progress: loadingValue.roundToDouble());
           });
 
-          TaskSnapshot taskres=await uploadTask.whenComplete(() => null);
+          TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
           String url = await taskres.ref.getDownloadURL();
 
           await FirebaseFirestore.instance.collection("gallery").add({
@@ -320,8 +323,7 @@ class GalleryPageState extends State<GalleryPage> {
             child: GridView.builder(
               itemCount: messageCount,
               itemBuilder: (_, int index) {
-                final DocumentSnapshot document =
-                    snapshot.data.docs[index];
+                final DocumentSnapshot document = snapshot.data.docs[index];
                 return buildAttachment(document, context);
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -375,8 +377,8 @@ class GalleryPageState extends State<GalleryPage> {
       return GestureDetector(
           onLongPress: Utils.isSuperAdmin()
               ? () {
-                  deleteAlert(context, false, galleryItem.id,
-                      galleryItem["url"]);
+                  deleteAlert(
+                      context, false, galleryItem.id, galleryItem["url"]);
                 }
               : null,
           child: Utils.buildGalleryFileItem(context, galleryItem["url"],
@@ -420,10 +422,9 @@ class GalleryPageState extends State<GalleryPage> {
             onTap: _onItemTapped,
           ),
           floatingActionButton: new Visibility(
-              visible: Utils.userRole == 1 || Utils.userRole == 2,
+              visible: Utils.userRole == 1,
               child: FloatingActionButton(
-                onPressed: ((Utils.userRole == 1 || Utils.userRole == 2) &&
-                        argMap["superLevel"] < 10)
+                onPressed: ((Utils.userRole == 1) && argMap["superLevel"] < 10)
                     ? () {
                         showAddType(context);
                       }
@@ -448,8 +449,7 @@ class GalleryPageState extends State<GalleryPage> {
           floatingActionButton: new Visibility(
               visible: Utils.userRole == 1,
               child: FloatingActionButton(
-                onPressed: ((Utils.userRole == 1) &&
-                        argMap["superLevel"] < 10)
+                onPressed: ((Utils.userRole == 1) && argMap["superLevel"] < 10)
                     ? () {
                         showAddType(context);
                       }

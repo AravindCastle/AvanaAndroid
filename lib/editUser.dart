@@ -31,7 +31,7 @@ class _EditUserState extends State<EditUser> {
   TextEditingController password = new TextEditingController();
   TextEditingController description = new TextEditingController();
 
-  TextEditingController hospital = new TextEditingController();
+  //TextEditingController hospital = new TextEditingController();
 
   TextEditingController city = new TextEditingController();
   String region = "north";
@@ -43,10 +43,11 @@ class _EditUserState extends State<EditUser> {
   }
 
   Future<void> _pickImage() async {
-    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
+    FilePickerResult selectedFile =
+        await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {
       setState(() {
-        profilePic =File(selectedFile.files.first.path);
+        profilePic = File(selectedFile.files.first.path);
       });
     }
   }
@@ -89,7 +90,9 @@ class _EditUserState extends State<EditUser> {
 
     if (profilePic != null) {
       try {
-          profilePickUrl=await Utils.uploadImageGetUrl('AvanaFiles/profilepics/' + profilePic.path.split("/").last,profilePic);
+        profilePickUrl = await Utils.uploadImageGetUrl(
+            'AvanaFiles/profilepics/' + profilePic.path.split("/").last,
+            profilePic);
       } catch (Exception) {}
     }
 
@@ -101,7 +104,7 @@ class _EditUserState extends State<EditUser> {
       "isactive": isActiveUser,
       "userrole": userRole,
       "description": description.text,
-      "hospital": hospital.text,
+      //"hospital": hospital.text,
       "city": city.text,
       "region": region,
       "profile_pic_url": profilePickUrl,
@@ -124,7 +127,7 @@ class _EditUserState extends State<EditUser> {
     currentUserEmail = currentUserDetails["email"];
     isActiveUser = currentUserDetails["isactive"];
     password.text = currentUserDetails["password"];
-    hospital.text = currentUserDetails["hospital"];
+    //hospital.text = currentUserDetails["hospital"];
     city.text = currentUserDetails["city"];
     region = currentUserDetails["region"];
     description.text = currentUserDetails["description"];
@@ -213,14 +216,14 @@ class _EditUserState extends State<EditUser> {
                             contentPadding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                             labelText: "Password")),
-                    SizedBox(height: 10),
+                    /*SizedBox(height: 10),
                     TextField(
                         controller: hospital,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             contentPadding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Hospital Name")),
+                            labelText: "Hospital Name")),*/
                     SizedBox(height: 10),
                     TextField(
                         controller: city,

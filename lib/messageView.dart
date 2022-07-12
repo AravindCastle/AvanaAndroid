@@ -352,8 +352,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                 children: [
                   Row(
                     children: <Widget>[
-                      (commentsDoc[i]["ownerrole"] == 1 ||
-                              commentsDoc[i]["ownerrole"] == 2)
+                      (commentsDoc[i]["ownerrole"] == 1)
                           ? Icon(
                               Icons.check_circle,
                               size: 16,
@@ -752,9 +751,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                           reverse: false,
                         ),
                       ),
-                      (userRole == 1 ||
-                              //userRole == 2 ||
-                              userId == threadDetails["owner"])
+                      (userRole == 1 || userId == threadDetails["owner"])
                           ? buildInput()
                           : SizedBox(height: 10),
                     ],

@@ -596,9 +596,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                         reverse: false,
                       ),
                     ),
-                    (userRole == 1 ||
-                            userRole == 2 ||
-                            userId == threadDetails["owner"])
+                    (userRole == 1 || userId == threadDetails["owner"])
                         ? buildInput()
                         : SizedBox(height: 10),
                   ],

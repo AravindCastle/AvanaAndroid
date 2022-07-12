@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                     "Avana Surgical Systems Pvt Ltd",
                     style: TextStyle(
                         color: Colors.black87,
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: medQry.size.height * 0.015),
@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                     "Orthotics Learning App",
                     style: TextStyle(
                         color: Colors.black87,
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: medQry.size.height * 0.1),

@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'Utils.dart';
+
 bool isActive = true;
 String userRole = "3";
 bool loading = false;
@@ -21,7 +22,7 @@ class _AddUserPageState extends State<AddUserPage> {
   TextEditingController password = new TextEditingController();
   TextEditingController description = new TextEditingController();
 
-  TextEditingController hospital = new TextEditingController();
+  //TextEditingController hospital = new TextEditingController();
 
   TextEditingController city = new TextEditingController();
   String region = "north";
@@ -48,10 +49,11 @@ class _AddUserPageState extends State<AddUserPage> {
   }
 
   Future<void> _pickImage() async {
-    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
+    FilePickerResult selectedFile =
+        await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {
       setState(() {
-        profilePic =File(selectedFile.files.first.path);
+        profilePic = File(selectedFile.files.first.path);
       });
     }
   }
@@ -73,9 +75,11 @@ class _AddUserPageState extends State<AddUserPage> {
         uploadingPop.show();
         String profile_pic_url = null;
         if (profilePic != null) {
-          profile_pic_url=await Utils.uploadImageGetUrl('AvanaFiles/profilepics/' + profilePic.path.split("/").last,profilePic);                  
+          profile_pic_url = await Utils.uploadImageGetUrl(
+              'AvanaFiles/profilepics/' + profilePic.path.split("/").last,
+              profilePic);
         }
-await FirebaseFirestore.instance.collection("userdata").add({
+        await FirebaseFirestore.instance.collection("userdata").add({
           "username": userName.text,
           "email": emailId.text,
           "password": password.text,
@@ -83,7 +87,7 @@ await FirebaseFirestore.instance.collection("userdata").add({
           "userrole": int.parse(userRole),
           "membershipdate": new DateTime.now().millisecondsSinceEpoch,
           "description": description.text,
-          "hospital": hospital.text,
+          //  "hospital": hospital.text,
           "city": city.text,
           "region": region,
           "profile_pic_url": profile_pic_url,
@@ -100,9 +104,6 @@ await FirebaseFirestore.instance.collection("userdata").add({
         }
         uploadingPop.hide();
         Navigator.pop(context);
-        
-
-        
       }
     } catch (Exception) {
       setState(() {
@@ -178,14 +179,14 @@ await FirebaseFirestore.instance.collection("userdata").add({
                             contentPadding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                             labelText: "Password")),
-                    SizedBox(height: 10),
+                    /*SizedBox(height: 10),
                     TextField(
                         controller: hospital,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             contentPadding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Hospital Name")),
+                            labelText: "Hospital Name")),*/
                     SizedBox(height: 10),
                     TextField(
                         controller: city,
