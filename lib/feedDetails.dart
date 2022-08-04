@@ -563,7 +563,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       appBar: AppBar(
         title: isLoading ? Text("") : buildMessageInfo(),
         actions: <Widget>[
-          (!isLoading && (userId == threadDetails['owner'] || userRole == 1))
+          (!isLoading && (userRole == 1))
               ? IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
@@ -596,9 +596,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                         reverse: false,
                       ),
                     ),
-                    (userRole == 1 || userId == threadDetails["owner"])
-                        ? buildInput()
-                        : SizedBox(height: 10),
+                    (userRole == 1) ? buildInput() : SizedBox(height: 10),
                   ],
                 ),
               ],
