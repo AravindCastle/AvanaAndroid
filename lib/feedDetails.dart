@@ -274,7 +274,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                 right: medQry.size.width * .02,
                 top: medQry.size.width * .05),
             child: Text(
-              "\t\t\t\t" + threadDetails["content"],
+              "      " + threadDetails["content"],
               style: TextStyle(fontSize: 17),
             ))
       ],

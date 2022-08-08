@@ -287,7 +287,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                 right: medQry.size.width * .02,
                 top: medQry.size.width * .05),
             child: Text(
-              "\t\t\t\t" + threadDetails["content"],
+              "     " + threadDetails["content"],
               style: TextStyle(fontSize: 17),
             ))
       ],
@@ -417,7 +417,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                               top: medQry.size.width * .03),
                         )
                       : Text(
-                          "\t\t\t" + commentsDoc[i]["comment"],
+                          "     " + commentsDoc[i]["comment"],
                           style: TextStyle(
                               color: Colors.black87,
                               fontSize: 15,
