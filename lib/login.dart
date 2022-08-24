@@ -20,7 +20,6 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<Void> handleSignIn(BuildContext context) async {
-    bool isActive = false;
     final ProgressDialog loadingPop = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false);
 
@@ -31,9 +30,9 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!Utils.validateLogin(emailField.text, passwordField.text)) {
       loadingPop.hide();
-
-      scaffoldKey.currentState.showSnackBar(
-          SnackBar(content: Text('Invalid Email or Password ! ')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Invalid Email or Password !'),
+      ));
     } else {
       try {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -53,24 +52,12 @@ class _LoginPageState extends State<LoginPage> {
           Utils.userId = documents[0].id;
 
           int currDate = new DateTime.now().millisecondsSinceEpoch;
-          isActive = membershipDate - currDate > 31540000000
-              ? false
-              : documents[0]["isactive"];
+
           loadingPop.hide();
-
-          if (isActive) {
-            prefs.setString("userId", documents[0].id);
-            prefs.setString("name", documents[0]["username"]);
-            prefs.setInt("role", documents[0]["userrole"]);
-
-            Navigator.pushReplacementNamed(context, "/feed");
-          } else {
-            scaffoldKey.currentState
-                .showSnackBar(SnackBar(content: Text('Membership Expired ! ')));
-          }
         } else {
-          scaffoldKey.currentState.showSnackBar(
-              SnackBar(content: Text('Invalid Email or Password ! ')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Invalid Email or Password !'),
+          ));
         }
       } catch (Exception) {
         print(Exception);

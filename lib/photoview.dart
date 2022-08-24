@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -7,39 +9,55 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:photo_view/photo_view.dart';
 
-class PhotoViewr extends StatelessWidget {
-  Future<String> getDownloadPath() async {
-    Directory directory;
-    try {
-      if (Platform.isIOS) {
-        directory = await getApplicationDocumentsDirectory();
-      } else {
-        directory = Directory('/storage/emulated/0/Download');
-        // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
-        // ignore: avoid_slow_async_io
-        if (!await directory.exists())
-          directory = await getExternalStorageDirectory();
-      }
-    } catch (err, stack) {
-      print("Cannot get download folder path");
-    }
-    return directory.path;
+class PhotoViewr extends StatefulWidget {
+  _PhotoViewrState createState() => _PhotoViewrState();
+}
+
+class _PhotoViewrState extends State<PhotoViewr> {
+  ReceivePort _port = ReceivePort();
+  @override
+  void initState() {
+    super.initState();
+
+    IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+      setState(() {});
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
   }
 
-  Future<void> fileDownload(String url) async {
-    final downloadPath = await getDownloadPath();
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    super.dispose();
+  }
 
-    final taskId = await FlutterDownloader.enqueue(
+  @pragma('vm:entry-point')
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
+  }
+
+  void _download(String url) async {
+    final externalDir = await getExternalStorageDirectory();
+
+    final id = await FlutterDownloader.enqueue(
       url: url,
+      savedDir: externalDir.path,
+      showNotification: true,
+      openFileFromNotification: true,
       saveInPublicStorage: true,
-      savedDir: downloadPath,
-      headers: {}, // optional: header send with url (auth token etc)
-      //savedDir: 'the path of directory where you want to save downloaded files',
-      showNotification:
-          true, // show download progress in status bar (for Android)
-      openFileFromNotification:
-          true, // click on notification to open downloaded file (for Android)
     );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Download started ...'),
+    ));
   }
 
   @override
@@ -48,6 +66,11 @@ class PhotoViewr extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(arg["name"]),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.download_sharp),
+              onPressed: () => {_download(arg["url"])})
+        ],
       ),
       body: Container(
           child: Stack(children: [
@@ -67,10 +90,6 @@ class PhotoViewr extends StatelessWidget {
                   ),
                 ),
             imageProvider: CachedNetworkImageProvider(arg["url"])),
-        ElevatedButton(
-          child: Text("Download"),
-          onPressed: () => {fileDownload(arg["url"])},
-        ),
       ])),
     );
   }
