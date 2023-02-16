@@ -3,6 +3,7 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:avana_academy/Utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -73,15 +74,33 @@ class GalleryPageState extends State<GalleryPage> {
     }
   }
 
+  Future<String> updateFolderImage() async {
+    String dowloadUrl = "";
+    if (FolderImage != null) {
+      String fileName = FolderImage.path.split("/").last;
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.ref().child('AvanaFiles/Gallery/' +
+          fileName +
+          DateTime.now().millisecondsSinceEpoch.toString());
+      UploadTask uploadTask = ref.putFile(FolderImage);
+      TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
+      dowloadUrl = await taskres.ref.getDownloadURL();
+    }
+    return dowloadUrl;
+  }
+
   Future<void> createFolder() async {
     String name = folderName.text;
     if (name.isNotEmpty) {
+      String folderFileName = await updateFolderImage();
+
       FirebaseFirestore.instance.collection("gallery").add({
         "name": name,
         "type": "folder",
         "level": argMap["superLevel"],
         "parentid": argMap["parentid"],
         "ordertype": 1,
+        "fileurl": folderFileName,
         "created_time": new DateTime.now().millisecondsSinceEpoch,
       });
       Navigator.pop(context);
@@ -139,13 +158,23 @@ class GalleryPageState extends State<GalleryPage> {
                   textAlign: TextAlign.center,
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Delete'),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -156,6 +185,19 @@ class GalleryPageState extends State<GalleryPage> {
                 ],
               ));
         });
+  }
+
+  File FolderImage = null;
+  Future<void> _pickFolderImage() async {
+    FolderImage = null;
+    FilePickerResult selectedFile =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+    //await ImagePicker.pickImage(source: source);
+    if (selectedFile.files.length > 0 && this.mounted) {
+      setState(() {
+        FolderImage = File(selectedFile.files.first.path);
+      });
+    }
   }
 
   Future<void> uploadFile(BuildContext context) async {
@@ -230,22 +272,49 @@ class GalleryPageState extends State<GalleryPage> {
                   "New folder",
                   textAlign: TextAlign.center,
                 ),
-                content: TextField(
-                    controller: folderName,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Color.fromRGBO(117, 117, 117, .2),
-                      contentPadding: EdgeInsets.all(2),
-                    )),
+                content: Column(
+                  children: [
+                    TextField(
+                        controller: folderName,
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Color.fromRGBO(117, 117, 117, .2),
+                          contentPadding: EdgeInsets.all(2),
+                        )),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text("Attach Image"),
+                        SizedBox(width: 10),
+                        IconButton(
+                            onPressed: _pickFolderImage,
+                            icon: Icon(
+                              Icons.attach_file,
+                              color: Color.fromRGBO(25, 118, 210, .4),
+                            ))
+                      ],
+                    )
+                  ],
+                ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Create'),
                     onPressed: () {
                       createFolder();
@@ -291,13 +360,23 @@ class GalleryPageState extends State<GalleryPage> {
                       )),
                 ]),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Add'),
                     onPressed: () {
                       createYoutubeLink();
@@ -356,16 +435,40 @@ class GalleryPageState extends State<GalleryPage> {
               width: 100,
               height: 90,
               child: Column(children: [
-                IconButton(
-                    color: Color.fromRGBO(25, 118, 210, .4),
-                    icon: Icon(
-                      Icons.folder,
-                      color: Color.fromRGBO(25, 118, 210, .4),
-                    ),
-                    iconSize: 80,
-                    onPressed: null),
+                SizedBox(
+                    width: 80,
+                    height: 75,
+                    child: galleryItem.data().toString().contains('fileurl') &&
+                            "" != galleryItem["fileurl"]
+                        ? Material(
+                            child: CachedNetworkImage(
+                              width: 55,
+                              height: 65,
+                              alignment: Alignment.bottomCenter,
+                              fit: BoxFit.fill,
+                              progressIndicatorBuilder:
+                                  (context, url, progress) => Image.asset(
+                                "assets/imagethumbnail.png",
+                                width: 120,
+                                height: 86,
+                              ),
+                              imageUrl: galleryItem["fileurl"],
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.0),
+                            ),
+                            clipBehavior: Clip.hardEdge,
+                          )
+                        : IconButton(
+                            color: Color.fromRGBO(25, 118, 210, .4),
+                            icon: Icon(
+                              Icons.folder,
+                              color: Color.fromRGBO(25, 118, 210, .4),
+                            ),
+                            iconSize: 80,
+                            onPressed: null)),
                 Padding(
-                    padding: EdgeInsets.only(left: 15, right: 5),
+                    padding: EdgeInsets.only(top: 8, left: 15, right: 5),
                     child: Text(galleryItem["name"],
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,

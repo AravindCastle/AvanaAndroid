@@ -307,13 +307,23 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                   textAlign: TextAlign.center,
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Delete'),
                     onPressed: () {
                       deleteComment(commentId);
@@ -536,12 +546,22 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                           height: 40,
                         ),
                         Row(children: [
-                          RaisedButton(
+                          TextButton(
+                            style: ButtonStyle(
+                                foregroundColor:
+                                    MaterialStateProperty.all(Colors.white),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Color.fromRGBO(128, 0, 0, 1))),
                             onPressed: updateMessage,
                             child: Text("Edit"),
                           ),
                           Spacer(),
-                          RaisedButton(
+                          TextButton(
+                            style: ButtonStyle(
+                                foregroundColor:
+                                    MaterialStateProperty.all(Colors.white),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Color.fromRGBO(128, 0, 0, 1))),
                             onPressed: () => {Navigator.pop(context)},
                             child: Text("Cancel"),
                           )
@@ -661,13 +681,23 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                   textAlign: TextAlign.center,
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Delete'),
                     onPressed: () {
                       deleteThread(threadID);

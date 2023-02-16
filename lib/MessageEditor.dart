@@ -28,9 +28,10 @@ class _MessageEditorState extends State<MessageEditor> {
 //videoFrmts.addAll({'.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'});
   Future<void> _pickImage() async {
     if (uploaderImgs.length < 10) {
-    FilePickerResult selectedFile = await FilePicker.platform.pickFiles(type: FileType.image);
+      FilePickerResult selectedFile =
+          await FilePicker.platform.pickFiles(type: FileType.image);
       //await ImagePicker.pickImage(source: source);
-      if (selectedFile.files.length>0 && this.mounted) {
+      if (selectedFile.files.length > 0 && this.mounted) {
         setState(() {
           uploaderImgs.add(File(selectedFile.files.first.path));
         });
@@ -49,15 +50,14 @@ class _MessageEditorState extends State<MessageEditor> {
         setState(() {
           isSaving = true;
         });
-      
 
       try {
         String content = messageContr.text;
         String sub = dropDownValue.text;
         if (content.isNotEmpty && sub.isNotEmpty) {
-uploadingPop.style(
-          message: "Uploading files", maxProgress: 100, progress: 0);
-      await uploadingPop.show();
+          uploadingPop.style(
+              message: "Uploading files", maxProgress: 100, progress: 0);
+          await uploadingPop.show();
           List<Map> fileUrls = new List();
           final SharedPreferences localStore =
               await SharedPreferences.getInstance();
@@ -65,12 +65,12 @@ uploadingPop.style(
 
           for (int i = 0; i < uploaderImgs.length; i++) {
             String fileName = uploaderImgs[i].path.split("/").last;
-            
+
             FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child('AvanaFiles/' + folderId + '/' + fileName);
-    UploadTask uploadTask = ref.putFile(uploaderImgs[i]);    
-            
-            
+            Reference ref =
+                storage.ref().child('AvanaFiles/' + folderId + '/' + fileName);
+            UploadTask uploadTask = ref.putFile(uploaderImgs[i]);
+
             int fileNumber = i + 1;
             String loaderInfo = "$fileNumber/$totalFiles file is uploading  ";
 
@@ -85,10 +85,10 @@ uploadingPop.style(
                   message: loaderInfo, progress: loadingValue.roundToDouble());
             });
 
-            TaskSnapshot taskres=await uploadTask.whenComplete(() => null);
-          String url = await taskres.ref.getDownloadURL();
+            TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
+            String url = await taskres.ref.getDownloadURL();
             fileUrls.add({
-              "url":  url,
+              "url": url,
               "name": fileName,
               "type": fileName.split(".").last
             });

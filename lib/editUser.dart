@@ -158,7 +158,15 @@ class _EditUserState extends State<EditUser> {
                                   title: Text(
                                       "Do you want to remove this user permanently ?"),
                                   actions: [
-                                    FlatButton(
+                                    TextButton(
+                                      style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.white),
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  Color.fromRGBO(
+                                                      128, 0, 0, 1))),
                                       onPressed: () => {
                                         FirebaseFirestore.instance
                                             .collection('userdata')
@@ -169,7 +177,15 @@ class _EditUserState extends State<EditUser> {
                                       },
                                       child: Text("Ok"),
                                     ),
-                                    FlatButton(
+                                    TextButton(
+                                      style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.white),
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  Color.fromRGBO(
+                                                      128, 0, 0, 1))),
                                       onPressed: () => {Navigator.pop(context)},
                                       child: Text("Cancel"),
                                     )
@@ -334,7 +350,12 @@ class _EditUserState extends State<EditUser> {
                     ConstrainedBox(
                         constraints: const BoxConstraints(
                             minWidth: double.infinity, minHeight: 40),
-                        child: RaisedButton(
+                        child: TextButton(
+                          style: ButtonStyle(
+                              foregroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              backgroundColor: MaterialStateProperty.all(
+                                  Color.fromRGBO(128, 0, 0, 1))),
                           child: Text(
                             "Update",
                             style: TextStyle(fontSize: 20),

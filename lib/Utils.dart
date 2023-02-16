@@ -6,8 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
+import 'package:open_file_safe/open_file_safe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -570,8 +570,12 @@ static void openFile(File file,String url){
                         SizedBox(height: 10),
                         Row(
                           children: [
-                            RaisedButton(
-                              color: Colors.white,
+                            TextButton(
+                              style: ButtonStyle(
+                                  foregroundColor:
+                                      MaterialStateProperty.all(Colors.white),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Color.fromRGBO(128, 0, 0, 1))),
                               onPressed: () async {
                                 final SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
@@ -581,9 +585,7 @@ static void openFile(File file,String url){
                               },
                               child: Text(
                                 "Logout",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: Theme.of(context).primaryColor),
+                                style: TextStyle(fontSize: 18),
                               ),
                             ),
                           ],
@@ -600,7 +602,7 @@ static void openFile(File file,String url){
       BuildContext context, String url, String name, String type) {
     if (getImageFormats(type)) {
       return Container(
-        child: FlatButton(
+        child: TextButton(
           child: Column(
             children: [
               Material(
@@ -630,20 +632,15 @@ static void openFile(File file,String url){
                       textAlign: TextAlign.center))
             ],
           ),
-
           onPressed: () {
             Navigator.pushNamed(context, "/photoview",
                 arguments: {"url": url, "name": name});
           },
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          //  borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
         ),
       );
     } else if (getVideoFormats(type)) {
       return Container(
-        child: FlatButton(
+        child: TextButton(
           child: Column(
             children: [
               Material(
@@ -667,19 +664,14 @@ static void openFile(File file,String url){
                       textAlign: TextAlign.center))
             ],
           ),
-
           onPressed: () {
             openFile(url, name, context);
           },
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          //  borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
         ),
       );
     } else if ("pdf".contains(type)) {
       return Container(
-        child: FlatButton(
+        child: TextButton(
           child: Column(
             children: [
               Material(
@@ -703,19 +695,14 @@ static void openFile(File file,String url){
                       textAlign: TextAlign.center))
             ],
           ),
-
           onPressed: () {
             openFile(url, name, context);
           },
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          //  borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
         ),
       );
     } else if ("youtube".contains(type)) {
       return Container(
-        child: FlatButton(
+        child: TextButton(
           child: Column(
             children: [
               Material(
@@ -742,10 +729,6 @@ static void openFile(File file,String url){
           onPressed: () {
             _launchInBrowser(url);
           },
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
-          //  borderSide: BorderSide(color: Colors.grey),
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
         ),
       );
     }

@@ -36,7 +36,11 @@ class _AddUserPageState extends State<AddUserPage> {
       return ConstrainedBox(
           constraints:
               const BoxConstraints(minWidth: double.infinity, minHeight: 40),
-          child: RaisedButton(
+          child: TextButton(
+            style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all(Colors.white),
+                backgroundColor:
+                    MaterialStateProperty.all(Color.fromRGBO(128, 0, 0, 1))),
             child: Text(
               "Add new user",
               style: TextStyle(fontSize: 20),

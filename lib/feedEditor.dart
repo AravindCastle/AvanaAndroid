@@ -103,10 +103,9 @@ class _FeedEditorState extends State<FeedEditor> {
             "attachments": fileUrls
           });
 
-          String notfyStr =
-              localStore.getString("name") + " has added a new post ";
+          //String notfyStr =localStore.getString("name") + " has added a new post ";
 
-          Utils.sendPushNotification("New feed ", notfyStr, "feed", newFeed.id);
+          //Utils.sendPushNotification("New feed ", notfyStr, "feed", newFeed.id);
 
           Navigator.pushNamed(context, "/feed");
         }

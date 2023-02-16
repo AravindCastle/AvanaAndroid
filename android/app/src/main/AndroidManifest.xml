@@ -7,7 +7,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="${applicationName}"
-        android:label="ASSP Orthotics Learning App"
+        android:label="Avana Learning App"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -38,12 +38,13 @@
     android:authorities="${applicationId}.flutter_downloader.provider"
     android:exported="false"
     android:grantUriPermissions="true">
+    
     <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
         android:resource="@xml/provider_paths"/>
 </provider>
 
-
+    
     </application>
     
 </manifest>

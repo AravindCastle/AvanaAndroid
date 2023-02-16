@@ -294,13 +294,23 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                   textAlign: TextAlign.center,
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Delete'),
                     onPressed: () {
                       deleteComment(commentId);
@@ -530,13 +540,18 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
                   textAlign: TextAlign.center,
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color.fromRGBO(128, 0, 0, 1))),
                     child: Text('Delete'),
                     onPressed: () {
                       deleteThread(threadID);
