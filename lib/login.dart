@@ -49,7 +49,9 @@ class _LoginPageState extends State<LoginPage> {
           Utils.userRole = documents[0]["userrole"];
           Utils.userName = documents[0]["username"];
           Utils.userEmail = documents[0]["email"];
+          Utils.password = documents[0]["password"];
           Utils.userId = documents[0].id;
+          Utils.userProfPic = documents[0]["profile_pic_url"];
 
           int currDate = new DateTime.now().millisecondsSinceEpoch;
           prefs.setString("userId", Utils.userId);
@@ -88,17 +90,17 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Image.asset(
                     "assets/avanaloginlogo.png",
-                    width: medQry.size.width * 0.7,
-                    height: medQry.size.width * 0.3,
+                    width: medQry.size.width * 1.1,
+                    height: medQry.size.width * 0.4,
                   ),
-                  SizedBox(height: medQry.size.height * 0.015),
-                  Text(
-                    "Avana Learning App",
+                  SizedBox(height: medQry.size.height * 0.012),
+                  /*Text(
+                    "Avana Education App",
                     style: TextStyle(
                         color: Colors.black87,
                         fontSize: 22,
                         fontWeight: FontWeight.bold),
-                  ),
+                  ),*/
                   /*SizedBox(height: medQry.size.height * 0.015),
                   Text(
                     "Orthotics Learning App",

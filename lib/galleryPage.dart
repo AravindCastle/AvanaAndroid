@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class GalleryPage extends StatefulWidget {
@@ -17,6 +19,7 @@ class GalleryPage extends StatefulWidget {
 class GalleryPageState extends State<GalleryPage> {
   TextEditingController folderName = new TextEditingController();
   TextEditingController urlContrl = new TextEditingController();
+  TextEditingController folderEditForm = new TextEditingController();
   Map argMap;
   void showAddType(BuildContext context) {
     showModalBottomSheet(
@@ -89,6 +92,20 @@ class GalleryPageState extends State<GalleryPage> {
     return dowloadUrl;
   }
 
+  Future<void> editFolder(String folderId, String folderName) async {
+    String folderFileName = await updateFolderImage();
+    Map<String, Object> editedFolderObj = new Map();
+    editedFolderObj["name"] = folderName;
+    if (folderFileName != "") {
+      editedFolderObj["fileurl"] = folderFileName;
+    }
+    FirebaseFirestore.instance
+        .collection("gallery")
+        .doc(folderId)
+        .update(editedFolderObj)
+        .then((value) => Navigator.of(context).pop());
+  }
+
   Future<void> createFolder() async {
     String name = folderName.text;
     if (name.isNotEmpty) {
@@ -120,70 +137,145 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   Future<bool> deleteOnLoop(String docId) async {
-    DocumentSnapshot currDoc =
-        await FirebaseFirestore.instance.collection('gallery').doc(docId).get();
-    if (currDoc["type"] == "folder") {
-      List<DocumentSnapshot> childElements = new List();
-      final QuerySnapshot userDetails = await FirebaseFirestore.instance
+    try {
+      DocumentSnapshot currDoc = await FirebaseFirestore.instance
           .collection('gallery')
-          .where("parentid", isEqualTo: docId)
+          .doc(docId)
           .get();
-      childElements = userDetails.docs;
+      if (currDoc["type"] == "folder") {
+        List<DocumentSnapshot> childElements = [];
+        final QuerySnapshot userDetails = await FirebaseFirestore.instance
+            .collection('gallery')
+            .where("parentid", isEqualTo: docId)
+            .get();
+        childElements = userDetails.docs;
 
-      for (int i = 0; i < childElements.length; i++) {
-        deleteOnLoop(childElements[i].id);
+        for (int i = 0; i < childElements.length; i++) {
+          deleteOnLoop(childElements[i].id);
+        }
+      } else if (currDoc["type"] == "file") {
+        try {
+          Reference storageReference =
+              await FirebaseStorage.instance.refFromURL(currDoc["url"]);
+          storageReference.delete();
+        } catch (Exception) {}
       }
-    } else if (currDoc["type"] == "file") {
-      try {
-        Reference storageReference =
-            await FirebaseStorage.instance.refFromURL(currDoc["url"]);
-        storageReference.delete();
-      } catch (Exception) {}
+      await FirebaseFirestore.instance
+          .collection('gallery')
+          .doc(docId)
+          .delete();
+    } catch (e) {
+      return false;
     }
-    await FirebaseFirestore.instance.collection('gallery').doc(docId).delete();
+
     return true;
   }
 
-  void deleteAlert(
-      BuildContext context, bool isFolder, String docId, String url) {
+  String updatedImageText = "";
+
+  void showEditPop(BuildContext context, bool isFolder, String docId,
+      String url, DocumentSnapshot itemObj) {
+    folderEditForm.text = itemObj["name"];
     showDialog(
         context: context,
         builder: (BuildContext bCont) {
-          return new Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(95)),
-              child: AlertDialog(
-                title: Text(
-                  "Do you want to delete this message",
-                  textAlign: TextAlign.center,
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        backgroundColor: MaterialStateProperty.all(
-                            Color.fromRGBO(128, 0, 0, 1))),
-                    child: Text('Cancel'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  TextButton(
-                    style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        backgroundColor: MaterialStateProperty.all(
-                            Color.fromRGBO(128, 0, 0, 1))),
-                    child: Text('Delete'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
+          return new Dialog(
+              child: Padding(
+                  padding: EdgeInsets.all(30),
+                  child: Container(
+                      child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        controller: folderEditForm,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                          focusColor: Colors.blue,
+                          border: OutlineInputBorder(),
+                          //  icon: Icon(Icons.vpn_key),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextButton.icon(
+                          onPressed: _pickFolderImage,
+                          icon: Icon(Icons.mode_edit_outline),
+                          label: Text("Upload Image")),
+                      Text(updatedImageText),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 15,
+                          ),
+                          OutlinedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
 
-                      deleteFolderOrFile(docId, isFolder, url);
-                    },
-                  ),
-                ],
-              ));
+                              deleteFolderOrFile(docId, isFolder, url);
+                            },
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(
+                                  Color.fromRGBO(255, 255, 255, 1)),
+                              backgroundColor: MaterialStateProperty.all(
+                                  Color.fromRGBO(128, 0, 0, 1)),
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0))),
+                            ),
+                            child: Text('Delete'),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          OutlinedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0))),
+                            ),
+                            child: const Text("Cancel"),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          OutlinedButton(
+                            onPressed: () {
+                              String editedFolderName =
+                                  folderEditForm.text != ""
+                                      ? folderEditForm.text
+                                      : itemObj["name"];
+                              editFolder(itemObj.id, editedFolderName);
+                            },
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0))),
+                            ),
+                            child: const Text("Update"),
+                          ),
+                        ],
+                      )
+                    ],
+                  ))));
         });
   }
 
@@ -200,6 +292,32 @@ class GalleryPageState extends State<GalleryPage> {
     }
   }
 
+  Future<File> cropImage(BuildContext context, File file) async {
+    ImageCropper imgCrop = ImageCropper();
+    File croppedFile = await imgCrop.cropImage(
+      sourcePath: file.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      androidUiSettings: AndroidUiSettings(
+        toolbarTitle: 'Crop Image',
+        toolbarColor: Theme.of(context).primaryColor,
+        toolbarWidgetColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.original,
+        lockAspectRatio: false,
+      ),
+      iosUiSettings: IOSUiSettings(
+        minimumAspectRatio: 1.0,
+      ),
+    );
+
+    return croppedFile;
+  }
+
   Future<void> uploadFile(BuildContext context) async {
     try {
       FilePickerResult selectedFile =
@@ -212,6 +330,12 @@ class GalleryPageState extends State<GalleryPage> {
         if (fileType == "pdf" ||
             Utils.getImageFormats(fileType) ||
             Utils.getVideoFormats(fileType)) {
+          File fileToBeUploaded = File(selectedFile.files.first.path);
+          if (Utils.getImageFormats(fileType)) {
+            fileToBeUploaded =
+                await cropImage(context, File(selectedFile.files.first.path));
+          }
+
           uploadingPop.style(
               message: "Uploading files", maxProgress: 100, progress: 0);
           await uploadingPop.show();
@@ -220,8 +344,7 @@ class GalleryPageState extends State<GalleryPage> {
           Reference ref = storage.ref().child('AvanaFiles/Gallery/' +
               fileName +
               DateTime.now().millisecondsSinceEpoch.toString());
-          UploadTask uploadTask =
-              ref.putFile(File(selectedFile.files.first.path));
+          UploadTask uploadTask = ref.putFile(fileToBeUploaded);
 
           uploadingPop.style(
               message: "Uploading " + fileName, maxProgress: 100, progress: 0);
@@ -250,6 +373,15 @@ class GalleryPageState extends State<GalleryPage> {
           });
 
           await uploadingPop.hide();
+
+          Fluttertoast.showToast(
+              msg: "File successfully added ",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Color.fromARGB(255, 4, 62, 6),
+              textColor: Colors.white,
+              fontSize: 16.0);
 
           Utils.newResourceNotify();
         }
@@ -397,8 +529,8 @@ class GalleryPageState extends State<GalleryPage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return new Container();
         final int messageCount = snapshot.data.docs.length;
-        return Padding(
-            padding: EdgeInsets.all(1),
+        return Container(
+            padding: EdgeInsets.all(0),
             child: GridView.builder(
               itemCount: messageCount,
               itemBuilder: (_, int index) {
@@ -408,8 +540,8 @@ class GalleryPageState extends State<GalleryPage> {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 childAspectRatio: 9 / 11,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 22.0,
+                mainAxisSpacing: 22.0,
               ),
             ));
       },
@@ -421,7 +553,7 @@ class GalleryPageState extends State<GalleryPage> {
       return GestureDetector(
           onLongPress: Utils.isSuperAdmin()
               ? () {
-                  deleteAlert(context, true, galleryItem.id, null);
+                  showEditPop(context, true, galleryItem.id, null, galleryItem);
                 }
               : null,
           onTap: () {
@@ -441,6 +573,7 @@ class GalleryPageState extends State<GalleryPage> {
                     child: galleryItem.data().toString().contains('fileurl') &&
                             "" != galleryItem["fileurl"]
                         ? Material(
+                            elevation: 10,
                             child: CachedNetworkImage(
                               width: 55,
                               height: 65,
@@ -468,7 +601,7 @@ class GalleryPageState extends State<GalleryPage> {
                             iconSize: 80,
                             onPressed: null)),
                 Padding(
-                    padding: EdgeInsets.only(top: 8, left: 15, right: 5),
+                    padding: EdgeInsets.only(top: 12, left: 15, right: 5),
                     child: Text(galleryItem["name"],
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
@@ -480,8 +613,8 @@ class GalleryPageState extends State<GalleryPage> {
       return GestureDetector(
           onLongPress: Utils.isSuperAdmin()
               ? () {
-                  deleteAlert(
-                      context, false, galleryItem.id, galleryItem["url"]);
+                  showEditPop(context, false, galleryItem.id,
+                      galleryItem["url"], galleryItem);
                 }
               : null,
           child: Utils.buildGalleryFileItem(context, galleryItem["url"],
@@ -500,6 +633,19 @@ class GalleryPageState extends State<GalleryPage> {
     if (argMap["superLevel"].toString().contains("0")) {
       return Scaffold(
           appBar: AppBar(
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 134, 131, 131),
+                    Color.fromARGB(255, 54, 52, 52),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  stops: [0, 1],
+                ),
+              ),
+            ),
             leading: IconButton(
               icon: Utils.userProfilePic(Utils.userId, 14),
               onPressed: () {
@@ -512,15 +658,17 @@ class GalleryPageState extends State<GalleryPage> {
             elevation: 0,
           ),
           body: new Container(
+            color: Color.fromARGB(255, 232, 232, 232),
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
             child: buildGallery(context),
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: Utils.bottomNavItem(),
 
             currentIndex: _selectedIndex,
-            // backgroundColor: Colors.white,
-            selectedItemColor: Theme.of(context).primaryColor,
-            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.black,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white,
             //unselectedLabelStyle: TextStyle(color: Colors.grey),
             onTap: _onItemTapped,
           ),
@@ -541,12 +689,26 @@ class GalleryPageState extends State<GalleryPage> {
     } else {
       return Scaffold(
           appBar: AppBar(
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 134, 131, 131),
+                    Color.fromARGB(255, 54, 52, 52),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  stops: [0, 1],
+                ),
+              ),
+            ),
             title: Text(
               argMap["title"],
             ),
             elevation: 0,
           ),
           body: new Container(
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
             child: buildGallery(context),
           ),
           floatingActionButton: new Visibility(

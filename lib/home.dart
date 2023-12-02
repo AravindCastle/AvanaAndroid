@@ -233,17 +233,16 @@ class _HomePageState extends State<HomePage> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.image),
-                label:'Resources',
+                label: 'Products',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.supervisor_account),
-                label:  'Users',
-                
+                label: 'Users',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.verified_user),
                 label: 'Faculties',
-                              )
+              )
             ],
             currentIndex: _selectedIndex,
             backgroundColor: Colors.white,

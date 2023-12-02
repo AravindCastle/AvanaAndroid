@@ -22,7 +22,7 @@ class _AddUserPageState extends State<AddUserPage> {
   TextEditingController password = new TextEditingController();
   TextEditingController description = new TextEditingController();
 
-  //TextEditingController hospital = new TextEditingController();
+  TextEditingController distributor_name = new TextEditingController();
 
   TextEditingController city = new TextEditingController();
   String region = "north";
@@ -39,8 +39,8 @@ class _AddUserPageState extends State<AddUserPage> {
           child: TextButton(
             style: ButtonStyle(
                 foregroundColor: MaterialStateProperty.all(Colors.white),
-                backgroundColor:
-                    MaterialStateProperty.all(Color.fromRGBO(128, 0, 0, 1))),
+                backgroundColor: MaterialStateProperty.all(
+                    Color.fromRGBO(117, 117, 117, 1))),
             child: Text(
               "Add new user",
               style: TextStyle(fontSize: 20),
@@ -79,9 +79,14 @@ class _AddUserPageState extends State<AddUserPage> {
         uploadingPop.show();
         String profile_pic_url = null;
         if (profilePic != null) {
-          profile_pic_url = await Utils.uploadImageGetUrl(
-              'AvanaFiles/profilepics/' + profilePic.path.split("/").last,
-              profilePic);
+          FirebaseStorage storage = FirebaseStorage.instance;
+          Reference ref = storage.ref().child('AvanaFiles/profilepics/' +
+              profilePic.path.split("/").last +
+              DateTime.now().millisecondsSinceEpoch.toString());
+          UploadTask uploadTask = ref.putFile(profilePic);
+
+          TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
+          profile_pic_url = await taskres.ref.getDownloadURL();
         }
         await FirebaseFirestore.instance.collection("userdata").add({
           "username": userName.text,
@@ -91,7 +96,7 @@ class _AddUserPageState extends State<AddUserPage> {
           "userrole": int.parse(userRole),
           "membershipdate": new DateTime.now().millisecondsSinceEpoch,
           "description": description.text,
-          //  "hospital": hospital.text,
+          "distributor_name": distributor_name.text,
           "city": city.text,
           "region": region,
           "profile_pic_url": profile_pic_url,
@@ -166,7 +171,7 @@ class _AddUserPageState extends State<AddUserPage> {
                             border: OutlineInputBorder(),
                             contentPadding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Username")),
+                            labelText: "Full name")),
                     SizedBox(height: 10),
                     TextField(
                         controller: emailId,
@@ -183,14 +188,14 @@ class _AddUserPageState extends State<AddUserPage> {
                             contentPadding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                             labelText: "Password")),
-                    /*SizedBox(height: 10),
+                    SizedBox(height: 10),
                     TextField(
-                        controller: hospital,
+                        controller: distributor_name,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             contentPadding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Hospital Name")),*/
+                            labelText: "Distributor Name")),
                     SizedBox(height: 10),
                     TextField(
                         controller: city,

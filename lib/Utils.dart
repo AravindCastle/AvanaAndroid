@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:open_file_safe/open_file_safe.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -51,6 +54,8 @@ class Utils {
   static int userRole = 1;
   static String userEmail = "";
   static String userId = "";
+  static String password = "";
+  static String userProfPic = "";
   static bool isNewResourcesAdded = false;
   static bool getVideoFormats(String isSupported) {
     List<String> imgFrmt = new List();
@@ -390,7 +395,7 @@ static void openFile(File file,String url){
     String serverToken =
         "AAAA7_Sx8pg:APA91bE1afmUpIcNCCe9leKNrNOHut5JajyvKmUBRKxdfELopzap3XJaHw4Ih_Cj6EzebCGi8QeSA_m6kXIvRq4WiGiqDYj7c-G8YklDX9feOm1eusmN0eIPa914m4APgLVC5Iqx96Nw";
     await http.post(
-      Uri(host: 'https://fcm.googleapis.com/fcm/send'),
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'key=$serverToken',
@@ -530,16 +535,54 @@ static void openFile(File file,String url){
   }
 
   static void showUserPop(BuildContext context) {
+    Navigator.pushNamed(context, "/userdetailpage", arguments: {
+      "userid": Utils.userId,
+      "username": Utils.userName,
+      "ismemberedit": true
+    });
+/*
+    File profilePic = null;
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
           return Container(
             padding: EdgeInsets.all(30),
-            height: 200,
+            height: 400,
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                /*GestureDetector(
+                  child: Container(
+                    height: 130,
+                    width: 130,
+                    child: (Utils.userProfPic == null && profilePic == null)
+                        ? Center(
+                            child: Icon(Icons.edit),
+                          )
+                        : CircleAvatar(
+                            child: ClipOval(
+                            child: profilePic != null
+                                ? Image.file(
+                                    profilePic,
+                                    width: 130,
+                                    height: 130,
+                                    fit: BoxFit.fill,
+                                  )
+                                : CachedNetworkImage(
+                                    imageUrl: Utils.userProfPic,
+                                    width: 130,
+                                    height: 130,
+                                    fit: BoxFit.fill,
+                                  ),
+                          )),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.grey[350]),
+                  ),
+                ),*/
+                SizedBox(
+                  height: 15,
+                ),
                 Text(Utils.userName,
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
@@ -596,6 +639,7 @@ static void openFile(File file,String url){
             ),
           );
         });
+        */
   }
 
   static Widget buildGalleryFileItem(
@@ -841,13 +885,12 @@ static void openFile(File file,String url){
       Navigator.pushReplacementNamed(context, "/messagePage");
     } else if (selectedIndex == 2) {
       Navigator.pushReplacementNamed(context, "/gallery",
-          arguments: {"superLevel": 0, "parentid": "0", "title": "Resources"});
+          arguments: {"superLevel": 0, "parentid": "0", "title": "Products"});
     } else if (selectedIndex == 3) {
+      Navigator.pushReplacementNamed(context, "/web_view");
+    } else if (selectedIndex == 4) {
       Navigator.pushReplacementNamed(context, "/userlist");
     }
-    /*else if (selectedIndex == 4) {
-      Navigator.pushReplacementNamed(context, "/facultyPage");
-    }*/
   }
 
   static pushFeed(String content, int feedType) async {
@@ -968,40 +1011,41 @@ static void openFile(File file,String url){
   }
 
   static List<BottomNavigationBarItem> bottomNavItem() {
-    List<BottomNavigationBarItem> list = new List();
+    List<BottomNavigationBarItem> list = [];
     list.add(BottomNavigationBarItem(
-      icon: Image.asset(
-        "assets/icons/feed.png",
-        width: 24.0,
-        height: 24.0,
-      ),
-      label: 'Feed',
-    ));
+        icon: Image.asset(
+          "assets/icons/feed.png",
+          width: 44.0,
+          height: 44.0,
+        ),
+        label: 'Feed',
+        backgroundColor: Color.fromARGB(255, 82, 82, 82)));
     list.add(BottomNavigationBarItem(
-      icon: Image.asset(
-        "assets/icons/message.png",
-        width: 24.0,
-        height: 24.0,
-      ),
-      label: 'Message',
-    ));
+        icon: Image.asset(
+          "assets/icons/message.png",
+          width: 44.0,
+          height: 44.0,
+        ),
+        label: 'Message',
+        backgroundColor: Color.fromARGB(255, 82, 82, 82)));
     list.add(BottomNavigationBarItem(
-      icon: Image.asset(
-        "assets/icons/resource.png",
-        width: 24.0,
-        height: 24.0,
-      ),
-      label: 'Resources',
-    ));
+        icon: Image.asset(
+          "assets/icons/resource.png",
+          width: 44.0,
+          height: 44.0,
+        ),
+        label: 'Products',
+        backgroundColor: Color.fromARGB(255, 82, 82, 82)));
+    list.add(BottomNavigationBarItem(
+        icon: Icon(Icons.web),
+        label: 'Avana App',
+        backgroundColor: Color.fromARGB(255, 82, 82, 82)));
+
     if (Utils.userRole == 1) {
       list.add(BottomNavigationBarItem(
-        icon: Image.asset(
-          "assets/icons/users.png",
-          width: 24.0,
-          height: 24.0,
-        ),
-        label: 'Users',
-      ));
+          icon: Icon(Icons.person_outline),
+          label: 'Users',
+          backgroundColor: Color.fromARGB(255, 82, 82, 82)));
     }
 
     /*list.add(BottomNavigationBarItem(
@@ -1011,7 +1055,8 @@ static void openFile(File file,String url){
         height: 24.0,
       ),
       label: 'Faculties',
-    ));*/
+    )
+    );*/
 
     return list;
   }
@@ -1116,12 +1161,46 @@ static void openFile(File file,String url){
         : "https://i.stack.imgur.com/WFy1e.jpg";
   }
 
-  static Future<String> uploadImageGetUrl(String path, File file) {
+  static Future<String> uploadImageGetUrl(String path, File file) async {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child(path);
     UploadTask uploadTask = ref.putFile(file);
     uploadTask.then((res) async {
       return await res.ref.getDownloadURL();
     });
+  }
+
+  static Future<void> shareToWhatsApp(
+      String message, List<String> filePath, List<String> fileName) async {
+    if (filePath != null && filePath.isNotEmpty) {
+      List<String> fileList = [];
+      int count = 0;
+      for (var fileUrl in filePath) {
+        var response = await http.get(Uri.parse(fileUrl));
+        if (response.statusCode == 200) {
+          final directory =
+              await getTemporaryDirectory(); // You can change this to a permanent directory if needed
+          final file = File('${directory.path}/${fileName[count]}');
+          await file.writeAsBytes(response.bodyBytes);
+          fileList.add(file.path);
+        }
+        count++;
+      }
+
+      if (fileList.isNotEmpty) {
+        await Share.shareFiles(fileList, text: message);
+      }
+    } else {
+      Share.share(message);
+    }
+  }
+
+  static Widget constructText(String textContent, TextStyle style) {
+    return Linkify(
+      onOpen: (link) => _launchInBrowser(link.url),
+      text: textContent,
+      style: style != null ? style : TextStyle(color: Colors.black),
+      linkStyle: TextStyle(color: Colors.blue),
+    );
   }
 }

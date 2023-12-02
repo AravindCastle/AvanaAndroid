@@ -59,9 +59,11 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   }
 
   Future<void> getUserDetails(String docId) async {
-    final DocumentSnapshot userDetails =
-        await FirebaseFirestore.instance.collection('userdata').doc(docId).get();
-    if (userDetails.data()!=null) {
+    final DocumentSnapshot userDetails = await FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(docId)
+        .get();
+    if (userDetails.data() != null) {
       userName = userDetails["username"];
       password = userDetails["password"];
       userRole = userDetails["userrole"];

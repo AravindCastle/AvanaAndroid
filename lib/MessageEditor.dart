@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:avana_academy/firebase_message_module.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -108,8 +110,16 @@ class _MessageEditorState extends State<MessageEditor> {
             "subject": dropDownValue.text
           });
           String notfyStr = messageContr.text;
-          Utils.sendPushNotification(
-              "New Message", notfyStr, "messageview", newThread.id);
+          NotificationHandler.sendPushNotification("New Message", notfyStr);
+          Fluttertoast.showToast(
+              msg: "Message successfully added ",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Color.fromARGB(255, 4, 62, 6),
+              textColor: Colors.white,
+              fontSize: 16.0);
+
           Navigator.pushNamed(context, "/messagePage");
         }
       } catch (Exception) {
@@ -165,6 +175,19 @@ class _MessageEditorState extends State<MessageEditor> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 134, 131, 131),
+                      Color.fromARGB(255, 54, 52, 52),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    stops: [0, 1],
+                  ),
+                ),
+              ),
               title: Text("Compose Message"),
               actions: <Widget>[
                 IconButton(

@@ -6,6 +6,7 @@ import 'package:avana_academy/editUser.dart';
 import 'package:avana_academy/feed.dart';
 import 'package:avana_academy/feedDetails.dart';
 import 'package:avana_academy/feedEditor.dart';
+import 'package:avana_academy/firebase_message_module.dart';
 import 'package:avana_academy/galleryPage.dart';
 import 'package:avana_academy/home.dart';
 import 'package:avana_academy/messageView.dart';
@@ -13,6 +14,7 @@ import 'package:avana_academy/messagescreen.dart';
 import 'package:avana_academy/photoview.dart';
 import 'package:avana_academy/userDetailsPage.dart';
 import 'package:avana_academy/userList.dart';
+import 'package:avana_academy/webView.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -49,33 +51,39 @@ class AvanaHome extends StatelessWidget {
       case '/login':
         return PageTransition(
             child: LoginPage(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings:
                 settings); //MaterialPageRoute(builder: (_) => LoginPage());
         break;
       /* case '/home':
         return PageTransition(
             child: HomePage(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings:
                 settings); //MaterialPageRoute(builder: (_) => LoginPage());
         break;*/
       case '/messagePage':
         return PageTransition(
             child: MessagePage(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
+            settings: settings);
+        break;
+      case '/web_view':
+        return PageTransition(
+            child: WebAppPage(),
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
       case '/userlist':
         return PageTransition(
             child: userListPage(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
       case '/adduser':
         return PageTransition(
             child: AddUserPage(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
       case '/userdetailpage':
@@ -85,49 +93,50 @@ class AvanaHome extends StatelessWidget {
             child: EditUser(
               currentUserId: arguments["userid"],
               currentUserName: arguments["username"],
+              isMemberEdit: arguments["ismemberedit"],
             ),
-            type: PageTransitionType.leftToRightWithFade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
       case '/messageeditor':
         return PageTransition(
             child: MessageEditor(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
       case '/messageview':
         return PageTransition(
             child: MessageViewScreen(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
       case '/photoview':
         return PageTransition(
             child: PhotoViewr(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
 
       case '/gallery':
         return PageTransition(
             child: GalleryPage(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
       case '/feed':
         return PageTransition(
             child: FeedPage(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
       case '/feededitor':
         return PageTransition(
             child: FeedEditor(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
       case '/feeddetails':
         return PageTransition(
             child: FeedDetailScreen(),
-            type: PageTransitionType.fade,
+            type: PageTransitionType.rightToLeft,
             settings: settings);
         break;
     }
@@ -199,6 +208,11 @@ class AvanaHome extends StatelessWidget {
 }
 
 class BackgroundNotify {
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    print('_firebaseMessagingBackgroundHandler');
+  }
+
   static Future<dynamic> myBackgroundMessageHandler(
       Map<String, dynamic> message) {
     if (message["data"]["screen"] == "resource" &&
@@ -238,7 +252,10 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     // TODO: implement initState
     super.initState();
     checkUserLogged();
-    _fcm.subscribeToTopic(Utils.notifyTopic);
+    //_fcm.subscribeToTopic(Utils.notifyTopic);
+    NotificationHandler notificationHandler = NotificationHandler();
+    notificationHandler.registerNotification();
+    /*
 
     if (Platform.isIOS) {
       NotificationSettings settings = null;
@@ -275,9 +292,9 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
       }
     });
 
-    /*FirebaseMessaging.onBackgroundMessage(
-        (message) => BackgroundNotify.myBackgroundMessageHandler(message.data));
-      */
+    FirebaseMessaging.onBackgroundMessage(
+        BackgroundNotify._firebaseMessagingBackgroundHandler);
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (this.mounted) {
         setState(() {
@@ -298,6 +315,8 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
         });
       }
     });
+  
+  */
   }
 
   void checkUserLogged() async {
@@ -316,7 +335,9 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
         Utils.userRole = userDetails.get("userrole");
         Utils.userName = userDetails.get("username");
         Utils.userEmail = userDetails.get("email");
+        Utils.password = userDetails.get("password");
         Utils.userId = userId;
+        Utils.userProfPic = userDetails.get("profile_pic_url");
 
         isUserLogged =
             (currDate - membershipDate) > 31540000000 ? false : activeState;

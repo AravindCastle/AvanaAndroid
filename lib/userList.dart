@@ -10,7 +10,7 @@ class userListPage extends StatefulWidget {
 class _userListPageState extends State<userListPage> {
   MediaQueryData medQry;
 
-  int _selectedIndex = 3;
+  int _selectedIndex = 4;
   void _onItemTapped(int index) {
     Utils.bottomNavAction(index, context);
   }
@@ -21,6 +21,19 @@ class _userListPageState extends State<userListPage> {
         child: Scaffold(
             // appBar: AppBar(title: Text("Users")),
             appBar: AppBar(
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 134, 131, 131),
+                      Color.fromARGB(255, 54, 52, 52),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    stops: [0, 1],
+                  ),
+                ),
+              ),
               leading: IconButton(
                 icon: Utils.userProfilePic(Utils.userId, 14),
                 onPressed: () {
@@ -70,8 +83,11 @@ class _userListPageState extends State<userListPage> {
                                         ))
                                     : SizedBox(),
                                 new Text(document['username'],
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold))
+                                    softWrap: true,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      overflow: TextOverflow.ellipsis,
+                                    ))
                               ]),
                           //subtitle: new Text(document['email']),
                           onTap: Utils.isSuperAdmin()
@@ -79,7 +95,8 @@ class _userListPageState extends State<userListPage> {
                                   Navigator.pushNamed(
                                       context, "/userdetailpage", arguments: {
                                     "userid": document.id,
-                                    "username": document["username"]
+                                    "username": document["username"],
+                                    "ismemberedit": false
                                   });
                                 }
                               : null,
@@ -92,9 +109,9 @@ class _userListPageState extends State<userListPage> {
               items: Utils.bottomNavItem(),
 
               currentIndex: _selectedIndex,
-              // backgroundColor: Colors.white,
-              selectedItemColor: Theme.of(context).primaryColor,
-              unselectedItemColor: Colors.grey,
+              backgroundColor: Colors.black,
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white,
               //unselectedLabelStyle: TextStyle(color: Colors.grey),
               onTap: _onItemTapped,
             ),

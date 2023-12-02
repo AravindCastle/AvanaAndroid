@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:avana_academy/Utils.dart';
+import 'package:avana_academy/firebase_message_module.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -79,8 +80,7 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       focusNode.unfocus();
       String notfyStr = localStore.getString("name") + ":" + commentEditor.text;
       commentEditor.clear();
-      Utils.sendPushNotification(
-          "New Comment", notfyStr, "messageview", threadID);
+      NotificationHandler.sendPushNotification("New Comment", notfyStr);
       //Utils.pushFeed(" has added new comment.", 1);
       Utils.updateCommentCount(threadID, true);
       isCommentSaved = true;
@@ -363,14 +363,11 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                   Row(
                     children: <Widget>[
                       (commentsDoc[i]["ownerrole"] == 1)
-                          ? Icon(
-                              Icons.check_circle,
-                              size: 16,
-                              color: commentsDoc[i]["ownerrole"] == 1
-                                  ? Colors.redAccent
-                                  : Colors.blueAccent,
-                            )
+                          ? Utils.userProfilePic(commentsDoc[i]["owner"], 12)
                           : SizedBox(),
+                      SizedBox(
+                        width: 7,
+                      ),
                       SizedBox(
                           width: medQry.size.width * .61,
                           child: Text(
@@ -445,8 +442,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                                   Utils.getTimeFrmt(
                                       commentsDoc[i]["created_time"]),
                                   style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.black54,
+                                    fontSize: 12,
+                                    color: Colors.black,
                                   ),
                                 ))),
                         Spacer(),
@@ -474,7 +471,17 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
             padding: EdgeInsets.all(medQry.size.width * .03),
             width: medQry.size.width * .85,
             //height: commentsDoc[i]["isattachment"]?100:double.infinity,
+
             decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 244, 241, 241),
+                    Color.fromARGB(255, 222, 222, 222),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  stops: [0, 1],
+                ),
                 color: Color.fromRGBO(238, 238, 238, 1),
                 borderRadius: BorderRadius.circular(8.0)),
           ));
@@ -723,6 +730,19 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
       return SafeArea(
           child: Scaffold(
         appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 134, 131, 131),
+                  Color.fromARGB(255, 54, 52, 52),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                stops: [0, 1],
+              ),
+            ),
+          ),
           title: isLoading ? Text("") : buildMessageInfo(),
           actions: <Widget>[
             (!isLoading &&
@@ -781,9 +801,8 @@ class _MessageViewScreenState extends State<MessageViewScreen> {
                           reverse: false,
                         ),
                       ),
-                      (userRole == 1 || userId == threadDetails["owner"])
-                          ? buildInput()
-                          : SizedBox(height: 10),
+                      //(userRole == 1 || userId == threadDetails["owner"])
+                      (userRole == 1) ? buildInput() : SizedBox(height: 10),
                     ],
                   ),
                 ],

@@ -19,11 +19,56 @@ class _MessagePageState extends State<MessagePage> {
   TextEditingController searchBarController = new TextEditingController();
   String searchText = null;
   final ScrollController _scrollController = ScrollController();
-
+  String currentSort = "1";
   @override
   void initState() {
     super.initState();
     Utils.getAllComments();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMsgStream() {
+    DateTime currentDate = new DateTime.now();
+    if ("1" == currentSort) {
+      return FirebaseFirestore.instance
+          .collection('Threads')
+          .orderBy("created_time", descending: true)
+          .limit(showSearchBar ? 1000 : 200)
+          .snapshots();
+    } else if ("2" == currentSort) {
+      currentDate = currentDate.subtract(const Duration(days: 7));
+      return FirebaseFirestore.instance
+          .collection('Threads')
+          .where("created_time",
+              isLessThanOrEqualTo: currentDate.millisecondsSinceEpoch)
+          .orderBy("created_time", descending: true)
+          .limit(200)
+          .snapshots();
+    } else if ("3" == currentSort) {
+      currentDate = currentDate.subtract(const Duration(days: 31));
+      return FirebaseFirestore.instance
+          .collection('Threads')
+          .where("created_time",
+              isLessThanOrEqualTo: currentDate.millisecondsSinceEpoch)
+          .orderBy("created_time", descending: true)
+          .limit(200)
+          .snapshots();
+    } else if ("4" == currentSort) {
+      currentDate = currentDate.subtract(const Duration(days: 92));
+      return FirebaseFirestore.instance
+          .collection('Threads')
+          .where("created_time",
+              isLessThanOrEqualTo: currentDate.millisecondsSinceEpoch)
+          .orderBy("created_time", descending: true)
+          .limit(200)
+          .snapshots();
+    } else if ("5" == currentSort) {
+      currentDate = currentDate.subtract(const Duration(days: 92));
+      return FirebaseFirestore.instance
+          .collection('Threads')
+          .orderBy("created_time", descending: false)
+          .limit(200)
+          .snapshots();
+    }
   }
 
   void getUserName() async {
@@ -66,28 +111,44 @@ class _MessagePageState extends State<MessagePage> {
             : SizedBox(),
       ];
       return new GestureDetector(
-          child: Card(
-              elevation: 1,
-              child: new Container(
-                height: messageDoc["attachments"].length > 0 ? 190 : 140,
-                child: new Padding(
-                    padding:
-                        EdgeInsets.only(top: 10, bottom: 10, left: 8, right: 8),
+          child: new Padding(
+              padding: EdgeInsets.all(10),
+              child: Card(
+                elevation: 7,
+                child: new Container(
+                    padding: EdgeInsets.only(right: 5),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color.fromARGB(255, 255, 255, 255),
+                          Color.fromARGB(255, 222, 222, 222),
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        stops: [0, 1],
+                      ),
+                      border: Border.all(
+                          color: Colors.transparent,
+                          width: 4,
+                          style: BorderStyle.none), //Border.all
+                      /*** The BorderRadius widget  is here ***/
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    constraints: BoxConstraints(
+                        minHeight: 80,
+                        maxHeight:
+                            messageDoc["attachments"].length > 0 ? 190 : 125),
                     child: new Column(children: [
                       Row(children: [
                         Utils.isNewMessage(messageDoc.id, prefs),
+                        Utils.userProfilePic(messageDoc["owner"], 12),
                         SizedBox(
-                          width: 30,
-                          child: Icon(
-                            Icons.check_circle,
-                            size: 16,
-                            color: messageDoc["ownerrole"] == 1
-                                ? Colors.redAccent
-                                : Colors.blueAccent,
-                          ),
+                          width: 7,
                         ),
                         SizedBox(
-                          width: medQry.size.width * .62,
+                          width: medQry.size.width * .59,
                           child: Text(messageDoc["ownername"],
                               overflow: TextOverflow.fade,
                               softWrap: false,
@@ -111,19 +172,21 @@ class _MessagePageState extends State<MessagePage> {
                       SizedBox(height: medQry.size.height * .01),
                       Row(
                         children: <Widget>[
-                          SizedBox(width: 15),
+                          SizedBox(width: 10),
                           SizedBox(
-                            width: medQry.size.width * .89,
+                            width: medQry.size.width * .81,
                             child: Text(
                               messageDoc["subject"],
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               softWrap: true,
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black54),
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ],
+                      ),
+                      SizedBox(
+                        height: 5,
                       ),
                       Row(
                         children: [
@@ -136,7 +199,7 @@ class _MessagePageState extends State<MessagePage> {
                                           ? messageDoc
                                           : null,
                                       messageDoc["subject"]),
-                                  height: 100,
+                                  height: 80,
                                   width: 120,
                                 )
                               : SizedBox(
@@ -147,10 +210,11 @@ class _MessagePageState extends State<MessagePage> {
                           ),
                           Container(
                               width: 200,
-                              height: 70,
+                              height: 35,
                               child: Text(
                                 messageDoc["content"],
-                                maxLines: 3,
+                                style: TextStyle(color: Colors.black54),
+                                maxLines: 2,
                               ))
                         ],
                       ),
@@ -159,6 +223,9 @@ class _MessagePageState extends State<MessagePage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: children2,
+                      ),
+                      SizedBox(
+                        height: 9,
                       )
                     ])),
               )),
@@ -190,6 +257,19 @@ class _MessagePageState extends State<MessagePage> {
             child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 134, 131, 131),
+                    Color.fromARGB(255, 54, 52, 52),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  stops: [0, 1],
+                ),
+              ),
+            ),
             actions: [
               IconButton(
                   icon: Icon(Icons.search),
@@ -198,7 +278,72 @@ class _MessagePageState extends State<MessagePage> {
                           showSearchBar = true;
                           _scrollController.jumpTo(0);
                         })
-                      })
+                      }),
+              PopupMenuButton(
+                initialValue: 1,
+                onSelected: (val) => {
+                  setState(() {
+                    currentSort = val;
+                  })
+                  //val == "1" ? showEditSheet() : deleteAlert(context)
+                },
+                itemBuilder: (context) {
+                  var list = List<PopupMenuEntry<Object>>();
+                  list.add(
+                    PopupMenuItem(
+                      child: Text("Recent post"),
+                      value: "1",
+                    ),
+                  );
+                  list.add(
+                    PopupMenuDivider(
+                      height: 10,
+                    ),
+                  );
+                  list.add(
+                    PopupMenuItem(
+                      child: Text("1 Week before"),
+                      value: "2",
+                    ),
+                  );
+                  list.add(
+                    PopupMenuDivider(
+                      height: 10,
+                    ),
+                  );
+                  list.add(
+                    PopupMenuItem(
+                      child: Text("1 Month before"),
+                      value: "3",
+                    ),
+                  );
+                  list.add(
+                    PopupMenuDivider(
+                      height: 10,
+                    ),
+                  );
+                  list.add(
+                    PopupMenuItem(
+                      child: Text("3 Months before"),
+                      value: "4",
+                    ),
+                  );
+                  list.add(
+                    PopupMenuDivider(
+                      height: 10,
+                    ),
+                  );
+                  list.add(
+                    PopupMenuItem(
+                      child: Text("Sort by date"),
+                      value: "5",
+                    ),
+                  );
+
+                  return list;
+                },
+                icon: Icon(Icons.sort_outlined),
+              ),
             ],
             leading: IconButton(
               icon: Utils.userProfilePic(Utils.userId, 14),
@@ -253,11 +398,7 @@ class _MessagePageState extends State<MessagePage> {
                   )),
               Expanded(
                   child: new StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('Threads')
-                    .orderBy("created_time", descending: true)
-                    .limit(showSearchBar ? 1000 : 200)
-                    .snapshots(),
+                stream: getMsgStream(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (!snapshot.hasData)
@@ -278,15 +419,27 @@ class _MessagePageState extends State<MessagePage> {
               )),
             ],
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            items: Utils.bottomNavItem(),
-
-            currentIndex: _selectedIndex,
-            // backgroundColor: Colors.white,
-            selectedItemColor: Theme.of(context).primaryColor,
-            unselectedItemColor: Colors.grey,
-            //unselectedLabelStyle: TextStyle(color: Colors.grey),
-            onTap: _onItemTapped,
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 134, 131, 131),
+                  Color.fromARGB(255, 54, 52, 52),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                stops: [0, 1],
+              ),
+            ),
+            child: BottomNavigationBar(
+              items: Utils.bottomNavItem(),
+              currentIndex: _selectedIndex,
+              backgroundColor: Color.fromARGB(255, 116, 115, 115),
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white,
+              //unselectedLabelStyle: TextStyle(color: Colors.grey),
+              onTap: _onItemTapped,
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {

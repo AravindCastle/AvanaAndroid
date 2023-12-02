@@ -5,10 +5,18 @@
          In most cases you can leave this as-is, but you if you want to provide
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:name="${applicationName}"
-        android:label="Avana Learning App"
+        android:label="Avana Education App"
+        android:width="244dp"
+        android:height="244dp"
         android:icon="@mipmap/ic_launcher">
+        <activity
+    android:name="com.yalantis.ucrop.UCropActivity"
+    android:screenOrientation="portrait"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -22,8 +30,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
- <action android:name="FLUTTER_NOTIFICATION_CLICK"/>
+ <action android:name="FLUTTER_NOTIFICATION_CLICK"/> 
  <category android:name="android.intent.category.DEFAULT"/>
+ 
 </intent-filter>
         </activity>
         

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:avana_academy/Utils.dart';
+import 'package:avana_academy/firebase_message_module.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -78,7 +79,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       focusNode.unfocus();
       String notfyStr = localStore.getString("name") + ":" + commentEditor.text;
       commentEditor.clear();
-      Utils.sendPushNotification("New Comment", notfyStr, "feed", threadID);
+      NotificationHandler.sendPushNotification("New Comment", notfyStr);
       //Utils.pushFeed(" has added new comment.", 1);
       Utils.updateFeedCommentCount(threadID, true);
       isCommentSaved = true;
@@ -244,7 +245,7 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
             SizedBox(
-              width: medQry.size.width * .60,
+              width: medQry.size.width * .53,
               child: Text(threadDetails['ownername'].toString(),
                   softWrap: true,
                   style: TextStyle(
@@ -270,13 +271,9 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
       children: [
         new Container(
             padding: EdgeInsets.only(
-                left: 5,
-                right: medQry.size.width * .02,
-                top: medQry.size.width * .05),
-            child: Text(
-              "      " + threadDetails["content"],
-              style: TextStyle(fontSize: 17),
-            ))
+                left: 15, right: 15, top: medQry.size.width * .05),
+            child: Utils.constructText(
+                "      " + threadDetails["content"], TextStyle(fontSize: 17)))
       ],
     );
   }
@@ -576,17 +573,45 @@ class _FeedDetailScreenState extends State<FeedDetailScreen> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 134, 131, 131),
+                Color.fromARGB(255, 54, 52, 52),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              stops: [0, 1],
+            ),
+          ),
+        ),
         title: isLoading ? Text("") : buildMessageInfo(),
-        actions: <Widget>[
-          (!isLoading && (userRole == 1))
-              ? IconButton(
+        actions: (!isLoading && (userRole == 1))
+            ? <Widget>[
+                IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
                     deleteAlert(context);
                   },
+                ),
+                IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {
+                    List<dynamic> attachmentList = threadDetails["attachments"];
+                    List<String> filePathList = [];
+                    List<String> fileNameList = [];
+                    for (int i = 0; i < attachmentList.length; i++) {
+                      filePathList.add(attachmentList[i]["url"]);
+                      fileNameList.add(
+                          '${attachmentList[i]["name"]}.${attachmentList[i]["type"]}');
+                    }
+                    Utils.shareToWhatsApp(
+                        threadDetails["content"], filePathList, fileNameList);
+                  },
                 )
-              : SizedBox()
-        ],
+              ]
+            : [SizedBox()],
       ),
       body: isLoading
           ? new Container(

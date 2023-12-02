@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:avana_academy/Utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,21 +8,24 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditUser extends StatefulWidget {
   String currentUserId;
   String currentUserName;
+  bool isMemberEdit;
 
-  EditUser({this.currentUserId, this.currentUserName});
+  EditUser({this.currentUserId, this.currentUserName, this.isMemberEdit});
 
-  _EditUserState createState() =>
-      _EditUserState(this.currentUserId, this.currentUserName);
+  _EditUserState createState() => _EditUserState(
+      this.currentUserId, this.currentUserName, this.isMemberEdit);
 }
 
 class _EditUserState extends State<EditUser> {
   String currentUserId;
   String currentUserName;
-  _EditUserState(this.currentUserId, this.currentUserName);
+  bool isMemberEdit;
+  _EditUserState(this.currentUserId, this.currentUserName, this.isMemberEdit);
 
   bool isPageLoading = true;
   bool isActiveUser = true;
@@ -30,6 +34,7 @@ class _EditUserState extends State<EditUser> {
   String currentUserEmail = "";
   TextEditingController password = new TextEditingController();
   TextEditingController description = new TextEditingController();
+  TextEditingController distributor_name = new TextEditingController();
 
   //TextEditingController hospital = new TextEditingController();
 
@@ -89,18 +94,33 @@ class _EditUserState extends State<EditUser> {
     updateUser.show();
 
     if (profilePic != null) {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.ref().child('AvanaFiles/profilepics/' +
+          profilePic.path.split("/").last +
+          DateTime.now().millisecondsSinceEpoch.toString());
+      UploadTask uploadTask = ref.putFile(profilePic);
+
+      TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
+      profilePickUrl = await taskres.ref.getDownloadURL();
+    }
+
+/*
+    if (profilePic != null) {
       try {
         profilePickUrl = await Utils.uploadImageGetUrl(
             'AvanaFiles/profilepics/' + profilePic.path.split("/").last,
             profilePic);
-      } catch (Exception) {}
+      } catch (Exception) {
+        print(Exception);
+      }
     }
-
+*/
     await FirebaseFirestore.instance
         .collection("userdata")
         .doc(currentUserId)
         .update({
       "password": password.text,
+      "distributor_name": distributor_name.text,
       "isactive": isActiveUser,
       "userrole": userRole,
       "description": description.text,
@@ -118,16 +138,197 @@ class _EditUserState extends State<EditUser> {
     Navigator.pop(context);
   }
 
+  List<Widget> userEditFields() {
+    List<Widget> fields = [
+      GestureDetector(
+        child: profilePicture(),
+        onTap: _pickImage,
+      ),
+      SizedBox(height: 20),
+      Text(
+        currentUserName,
+        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+      ),
+      SizedBox(height: 10),
+      Text(
+        currentUserEmail,
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+      ),
+      SizedBox(height: 20),
+      TextField(
+          controller: password,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              labelText: "Password")),
+      SizedBox(height: 10),
+      TextField(
+          controller: distributor_name,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              labelText: "Distributor Name")),
+      SizedBox(height: 10),
+      TextField(
+          controller: city,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              labelText: "City Name")),
+    ];
+    if (!isMemberEdit) {
+      fields.addAll([
+        SizedBox(height: 10),
+        DropdownButtonFormField(
+            onChanged: (val) => {
+                  setState(() {
+                    region = val;
+                  })
+                },
+            items: [
+              DropdownMenuItem(
+                child: Text("North"),
+                value: "north",
+              ),
+              DropdownMenuItem(
+                child: Text("South"),
+                value: "south",
+              ),
+              DropdownMenuItem(
+                child: Text("East"),
+                value: "east",
+              ),
+              DropdownMenuItem(
+                child: Text("West"),
+                value: "west",
+              )
+            ],
+            value: region,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Region",
+              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+            )),
+        SizedBox(height: 10),
+        TextField(
+          controller: description,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              labelText: "Description"),
+          maxLines: 5,
+        ),
+        SizedBox(height: 10),
+        SwitchListTile(
+          title: const Text(
+            'Activate User',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          value: isActiveUser,
+          onChanged: (bool value) {
+            setState(() {
+              isActiveUser = value;
+            });
+          },
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+            child: Text(
+              "Choose user role :",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            )),
+        ListTile(
+          title: new Text('Admin'),
+          leading: Radio(
+            value: 1,
+            groupValue: userRole,
+            onChanged: (int value) {
+              setState(() {
+                userRole = value;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: new Text(Utils.distributorName),
+          leading: Radio(
+            value: 2,
+            groupValue: userRole,
+            onChanged: (int value) {
+              setState(() {
+                userRole = value;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: new Text('Member'),
+          leading: Radio(
+            value: 3,
+            groupValue: userRole,
+            onChanged: (int value) {
+              setState(() {
+                userRole = value;
+              });
+            },
+          ),
+        ),
+      ]);
+    }
+
+    fields.addAll([
+      SizedBox(height: 30),
+      ConstrainedBox(
+          constraints:
+              const BoxConstraints(minWidth: double.infinity, minHeight: 40),
+          child: TextButton(
+            style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all(Colors.white),
+                backgroundColor: MaterialStateProperty.all(
+                    Color.fromRGBO(134, 134, 134, 1))),
+            child: Text(
+              "Update",
+              style: TextStyle(fontSize: 20),
+            ),
+            onPressed: updateUserDetails,
+          )),
+      SizedBox(height: 30),
+    ]);
+
+    if (isMemberEdit) {
+      fields.add(TextButton(
+        style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(Colors.white),
+            backgroundColor:
+                MaterialStateProperty.all(Color.fromRGBO(128, 0, 0, 1))),
+        onPressed: () async {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.clear();
+          Navigator.pushReplacementNamed(context, "/login");
+        },
+        child: Text(
+          "Logout",
+          style: TextStyle(fontSize: 18),
+        ),
+      ));
+    }
+    return fields;
+  }
+
   Future<void> fetchUserDetails() async {
-    DocumentSnapshot currentUserDetails = await FirebaseFirestore.instance
+    DocumentSnapshot currentUserDetailsSnap = await FirebaseFirestore.instance
         .collection('userdata')
         .doc(currentUserId)
         .get();
-
+    Map currentUserDetails = currentUserDetailsSnap.data();
     currentUserEmail = currentUserDetails["email"];
     isActiveUser = currentUserDetails["isactive"];
     password.text = currentUserDetails["password"];
-    //hospital.text = currentUserDetails["hospital"];
+    if (currentUserDetails["distributor_name"] != null) {
+      distributor_name.text = currentUserDetails["distributor_name"];
+    } else {
+      distributor_name.text = "";
+    }
     city.text = currentUserDetails["city"];
     region = currentUserDetails["region"];
     description.text = currentUserDetails["description"];
@@ -145,7 +346,8 @@ class _EditUserState extends State<EditUser> {
         child: Scaffold(
       appBar: AppBar(
         title: Text(currentUserName),
-        actions: "admin@avanasurgical.com" == currentUserEmail.trim()
+        actions: "admin@avanasurgical.com" == currentUserEmail.trim() ||
+                isMemberEdit
             ? []
             : [
                 IconButton(
@@ -207,163 +409,7 @@ class _EditUserState extends State<EditUser> {
                 )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      child: profilePicture(),
-                      onTap: _pickImage,
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      currentUserName,
-                      style:
-                          TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      currentUserEmail,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 20),
-                    TextField(
-                        controller: password,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding:
-                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Password")),
-                    /*SizedBox(height: 10),
-                    TextField(
-                        controller: hospital,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding:
-                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "Hospital Name")),*/
-                    SizedBox(height: 10),
-                    TextField(
-                        controller: city,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            contentPadding:
-                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            labelText: "City Name")),
-                    SizedBox(height: 10),
-                    DropdownButtonFormField(
-                        onChanged: (val) => {
-                              setState(() {
-                                region = val;
-                              })
-                            },
-                        items: [
-                          DropdownMenuItem(
-                            child: Text("North"),
-                            value: "north",
-                          ),
-                          DropdownMenuItem(
-                            child: Text("South"),
-                            value: "south",
-                          ),
-                          DropdownMenuItem(
-                            child: Text("East"),
-                            value: "east",
-                          ),
-                          DropdownMenuItem(
-                            child: Text("West"),
-                            value: "west",
-                          )
-                        ],
-                        value: region,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Region",
-                          contentPadding:
-                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                        )),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: description,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          contentPadding:
-                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                          labelText: "Description"),
-                      maxLines: 5,
-                    ),
-                    SizedBox(height: 10),
-                    SwitchListTile(
-                      title: const Text(
-                        'Activate User',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      value: isActiveUser,
-                      onChanged: (bool value) {
-                        setState(() {
-                          isActiveUser = value;
-                        });
-                      },
-                    ),
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                        child: Text(
-                          "Choose user role :",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        )),
-                    ListTile(
-                      title: new Text('Admin'),
-                      leading: Radio(
-                        value: 1,
-                        groupValue: userRole,
-                        onChanged: (int value) {
-                          setState(() {
-                            userRole = value;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: new Text(Utils.distributorName),
-                      leading: Radio(
-                        value: 2,
-                        groupValue: userRole,
-                        onChanged: (int value) {
-                          setState(() {
-                            userRole = value;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: new Text('Member'),
-                      leading: Radio(
-                        value: 3,
-                        groupValue: userRole,
-                        onChanged: (int value) {
-                          setState(() {
-                            userRole = value;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    ConstrainedBox(
-                        constraints: const BoxConstraints(
-                            minWidth: double.infinity, minHeight: 40),
-                        child: TextButton(
-                          style: ButtonStyle(
-                              foregroundColor:
-                                  MaterialStateProperty.all(Colors.white),
-                              backgroundColor: MaterialStateProperty.all(
-                                  Color.fromRGBO(128, 0, 0, 1))),
-                          child: Text(
-                            "Update",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          onPressed: updateUserDetails,
-                        )),
-                    SizedBox(height: 30),
-                  ],
+                  children: userEditFields(),
                 ),
         ),
       ),
