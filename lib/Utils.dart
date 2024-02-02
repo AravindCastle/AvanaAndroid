@@ -9,7 +9,8 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:open_file_safe/open_file_safe.dart';
+import 'package:open_file_plus/open_file_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1202,5 +1203,22 @@ static void openFile(File file,String url){
       style: style != null ? style : TextStyle(color: Colors.black),
       linkStyle: TextStyle(color: Colors.blue),
     );
+  }
+
+  static Future<bool> requestStoragePermission() async {
+    print("req permission");
+    PermissionStatus storage = await Permission.storage.request();
+    PermissionStatus photo = await Permission.photos.request();
+    PermissionStatus audio = await Permission.audio.request();
+    PermissionStatus video = await Permission.videos.request();
+    PermissionStatus exStore = await Permission.manageExternalStorage.request();
+    print("permission result");
+    print(storage.isGranted);
+    print(audio.isGranted);
+    print(photo.isGranted);
+    print(video.isGranted);
+    print(exStore.isGranted);
+
+    return photo.isGranted;
   }
 }

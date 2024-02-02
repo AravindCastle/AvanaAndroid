@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -29,6 +30,9 @@ class _MessageEditorState extends State<MessageEditor> {
 
 //videoFrmts.addAll({'.WEBM','.MPG', '.MP2', '.MPEG', '.MPE', '.MPV', '.OGG', '.MP4', '.M4P', '.M4V', '.AVI', '.WMV', '.MOV','.QT', '.FLV', '.SWF', '.AVCHD'});
   Future<void> _pickImage() async {
+    if (!await Utils.requestStoragePermission()) {
+      return;
+    }
     if (uploaderImgs.length < 10) {
       FilePickerResult selectedFile =
           await FilePicker.platform.pickFiles(type: FileType.image);

@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'Utils.dart';
 
@@ -53,6 +54,9 @@ class _AddUserPageState extends State<AddUserPage> {
   }
 
   Future<void> _pickImage() async {
+    if (!await Utils.requestStoragePermission()) {
+      return;
+    }
     FilePickerResult selectedFile =
         await FilePicker.platform.pickFiles(type: FileType.image);
     if (selectedFile != null && this.mounted) {

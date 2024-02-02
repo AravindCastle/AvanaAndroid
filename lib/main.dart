@@ -25,6 +25,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
@@ -255,6 +256,9 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
     //_fcm.subscribeToTopic(Utils.notifyTopic);
     NotificationHandler notificationHandler = NotificationHandler();
     notificationHandler.registerNotification();
+
+    _getStoragePermission();
+
     /*
 
     if (Platform.isIOS) {
@@ -348,6 +352,18 @@ class _AvanaHomePageState extends State<AvanaHomePage> {
       Navigator.pushReplacementNamed(context, "/login");
     } else {
       Navigator.pushReplacementNamed(context, "/feed");
+    }
+  }
+
+  Future _getStoragePermission() async {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      // You can request multiple permissions at once.
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.storage,
+      ].request();
+      print(statuses[
+          Permission.storage]); // it should print PermissionStatus.granted
     }
   }
 
