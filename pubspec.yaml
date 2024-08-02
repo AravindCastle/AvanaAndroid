@@ -14,7 +14,7 @@ description: Avana Surgical Academy.
 version: 1.0.7+19
 
 environment:
-  sdk: ">=2.2.0 <3.0.0" 
+  sdk: ">=2.2.0 <=3.0.0" 
 
 dependencies:
   firebase_core : ^1.17.1
@@ -22,7 +22,7 @@ dependencies:
   shared_preferences: any
   cloud_firestore: ^3.1.17
   file_picker: ^5.2.6  
-  open_file_plus: ^3.3.0
+  open_file_plus: 3.3.0
   flare_flutter: any
   firebase_messaging: ^11.4.1
   http: ^0.13.0

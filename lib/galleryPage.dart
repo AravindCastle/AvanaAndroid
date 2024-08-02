@@ -82,9 +82,7 @@ class GalleryPageState extends State<GalleryPage> {
     if (FolderImage != null) {
       String fileName = FolderImage.path.split("/").last;
       FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage.ref().child('AvanaFiles/Gallery/' +
-          fileName +
-          DateTime.now().millisecondsSinceEpoch.toString());
+      Reference ref = storage.ref().child('AvanaFiles/Gallery/' + fileName);
       UploadTask uploadTask = ref.putFile(FolderImage);
       TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
       dowloadUrl = await taskres.ref.getDownloadURL();
@@ -341,9 +339,7 @@ class GalleryPageState extends State<GalleryPage> {
           await uploadingPop.show();
 
           FirebaseStorage storage = FirebaseStorage.instance;
-          Reference ref = storage.ref().child('AvanaFiles/Gallery/' +
-              fileName +
-              DateTime.now().millisecondsSinceEpoch.toString());
+          Reference ref = storage.ref().child('AvanaFiles/Gallery/' + fileName);
           UploadTask uploadTask = ref.putFile(fileToBeUploaded);
 
           uploadingPop.style(

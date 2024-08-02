@@ -1157,8 +1157,9 @@ static void openFile(File file,String url){
 
   static String getyoutubeid(String url) {
     String id = getIdFromUrl(url);
+    print(id);
     return id != null
-        ? "https://img.youtube.com/vi/" + id + "/sddefault.jpg"
+        ? "https://img.youtube.com/vi/" + id + "/hqdefault.jpg"
         : "https://i.stack.imgur.com/WFy1e.jpg";
   }
 

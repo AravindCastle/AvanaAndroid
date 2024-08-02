@@ -99,9 +99,9 @@ class _EditUserState extends State<EditUser> {
 
     if (profilePic != null) {
       FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage.ref().child('AvanaFiles/profilepics/' +
-          profilePic.path.split("/").last +
-          DateTime.now().millisecondsSinceEpoch.toString());
+      Reference ref = storage
+          .ref()
+          .child('AvanaFiles/profilepics/' + profilePic.path.split("/").last);
       UploadTask uploadTask = ref.putFile(profilePic);
 
       TaskSnapshot taskres = await uploadTask.whenComplete(() => null);
