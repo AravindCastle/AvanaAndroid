@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -779,22 +780,59 @@ static void openFile(File file,String url){
     }
   }
 
-  static Future<File> fileAsset(String url, String filename) async {
+  static Future<File> fileAsset(
+      String url, String filename, BuildContext context) async {
     Directory tempDir = await getTemporaryDirectory();
     http.Client client = new http.Client();
-    var req = await client.get(Uri.parse(url));
-    var bytes = req.bodyBytes;
+    final ProgressDialog uploadingPop = ProgressDialog(context,
+        type: ProgressDialogType.Download, isDismissible: false);
+    uploadingPop.style(
+        message: "Downloading File ...", maxProgress: 100, progress: 0);
+    await uploadingPop.show();
+
+    var req = await client.send(http.Request('GET', Uri.parse(url)));
+
+    if (req.statusCode != 200) {
+      Fluttertoast.showToast(
+          msg: "File Download Failed Please Check With Admin ",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return null;
+    }
+
+    int totalBytes = req.contentLength ?? 0;
+    int receivedBytes = 0;
+
     File tempFile = File('${tempDir.path}/' + filename);
-    await tempFile.writeAsBytes(bytes, flush: true);
+    var fileSink = tempFile.openWrite();
+
+    // ignore: cancel_subscriptions
+    var streamSubscription = req.stream.listen((chunk) {
+      receivedBytes += chunk.length;
+      fileSink.add(chunk);
+      if (totalBytes > 0) {
+        double percentage = (receivedBytes / totalBytes) * 100;
+        uploadingPop.update(progress: percentage.roundToDouble());
+      }
+    });
+
+    await streamSubscription.asFuture();
+    await fileSink.close();
+
     return tempFile;
   }
 
   static Future<void> openFile(
       String filePath, String filename, BuildContext context) async {
-    showLoadingPopText(context, "Loading File ");
     try {
-      fileAsset(filePath, filename).then((file) {
-        OpenFile.open(file.path);
+      fileAsset(filePath, filename, context).then((file) {
+        if (file != null) {
+          OpenFile.open(file.path);
+        }
         Navigator.pop(context);
       });
     } catch (e) {
