@@ -129,9 +129,7 @@ class GalleryPageState extends State<GalleryPage> {
     deletingPop.style(message: "Deleting on progress");
     deletingPop.show();
 
-    await deleteOnLoop(docId);
-
-    deletingPop.hide();
+    deleteOnLoop(docId).then((value) async => {await deletingPop.hide()});
   }
 
   Future<bool> deleteOnLoop(String docId) async {
@@ -221,7 +219,6 @@ class GalleryPageState extends State<GalleryPage> {
                           OutlinedButton(
                             onPressed: () {
                               Navigator.of(context).pop();
-
                               deleteFolderOrFile(docId, isFolder, url);
                             },
                             style: ButtonStyle(
