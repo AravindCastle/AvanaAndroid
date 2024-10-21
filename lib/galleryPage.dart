@@ -129,7 +129,9 @@ class GalleryPageState extends State<GalleryPage> {
     deletingPop.style(message: "Deleting on progress");
     deletingPop.show();
 
-    deleteOnLoop(docId).then((value) async => {await deletingPop.hide()});
+    deleteOnLoop(docId)
+        .then((value) async => {await deletingPop.hide()})
+        .catchError(() => {deletingPop.hide()});
   }
 
   Future<bool> deleteOnLoop(String docId) async {
